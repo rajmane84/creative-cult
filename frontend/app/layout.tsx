@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist_Mono, Inter } from 'next/font/google';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
+import { Providers } from '@/components/providers';
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
@@ -28,7 +30,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Providers>{children}</Providers>
+        <Toaster />
+      </body>
     </html>
   );
 }
