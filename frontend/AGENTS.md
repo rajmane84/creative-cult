@@ -14,7 +14,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Tailwind CSS**: 4.x (major rewrite from v3)
 - **Shadcn**: 4.13.0 (latest version)
 - **TypeScript**: 5.x
-- **ESLint**: 9.x
+- **ESLint**: 10.x (root-level configuration with project-specific overrides)
 
 ## Critical Breaking Changes
 
@@ -49,12 +49,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Different installation and usage patterns from v2/v3
 - Uses new Tailwind 4 theming system
 
+### ESLint 10
+
+- Root-level configuration in `../eslint.config.mjs`
+- Flat config format (not .eslintrc.js)
+- Project-specific overrides for frontend and backend
+- NO project-specific eslint.config files - use root config
+
 ## Configuration Files to Check Before Making Changes
 
 - `app/globals.css` - Tailwind 4 configuration via `@theme` directive
 - `app/layout.tsx` - Next.js 16 font configuration and metadata
 - `next.config.ts` - Next.js 16 configuration
 - `package.json` - Latest dependency versions
+- `../eslint.config.mjs` - Root ESLint configuration
 
 ## DO NOT DO
 
@@ -64,6 +72,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - ❌ Use deprecated React 18 patterns
 - ❌ Modify font configuration without understanding Tailwind 4 CSS variable system
 - ❌ Assume traditional Tailwind v3 configuration methods work
+- ❌ Create project-specific ESLint config files - use root config
 
 ## DO DO
 
@@ -73,6 +82,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - ✅ Check current component patterns in existing files
 - ✅ Use CSS variables for theming (`--color-primary`, `--font-inter`, etc.)
 - ✅ Test changes with `npm run dev` before committing
+- ✅ Run `bun run lint` from root to check code quality
+- ✅ Run `bun run lint:fix` from root to auto-fix ESLint issues
 
 ## Font Configuration
 
@@ -86,7 +97,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `npm run dev` - Start development server (uses Turbopack)
 - `npm run build` - Production build
 - `npm run start` - Start production server
-- `npm run lint` - Run ESLint
+- `npm run lint` - Run ESLint from root (includes frontend)
+- `bun run lint` - Run ESLint from root (preferred)
+- `bun run lint:fix` - Auto-fix ESLint issues
 
 ## When in Doubt
 

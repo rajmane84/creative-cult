@@ -123,8 +123,10 @@ This backend is part of a monorepo with:
 Shared pre-commit hooks at the root level:
 
 - Auto-format code with Prettier
+- Auto-fix ESLint issues
 - Run TypeScript type check on backend changes
-- Logs errors to `.husky/logs/backend-typecheck.log`
+- Run frontend build on frontend changes
+- Logs errors to `.husky/logs/backend-typecheck.log` and `.husky/logs/frontend-build.log`
 
 ## TypeScript Configuration
 
