@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,6 +50,7 @@ const signupMutation = async (
 
 export function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -67,6 +69,7 @@ export function SignupForm() {
       } else {
         toast.success('Account created successfully!');
         setIsLoading(false);
+        router.push('/');
       }
     },
     onError: (error: unknown) => {
@@ -156,10 +159,16 @@ export function SignupForm() {
           </div>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="flex flex-col gap-2">
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Creating account...' : 'Sign up'}
           </Button>
+          <p className="text-sm text-center text-gray-600 dark:text-gray-400">
+            Already have an account?{' '}
+            <a href="/login" className="text-blue-600 hover:underline">
+              Sign in
+            </a>
+          </p>
         </CardFooter>
       </form>
     </Card>
