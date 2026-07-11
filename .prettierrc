@@ -1,0 +1,12 @@
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": ["frontend/**/*.{js,jsx,ts,tsx,css,scss}"],
+      "plugins": ["prettier-plugin-tailwindcss"]
+    }
+  ]
+}
