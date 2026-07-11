@@ -112,6 +112,12 @@ This backend is part of a monorepo with:
 - `backend/` - Bun application (this directory)
 - Root-level shared tooling: Husky, Prettier, ESLint
 
+## Package Management
+
+- **IMPORTANT**: Always use `bun install` for all dependencies (both frontend and backend)
+- Bun automatically loads .env files, no need for dotenv
+- Use `bun run <script>` instead of `npm run <script>`
+
 ## Development Scripts
 
 - `bun run dev` - Start development server with hot reload

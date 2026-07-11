@@ -101,6 +101,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `bun run lint` - Run ESLint from root (preferred)
 - `bun run lint:fix` - Auto-fix ESLint issues
 
+## Package Management
+
+- **IMPORTANT**: Always use `bun install` for all dependencies (both frontend and backend)
+- Both frontend and backend use Bun as package manager
+- Root-level dev tools also use Bun
+- Bun automatically loads .env files
+
 ## When in Doubt
 
 1. Check existing files for current patterns
