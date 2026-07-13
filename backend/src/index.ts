@@ -1,8 +1,11 @@
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
+
 import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from './auth';
-import { prisma } from './util/prisma';
+import { prisma, warmUpDatabase } from './util/prisma';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,6 +55,20 @@ app.get('/health', (req, res) => {
   return res.status(200).json({ message: 'API is healthy', status: 'OK' });
 });
 
-app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-});
+// Start server with database warm-up
+async function startServer() {
+  console.log('🚀 Starting server...');
+
+  const dbConnected = await warmUpDatabase();
+  if (!dbConnected) {
+    console.error(
+      '⚠️  Starting server without database connection (will retry on requests)'
+    );
+  }
+
+  app.listen(port, () => {
+    console.log(`✅ Server started on port ${port}`);
+  });
+}
+
+startServer();
