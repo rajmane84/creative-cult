@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth/minimal';
+import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './util/prisma';
 
@@ -14,5 +14,13 @@ export const auth = betterAuth({
   trustedOrigins: ['http://localhost:3000', 'http://localhost:3001'],
   advanced: {
     useSecureCookies: false,
+  },
+  user: {
+    additionalFields: {
+      role: {
+        type: 'string',
+        required: false,
+      },
+    },
   },
 });

@@ -62,14 +62,14 @@ export function SignupForm() {
 
   const mutation = useMutation({
     mutationFn: signupMutation,
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       if (response.error) {
         toast.error(response.error.message || 'Failed to create account');
         setIsLoading(false);
       } else {
         toast.success('Account created successfully!');
-        setIsLoading(false);
-        router.push('/');
+        // Redirect immediately, don't set loading to false
+        router.push('/select-role');
       }
     },
     onError: (error: unknown) => {

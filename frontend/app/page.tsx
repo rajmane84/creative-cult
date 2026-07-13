@@ -26,6 +26,15 @@ const Page = () => {
     }
   };
 
+  const user = session?.user;
+
+  // If user doesn't have a role, redirect to role selection
+  useEffect(() => {
+    if (!isPending && session && !user?.role) {
+      router.push('/select-role');
+    }
+  }, [session, isPending, user?.role, router]);
+
   if (isPending) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -41,7 +50,17 @@ const Page = () => {
     return null; // Will redirect
   }
 
-  const user = session.user;
+  // Show loading state while redirecting
+  if (!user?.role) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Setting up your profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -80,7 +99,7 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
             <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 Account Status
@@ -101,6 +120,16 @@ const Page = () => {
                 }
               >
                 {user.emailVerified ? 'Verified' : 'Not Verified'}
+              </p>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                Role
+              </h3>
+              <p className="text-blue-600 dark:text-blue-400 font-medium">
+                {user.role
+                  ? user.role.charAt(0) + user.role.slice(1).toLowerCase()
+                  : 'Not selected'}
               </p>
             </div>
             <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-6">
