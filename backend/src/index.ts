@@ -7,7 +7,6 @@ import { env } from './util/env';
 
 const app = express();
 const port = env.PORT;
-console.log('PORT', env.PORT);
 
 app.use(
   cors({

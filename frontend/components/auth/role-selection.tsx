@@ -41,7 +41,7 @@ export function RoleSelection() {
 
   const mutation = useMutation({
     mutationFn: updateRoleMutation,
-    onSuccess: (response) => {
+    onSuccess: (response, role) => {
       console.log('Update role response:', response);
       if (response.error) {
         toast.error(response.error || 'Failed to update role');
@@ -51,7 +51,12 @@ export function RoleSelection() {
         setIsLoading(null);
         // Refetch session to get updated role
         refetch();
-        router.push('/');
+        // Redirect to appropriate dashboard based on role
+        if (role === 'CLIENT') {
+          router.push('/client');
+        } else if (role === 'CREATIVE') {
+          router.push('/creative');
+        }
       }
     },
     onError: (error: unknown) => {

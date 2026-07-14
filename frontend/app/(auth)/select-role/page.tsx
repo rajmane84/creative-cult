@@ -13,7 +13,17 @@ export default function SelectRolePage() {
     if (!isPending && !session) {
       router.push('/login');
     } else if (!isPending && session && session.user?.role) {
-      router.push('/');
+      // Redirect to appropriate dashboard based on role
+      const role = session.user.role;
+      if (role === 'CLIENT') {
+        router.push('/client');
+      } else if (role === 'CREATIVE') {
+        router.push('/creative');
+      } else if (role === 'ADMIN') {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     }
   }, [session, isPending, router]);
 
