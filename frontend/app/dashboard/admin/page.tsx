@@ -7,20 +7,20 @@ import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
-const CreativeDashboard = () => {
+const AdminDashboard = () => {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
   useEffect(() => {
     if (!isPending && !session) {
       router.push('/login');
-    } else if (!isPending && session && session.user?.role !== 'CREATIVE') {
+    } else if (!isPending && session && session.user?.role !== 'ADMIN') {
       // Redirect to appropriate page based on role
       const role = session.user?.role;
       if (role === 'CLIENT') {
-        router.push('/client');
-      } else if (role === 'ADMIN') {
-        router.push('/admin');
+        router.push('/dashboard/client');
+      } else if (role === 'CREATIVE') {
+        router.push('/dashboard/creative');
       } else {
         router.push('/select-role');
       }
@@ -50,17 +50,17 @@ const CreativeDashboard = () => {
     );
   }
 
-  if (!session || session.user?.role !== 'CREATIVE') {
+  if (!session || session.user?.role !== 'ADMIN') {
     return null; // Will redirect
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-purple-50 to-purple-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-linear-to-br from-red-50 to-red-100 dark:from-slate-900 dark:to-slate-800">
       <nav className="border-b bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Creative Dashboard
+              Admin Dashboard
             </h1>
             <Button variant="outline" onClick={handleSignOut}>
               Sign Out
@@ -81,41 +81,41 @@ const CreativeDashboard = () => {
                 width={100}
               />
             ) : (
-              <div className="h-16 w-16 rounded-full bg-linear-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="h-16 w-16 rounded-full bg-linear-to-br from-red-500 to-orange-600 flex items-center justify-center text-white text-2xl font-bold">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
             )}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Welcome, {user?.name || 'Creative'}!
+                Welcome, {user?.name || 'Admin'}!
               </h2>
               <p className="text-gray-600 dark:text-gray-400">{user!.email}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6">
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                My Portfolio
+                User Management
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Showcase your best work and projects
+                Manage user accounts and permissions
               </p>
             </div>
-            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6">
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Find Projects
+                Content Moderation
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Browse and apply for client projects
+                Review and moderate platform content
               </p>
             </div>
-            <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6">
+            <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                My Profile
+                Platform Analytics
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Update your skills and experience
+                View platform usage and statistics
               </p>
             </div>
           </div>
@@ -125,4 +125,4 @@ const CreativeDashboard = () => {
   );
 };
 
-export default CreativeDashboard;
+export default AdminDashboard;

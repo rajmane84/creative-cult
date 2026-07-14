@@ -5,7 +5,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow access to auth pages
-  const publicPaths = ['/login', '/signup'];
+  const publicPaths = ['/login', '/signup', '/'];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
   // Allow static files and API routes

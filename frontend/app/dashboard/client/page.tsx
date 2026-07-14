@@ -17,10 +17,12 @@ const ClientDashboard = () => {
     } else if (!isPending && session && session.user?.role !== 'CLIENT') {
       // Redirect to appropriate page based on role
       const role = session.user?.role;
-      if (role === 'CREATIVE') {
-        router.push('/creative');
+      if (role === 'CLIENT') {
+        router.push('/dashboard/client');
+      } else if (role === 'CREATIVE') {
+        router.push('/dashboard/creative');
       } else if (role === 'ADMIN') {
-        router.push('/admin');
+        router.push('/dashboard/admin');
       } else {
         router.push('/select-role');
       }

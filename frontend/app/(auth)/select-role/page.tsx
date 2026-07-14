@@ -16,11 +16,11 @@ export default function SelectRolePage() {
       // Redirect to appropriate dashboard based on role
       const role = session.user.role;
       if (role === 'CLIENT') {
-        router.push('/client');
+        router.push('/dashboard/client');
       } else if (role === 'CREATIVE') {
-        router.push('/creative');
+        router.push('/dashboard/creative');
       } else if (role === 'ADMIN') {
-        router.push('/admin');
+        router.push('/dashboard/admin');
       } else {
         router.push('/');
       }

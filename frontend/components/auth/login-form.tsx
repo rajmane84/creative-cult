@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { RoleSelection } from './role-selection';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -38,6 +39,7 @@ const loginMutation = async (data: LoginFormData) => {
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showRoleModal, setShowRoleModal] = useState(false);
   const router = useRouter();
 
   const {
@@ -57,7 +59,23 @@ export function LoginForm() {
       } else {
         toast.success('Login successful!');
         setIsLoading(false);
-        router.push('/');
+        // Check if user has a role
+        const user = response.data?.user;
+        if (user?.role) {
+          // User has a role, redirect to appropriate dashboard
+          if (user.role === 'CLIENT') {
+            router.push('/dashboard/client');
+          } else if (user.role === 'CREATIVE') {
+            router.push('/dashboard/creative');
+          } else if (user.role === 'ADMIN') {
+            router.push('/dashboard/admin');
+          } else {
+            router.push('/');
+          }
+        } else {
+          // User doesn't have a role, show role selection modal
+          setShowRoleModal(true);
+        }
       }
     },
     onError: (error: unknown) => {
@@ -74,58 +92,69 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
-        <CardDescription>
-          Enter your credentials to access your account
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="john@example.com"
-              {...register('email')}
-              disabled={isLoading}
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
+    <>
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Welcome back</CardTitle>
+          <CardDescription>
+            Enter your credentials to access your account
+          </CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="john@example.com"
+                {...register('email')}
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              {...register('password')}
-              disabled={isLoading}
-            />
-            {errors.password && (
-              <p className="text-sm text-destructive">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-        </CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                {...register('password')}
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-sm text-destructive">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+          </CardContent>
 
-        <CardFooter className="flex flex-col gap-2">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Signing in...' : 'Sign in'}
-          </Button>
-          <p className="text-sm text-center text-gray-600 dark:text-gray-400">
-            Don't have an account?{' '}
-            <a href="/signup" className="text-blue-600 hover:underline">
-              Sign up
-            </a>
-          </p>
-        </CardFooter>
-      </form>
-    </Card>
+          <CardFooter className="flex flex-col gap-2">
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Signing in...' : 'Sign in'}
+            </Button>
+            <p className="text-sm text-center text-gray-600 dark:text-gray-400">
+              Don't have an account?{' '}
+              <a href="/signup" className="text-blue-600 hover:underline">
+                Sign up
+              </a>
+            </p>
+          </CardFooter>
+        </form>
+      </Card>
+
+      {showRoleModal && (
+        <RoleSelection
+          open={showRoleModal}
+          onClose={() => setShowRoleModal(false)}
+        />
+      )}
+    </>
   );
 }
