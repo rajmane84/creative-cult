@@ -54,6 +54,10 @@ export default defineConfig([
       "**/coverage/**",
       "**/*.config.{js,ts,mjs,mts}",
       "next-env.d.ts",
+      "**/.claude/**",
+      "**/.cursor/**",
+      "**/.gemini/**",
+      "**/.impeccable/**",
     ],
   },
 ]);

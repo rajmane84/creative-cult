@@ -67,6 +67,10 @@ azure-pipelines.yml
 # IDE
 .vscode
 .idea
+.claude
+.cursor
+.gemini
+.impeccable
 *.swp
 *.swo
 *~
