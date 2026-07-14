@@ -17,6 +17,12 @@ enum Role {
   CREATIVE
 }
 
+enum AvailabilityStatus {
+  AVAILABLE
+  BUSY
+  NOT_AVAILABLE
+}
+
 model User {
   id            String    @id
   name          String
@@ -24,12 +30,66 @@ model User {
   emailVerified Boolean   @default(false)
   image         String?
   role          Role?
+  creativeProfile CreativeProfile?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
   @@unique([email])
   @@map("user")
+}
+
+model CreativeProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  headline      String?
+  bio           String?
+  location      String? // We're not allowing the users to manually change the location
+  category      String?          // e.g. "Photographer", "Illustrator", "Motion Designer"
+  yearsExperience Int?
+  hourlyRate    Decimal?         @db.Decimal(10, 2)
+  currency      String?          @default("USD")
+  availability  AvailabilityStatus @default(AVAILABLE)
+
+  skills        CreativeSkill[]
+  portfolioItems PortfolioItem[]
+  experiences   Experience[]
+  // applications  Application[]    // applying to client projects
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model CreativeSkill {
+  id                String          @id @default(cuid())
+  creativeProfileId String
+  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
+  name              String
+  level             String?         // e.g. "Beginner" / "Expert", or numeric
+}
+
+model PortfolioItem {
+  id                String          @id @default(cuid())
+  creativeProfileId String
+  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
+  title             String
+  description       String?
+  mediaUrl          String
+  tags              String[]
+  createdAt         DateTime        @default(now())
+}
+
+model Experience {
+  id                String          @id @default(cuid())
+  creativeProfileId String
+  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
+  title             String
+  company           String?
+  startDate         DateTime
+  endDate           DateTime?
+  description       String?
 }
 
 model Session {
