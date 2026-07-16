@@ -4,6 +4,9 @@ import { toNodeHandler } from 'better-auth/node';
 import { auth } from './auth';
 import { prisma } from './util/prisma';
 import { env } from './util/env';
+import V1Router from './routes/v1/index';
+import { notFoundHandler } from './middlewares/notFoundHandler';
+import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 const port = env.PORT;
@@ -20,38 +23,14 @@ app.all('/api/auth/{*any}', toNodeHandler(auth));
 
 app.use(express.json());
 
-// Custom route to update user role
-app.post('/api/user/role', async (req, res) => {
-  try {
-    const session = await auth.api.getSession({
-      headers: req.headers,
-    });
+// All v1 routes
+app.use('/api/v1', V1Router);
 
-    if (!session) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+// 404 handler - must be after all routes
+app.use(notFoundHandler);
 
-    const { role } = req.body;
-
-    if (!role || !['CLIENT', 'CREATIVE', 'ADMIN'].includes(role)) {
-      return res.status(400).json({ error: 'Invalid role' });
-    }
-
-    const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
-      data: { role },
-    });
-
-    return res.json({ data: updatedUser });
-  } catch (error) {
-    console.error('Error updating role:', error);
-    return res.status(500).json({ error: 'Failed to update role' });
-  }
-});
-
-app.get('/health', (req, res) => {
-  return res.status(200).json({ message: 'API is healthy', status: 'OK' });
-});
+// Error handler - must be last
+app.use(errorHandler);
 
 async function startServer() {
   try {

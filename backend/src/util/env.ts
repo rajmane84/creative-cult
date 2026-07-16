@@ -12,6 +12,7 @@ const envSchema = z.object({
 
   // Server
   PORT: z.string().default('3000').transform(Number),
+  NODE_ENV: z.string().default('development'),
 
   // CORS
   CORS_ORIGINS: z

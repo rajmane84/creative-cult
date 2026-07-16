@@ -10,13 +10,14 @@ Default to using Bun instead of Node.js.
 
 ## APIs
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+**NOTE**: This backend uses Express.js with Bun runtime, not Bun.serve().
+
+- Use `express` for HTTP server and routing (already configured)
+- Use `cors` for CORS middleware (already configured)
+- Use `better-auth` for authentication (already configured)
+- Use `prisma` with PostgreSQL for database (already configured)
+- Prefer standard Node.js APIs for file operations when needed
+- Use existing middleware patterns (asyncHandler, errorHandler, notFoundHandler)
 
 ## Testing
 
@@ -30,87 +31,82 @@ test("hello world", () => {
 });
 ```
 
-## Frontend
-
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
-
-Server:
-
-```ts#index.ts
-import index from "./index.html"
-
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
-    }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
-})
-```
-
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
-
-```html#index.html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
-```
-
-With the following `frontend.tsx`:
-
-```tsx#frontend.tsx
-import React from "react";
-import { createRoot } from "react-dom/client";
-
-// import .css files directly and it works
-import './index.css';
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
-}
-
-root.render(<Frontend />);
-```
-
-Then, run index.ts
-
-```sh
-bun --hot ./index.ts
-```
-
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.mdx`.
-
 ## Project Structure
 
 This backend is part of a monorepo with:
 
 - `frontend/` - Next.js 16 application
-- `backend/` - Bun application (this directory)
+- `backend/` - Bun application with Express.js (this directory)
 - Root-level shared tooling: Husky, Prettier, ESLint
+
+### Current Backend Stack
+
+- **Runtime**: Bun (instead of Node.js)
+- **Server**: Express.js (HTTP server and routing)
+- **Authentication**: better-auth (configured with `/api/auth/*` routes)
+- **Database**: PostgreSQL with Prisma ORM
+- **CORS**: Configured with allowed origins from environment
+- **Middleware**: asyncHandler, errorHandler, notFoundHandler
+
+### Directory Structure
+
+- `src/` - Main source code
+  - `auth/` - Authentication configuration
+  - `controllers/` - Route controllers
+  - `middlewares/` - Express middleware
+  - `routes/` - API route definitions
+  - `util/` - Utility functions (ApiResponse, errors, env, prisma)
+
+### Server Setup
+
+The server is configured in `src/index.ts`:
+
+```typescript
+import express from 'express';
+import cors from 'cors';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './auth';
+import { prisma } from './util/prisma';
+import { env } from './util/env';
+import V1Router from './routes/v1/index';
+import { notFoundHandler } from './middlewares/notFoundHandler';
+import { errorHandler } from './middlewares/errorHandler';
+
+const app = express();
+const port = env.PORT;
+
+// CORS configuration
+app.use(
+  cors({
+    origin: env.CORS_ORIGINS,
+    methods: ['GET', 'POST', 'PATCH', 'PUT'],
+    credentials: true,
+  })
+);
+
+// Better-auth routes
+app.all('/api/auth/{*any}', toNodeHandler(auth));
+
+// Body parsing middleware
+app.use(express.json());
+
+// API routes
+app.use('/api/v1', V1Router);
+
+// 404 handler (must be after all routes)
+app.use(notFoundHandler);
+
+// Error handler (must be last)
+app.use(errorHandler);
+
+// Start server with database connection
+async function startServer() {
+  await prisma.$connect();
+  app.listen(port, () => {
+    console.log(`Server started on port ${port}`);
+  });
+}
+```
 
 ## Package Management
 
@@ -118,25 +114,178 @@ This backend is part of a monorepo with:
 - Bun automatically loads .env files, no need for dotenv
 - Use `bun run <script>` instead of `npm run <script>`
 
+## Environment Configuration
+
+- Environment variables are managed through `src/util/env.ts`
+- Bun automatically loads `.env` files from the project root
+- The env utility provides type-safe environment variable access
+- Required environment variables will cause the app to fail fast if missing
+
+## Database (Prisma)
+
+- **ORM**: Prisma with PostgreSQL
+- **Schema location**: `prisma/schema.prisma`
+- **Client location**: `src/util/prisma.ts`
+- **Migration commands**:
+  - `bun run prisma:migrate` - Create and apply migrations in development
+  - `bun run prisma:generate` - Generate Prisma client after schema changes
+  - `bun run prisma:studio` - Open Prisma Studio for database inspection
+  - `bun run prisma:reset` - Reset database (use with caution)
+
+### Database Connection
+
+The database client is initialized in `src/util/prisma.ts` and automatically connects on server startup. The connection is established in `src/index.ts` before the server starts listening.
+
 ## Development Scripts
 
-- `bun run dev` - Start development server with hot reload
+- `bun run dev` - Start development server with hot reload (uses `bun --watch src/index.ts`)
 - `bun run start` - Start production server
 - `bun run typecheck` - Run TypeScript type checking (used in pre-commit hooks)
+- `bun run prisma:generate` - Generate Prisma client
+- `bun run prisma:migrate` - Run Prisma migrations in development
+- `bun run prisma:studio` - Open Prisma Studio for database inspection
+- `bun run prisma:reset` - Reset database (force reset)
 
 ## Pre-commit Hooks
 
-Shared pre-commit hooks at the root level:
+Shared pre-commit hooks at the root level (`.husky/`):
 
-- Auto-format code with Prettier
-- Auto-fix ESLint issues
-- Run TypeScript type check on backend changes
-- Run frontend build on frontend changes
-- Logs errors to `.husky/logs/backend-typecheck.log` and `.husky/logs/frontend-build.log`
+- **Prettier**: Auto-format all staged files (both frontend and backend)
+- **ESLint**: Auto-fix linting issues in staged files
+- **Backend typecheck**: Run `tsc --noEmit` on backend TypeScript files when backend files change
+- **Frontend build**: Run frontend build when frontend files change
+- Error logs are written to:
+  - `.husky/logs/backend-typecheck.log` for backend type errors
+  - `.husky/logs/frontend-build.log` for frontend build errors
+
+Note: These hooks ensure code quality and catch type errors before commits are finalized.
 
 ## TypeScript Configuration
 
-- Strict mode enabled
+- Strict mode enabled with additional type safety flags
 - ESNext target with bundler module resolution
+- JSX support for React (react-jsx)
 - No emit (type checking only)
 - Include patterns: `src/**/*`
+- Additional safety: `noUncheckedIndexedAccess`, `noImplicitOverride`, `noFallthroughCasesInSwitch`
+
+## Backend API Response Patterns
+
+**CRITICAL**: Always use the `ApiResponse` utility for consistent API responses. Never use direct `res.status().json()` calls.
+
+### Response Utility Location
+
+- **ApiResponse class**: `backend/src/util/response/ApiResponse.ts`
+
+### Available Response Methods
+
+#### Success Response
+
+```typescript
+import { ApiResponse } from '../util/response/ApiResponse';
+
+// Basic success response (200)
+return ApiResponse.success(res, data, 'Optional success message');
+
+// Success response with custom status code
+return ApiResponse.success(res, data, 'Message', 201);
+```
+
+#### Created Response (201)
+
+```typescript
+return ApiResponse.created(res, data, 'Resource created successfully');
+```
+
+#### No Content Response (204)
+
+```typescript
+return ApiResponse.noContent(res);
+```
+
+#### Paginated Response
+
+```typescript
+const pagination = ApiResponse.calculatePagination(page, limit, total);
+return ApiResponse.paginated(res, data, pagination, 'Optional message');
+```
+
+#### Error Response
+
+```typescript
+return ApiResponse.error(res, 'Error message', 400, {
+  context: 'optional context',
+});
+```
+
+### Response Structure
+
+#### Success Response
+
+```typescript
+{
+  success: true,
+  data: T,
+  message?: string,
+  meta: {
+    timestamp: string,
+    path: string,
+    method: string,
+    statusCode: number
+  },
+  pagination?: {
+    page: number,
+    limit: number,
+    total: number,
+    totalPages: number,
+    hasNext: boolean,
+    hasPrev: boolean
+  }
+}
+```
+
+#### Error Response
+
+```typescript
+{
+  success: false,
+  error: string,
+  statusCode?: number,
+  context?: Record<string, unknown>,
+  stack?: string // Only in development
+}
+```
+
+### Error Handling Patterns
+
+#### Use AppError for Custom Errors
+
+```typescript
+import { AppError } from '../util/errors/AppError';
+
+// Throw custom errors in controllers
+throw new AppError('Not found', 404, { resourceId: id });
+```
+
+#### Use asyncHandler for Route Wrapping
+
+```typescript
+import { asyncHandler } from '../middlewares/asyncHandler';
+import { ApiResponse } from '../util/response/ApiResponse';
+
+router.get(
+  '/users/:id',
+  asyncHandler(async (req, res) => {
+    // Async logic here
+    return ApiResponse.success(res, user);
+  })
+);
+```
+
+### Key Principles
+
+1. **Always use ApiResponse methods** - Never use `res.status().json()` directly
+2. **Consistent structure** - All responses follow the same format
+3. **Automatic metadata** - Responses include timestamp, path, method, and status code
+4. **Error context** - Include relevant context in error responses for debugging
+5. **Development stack traces** - Stack traces are only included in development mode
