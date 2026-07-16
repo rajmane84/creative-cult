@@ -283,7 +283,7 @@ export default function CreativeOnboardingPage() {
       </div>
 
       {/* Navigation Footer */}
-      <div className="sticky bottom-0 pt-8 pb-4 mt-8 bg-gradient-to-t from-[#faf9f7] via-[#faf9f7] to-transparent">
+      <div className="sticky bottom-0 pt-8 pb-4 mt-8 bg-linear-to-t from-[#faf9f7] via-[#faf9f7] to-transparent">
         <div className="flex items-center justify-between max-w-xl">
           <Button
             variant="ghost"

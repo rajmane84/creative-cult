@@ -23,73 +23,130 @@ enum AvailabilityStatus {
   NOT_AVAILABLE
 }
 
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  FREELANCE
+  SELF_EMPLOYED
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+}
+
+enum Degree {
+  HIGH_SCHOOL
+  DIPLOMA
+  BSC
+  BCA
+  BCOM
+  BA
+  BTECH
+  BE
+  BPHARM
+  LLB
+  MBBS
+  MSC
+  MCA
+  MCOM
+  MA
+  MTECH
+  ME
+  MBA
+  MPHARM
+  LLM
+  MD
+  PHD
+  OTHER
+}
+
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  role          Role?
+  id              String           @id
+  name            String
+  email           String
+  emailVerified   Boolean          @default(false)
+  image           String?
+  role            Role?
   creativeProfile CreativeProfile?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  sessions        Session[]
+  accounts        Account[]
+
   @@unique([email])
   @@map("user")
 }
 
 model CreativeProfile {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  headline            String?
+  bio                 String?
+  location            String? // We're not allowing the users to manually change the location
+  availability        AvailabilityStatus @default(AVAILABLE)
+  onboardingCompleted Boolean            @default(false)
 
-  headline      String?
-  bio           String?
-  location      String? // We're not allowing the users to manually change the location
-  category      String?          // e.g. "Photographer", "Illustrator", "Motion Designer"
-  yearsExperience Int?
-  hourlyRate    Decimal?         @db.Decimal(10, 2)
-  currency      String?          @default("USD")
-  availability  AvailabilityStatus @default(AVAILABLE)
-
-  skills        CreativeSkill[]
-  portfolioItems PortfolioItem[]
-  experiences   Experience[]
+  skills         CreativeSkill[]
+  experiences    Experience[]
+  education      Education[]
   // applications  Application[]    // applying to client projects
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model CreativeSkill {
   id                String          @id @default(cuid())
+  name              String
+  level             SkillLevel?
+
+  skillId           String
+  skill             Skill           @relation(fields: [skillId], references: [id])
+
   creativeProfileId String
   creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
-  name              String
-  level             String?         // e.g. "Beginner" / "Expert", or numeric
+  @@unique([creativeProfileId, skillId])
 }
 
-model PortfolioItem {
-  id                String          @id @default(cuid())
-  creativeProfileId String
-  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
-  title             String
-  description       String?
-  mediaUrl          String
-  tags              String[]
-  createdAt         DateTime        @default(now())
+model Skill {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+
+  creativeSkills CreativeSkill[]
+  createdAt      DateTime @default(now())
 }
 
 model Experience {
-  id                String          @id @default(cuid())
+  id               String         @id @default(cuid())
+  title            String
+  employmentType   EmploymentType
+  companyName      String?
+  industry         String?
+  startDate        DateTime
+  endDate          DateTime?
+  currentlyWorking Boolean        @default(false)
+  description      String?
+  skills           String[]
+
   creativeProfileId String
   creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
-  title             String
-  company           String?
-  startDate         DateTime
-  endDate           DateTime?
-  description       String?
+}
+
+model Education {
+  id                String          @id @default(cuid())
+  country           String
+  school            String
+  degree            Degree
+  fieldOfStudy      String
+  yearOfGraduation  String
+
+  creativeProfileId String
+  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
 }
 
 model Session {

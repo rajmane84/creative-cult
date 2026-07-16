@@ -34,6 +34,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `@theme inline` is used for inline theme configuration
 - Font system uses CSS variables, not traditional font-family arrays
 - New color system with `oklch()` color space
+- **NEW UTILITY NAMES**: Many utility classes have been renamed in Tailwind 4:
+  - `bg-gradient-to-br` → `bg-linear-to-br`
+  - `bg-gradient-to-t` → `bg-linear-to-t`
+  - `bg-gradient-to-b` → `bg-linear-to-b`
+  - `bg-gradient-to-l` → `bg-linear-to-l`
+  - `bg-gradient-to-r` → `bg-linear-to-r`
+  - `bg-gradient-to-tl` → `bg-linear-to-tl`
+  - `bg-gradient-to-tr` → `bg-linear-to-tr`
+  - `bg-gradient-to-bl` → `bg-linear-to-bl`
+  - Similar changes for other gradient utilities
+- Always use the new `bg-linear-*` format instead of `bg-gradient-*`
+- Check Tailwind 4 documentation for other utility name changes
 - DO NOT create a tailwind config file - it will break the build
 
 ### React 19
@@ -107,6 +119,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - Both frontend and backend use Bun as package manager
 - Root-level dev tools also use Bun
 - Bun automatically loads .env files
+
+## Shadcn Configuration
+
+- **cn utility location**: `@/lib/cn` (frontend/lib/cn.ts)
+- When installing shadcn components, the cn utility is expected to be at `@/lib/utils` by default
+- Update the import path in installed components from `@/lib/utils` to `@/lib/cn`
+- Install components using: `bunx --bun shadcn@latest add <component_name>`
 
 ## When in Doubt
 
