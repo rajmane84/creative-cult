@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { RoleSelection } from '@/components/auth/role-selection';
 import Loader from '@/components/loader';
+import { ROLE_ROUTES } from '@/constants';
 
 const Page = () => {
   const router = useRouter();
@@ -23,12 +24,8 @@ const Page = () => {
       if (!user?.role) {
         // Show role selection modal
         setShowRoleModal(true);
-      } else if (user.role === 'CLIENT') {
-        router.push('/dashboard/client');
-      } else if (user.role === 'CREATIVE') {
-        router.push('/dashboard/creative');
-      } else if (user.role === 'ADMIN') {
-        router.push('/dashboard/admin');
+      } else if (ROLE_ROUTES[user.role]) {
+        router.push(ROLE_ROUTES[user.role]);
       }
     }
   }, [session, isPending, user?.role, router]);

@@ -46,7 +46,7 @@ axiosInstance.interceptors.response.use(
     }
 
     // Return the response with typed data
-    return response;
+    return response.data;
   },
   (error: AxiosError<ErrorResponse>) => {
     // Handle common error cases

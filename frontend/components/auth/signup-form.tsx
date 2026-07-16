@@ -3,10 +3,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,44 +19,11 @@ import {
 import { RoleSelection } from './role-selection';
 import Image from 'next/image';
 
-const signupSchema = z
-  .object({
-    name: z.string().min(2, 'Name must be at least 2 characters'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z
-      .string()
-      .min(8, 'Password must be at least 8 characters'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type SignupFormData = z.infer<typeof signupSchema>;
-
-const signupMutation = async (
-  data: Omit<SignupFormData, 'confirmPassword'>
-) => {
-  const response = await authClient.signUp.email({
-    email: data.email,
-    password: data.password,
-    name: data.name,
-  });
-  return response;
-};
-
-const googleSignupMutation = async () => {
-  const response = await authClient.signIn.social({
-    provider: 'google',
-    callbackURL: window.location.href,
-  });
-  return response;
-};
+import { signupSchema, type SignupFormData } from '@/lib/validations/auth';
+import { useSignupMutation } from '@/hooks/auth/use-signup';
+import Link from 'next/link';
 
 export function SignupForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
 
   const {
@@ -71,54 +34,15 @@ export function SignupForm() {
     resolver: zodResolver(signupSchema),
   });
 
-  const mutation = useMutation({
-    mutationFn: signupMutation,
-    onSuccess: async (response) => {
-      if (response.error) {
-        toast.error(response.error.message || 'Failed to create account');
-        setIsLoading(false);
-      } else {
-        toast.success('Account created successfully!');
-        setIsLoading(false);
-        // Show role selection modal instead of redirecting
-        setShowRoleModal(true);
-      }
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to create account';
-      toast.error(errorMessage);
-      setIsLoading(false);
-    },
+  const { signupMutation, googleSignupMutation } = useSignupMutation({
+    onRequireRole: () => setShowRoleModal(true),
   });
 
-  const googleMutation = useMutation({
-    mutationFn: googleSignupMutation,
-    onSuccess: (response) => {
-      if (response.error) {
-        toast.error(response.error.message || 'Google signup failed');
-        setIsGoogleLoading(false);
-      } else if ('url' in response.data && response.data.url) {
-        // Redirect to Google OAuth URL
-        window.location.href = response.data.url;
-      } else if ('user' in response.data && response.data.user) {
-        toast.success('Google signup successful!');
-        setIsGoogleLoading(false);
-        // Show role selection modal
-        setShowRoleModal(true);
-      }
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Google signup failed';
-      toast.error(errorMessage);
-      setIsGoogleLoading(false);
-    },
-  });
+  const isLoading = signupMutation.isPending;
+  const isGoogleLoading = googleSignupMutation.isPending;
 
   const onSubmit = (data: SignupFormData) => {
-    setIsLoading(true);
-    mutation.mutate({
+    signupMutation.mutate({
       name: data.name,
       email: data.email,
       password: data.password,
@@ -126,8 +50,7 @@ export function SignupForm() {
   };
 
   const handleGoogleSignup = () => {
-    setIsGoogleLoading(true);
-    googleMutation.mutate();
+    googleSignupMutation.mutate();
   };
 
   return (
@@ -248,9 +171,9 @@ export function SignupForm() {
             </Button>
             <p className="text-sm text-center text-gray-600 dark:text-gray-400">
               Already have an account?{' '}
-              <a href="/login" className="text-blue-600 hover:underline">
+              <Link href="/login" className="text-blue-600 hover:underline">
                 Sign in
-              </a>
+              </Link>
             </p>
           </CardFooter>
         </form>

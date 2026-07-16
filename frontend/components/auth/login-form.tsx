@@ -3,11 +3,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,34 +20,11 @@ import { RoleSelection } from './role-selection';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-
-const loginMutation = async (data: LoginFormData) => {
-  const response = await authClient.signIn.email({
-    email: data.email,
-    password: data.password,
-  });
-  return response;
-};
-
-const googleLoginMutation = async () => {
-  const response = await authClient.signIn.social({
-    provider: 'google',
-    callbackURL: window.location.href,
-  });
-  return response;
-};
+import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
+import { useLoginMutation } from '@/hooks/auth/use-login';
 
 export function LoginForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const router = useRouter();
 
   const {
     register,
@@ -62,89 +34,19 @@ export function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const mutation = useMutation({
-    mutationFn: loginMutation,
-    onSuccess: (response) => {
-      if (response.error) {
-        toast.error(response.error.message || 'Login failed');
-        setIsLoading(false);
-      } else {
-        toast.success('Login successful!');
-        setIsLoading(false);
-        // Check if user has a role
-        const user = response.data?.user;
-        if (user?.role) {
-          // User has a role, redirect to appropriate dashboard
-          if (user.role === 'CLIENT') {
-            router.push('/dashboard/client');
-          } else if (user.role === 'CREATIVE') {
-            router.push('/dashboard/creative');
-          } else if (user.role === 'ADMIN') {
-            router.push('/dashboard/admin');
-          } else {
-            router.push('/');
-          }
-        } else {
-          // User doesn't have a role, show role selection modal
-          setShowRoleModal(true);
-        }
-      }
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Login failed';
-      toast.error(errorMessage);
-      setIsLoading(false);
-    },
+  const { loginMutation, googleLoginMutation } = useLoginMutation({
+    onRequireRole: () => setShowRoleModal(true),
   });
 
-  const googleMutation = useMutation({
-    mutationFn: googleLoginMutation,
-    onSuccess: (response) => {
-      if (response.error) {
-        toast.error(response.error.message || 'Google login failed');
-        setIsGoogleLoading(false);
-      } else if ('url' in response.data && response.data.url) {
-        // Redirect to Google OAuth URL
-        window.location.href = response.data.url;
-      } else if ('user' in response.data && response.data.user) {
-        toast.success('Google login successful!');
-        setIsGoogleLoading(false);
-        // Check if user has a role
-        const user = response.data.user;
-        if (user.role) {
-          // User has a role, redirect to appropriate dashboard
-          if (user.role === 'CLIENT') {
-            router.push('/dashboard/client');
-          } else if (user.role === 'CREATIVE') {
-            router.push('/dashboard/creative');
-          } else if (user.role === 'ADMIN') {
-            router.push('/dashboard/admin');
-          } else {
-            router.push('/');
-          }
-        } else {
-          // User doesn't have a role, show role selection modal
-          setShowRoleModal(true);
-        }
-      }
-    },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Google login failed';
-      toast.error(errorMessage);
-      setIsGoogleLoading(false);
-    },
-  });
+  const isLoading = loginMutation.isPending;
+  const isGoogleLoading = googleLoginMutation.isPending;
 
   const onSubmit = (data: LoginFormData) => {
-    setIsLoading(true);
-    mutation.mutate(data);
+    loginMutation.mutate(data);
   };
 
   const handleGoogleLogin = () => {
-    setIsGoogleLoading(true);
-    googleMutation.mutate();
+    googleLoginMutation.mutate();
   };
 
   return (

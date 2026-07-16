@@ -36,3 +36,9 @@ export enum EmploymentType {
   FREELANCE = 'FREELANCE',
   SELF_EMPLOYED = 'SELF_EMPLOYED',
 }
+
+export enum UserRole {
+  CREATIVE = 'CREATIVE',
+  CLIENT = 'CLIENT',
+  ADMIN = 'ADMIN',
+}
