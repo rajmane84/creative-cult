@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -20,6 +21,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { RoleSelection } from './role-selection';
+import Image from 'next/image';
 
 const signupSchema = z
   .object({
@@ -48,8 +50,17 @@ const signupMutation = async (
   return response;
 };
 
+const googleSignupMutation = async () => {
+  const response = await authClient.signIn.social({
+    provider: 'google',
+    callbackURL: window.location.href,
+  });
+  return response;
+};
+
 export function SignupForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
 
   const {
@@ -81,6 +92,30 @@ export function SignupForm() {
     },
   });
 
+  const googleMutation = useMutation({
+    mutationFn: googleSignupMutation,
+    onSuccess: (response) => {
+      if (response.error) {
+        toast.error(response.error.message || 'Google signup failed');
+        setIsGoogleLoading(false);
+      } else if ('url' in response.data && response.data.url) {
+        // Redirect to Google OAuth URL
+        window.location.href = response.data.url;
+      } else if ('user' in response.data && response.data.user) {
+        toast.success('Google signup successful!');
+        setIsGoogleLoading(false);
+        // Show role selection modal
+        setShowRoleModal(true);
+      }
+    },
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Google signup failed';
+      toast.error(errorMessage);
+      setIsGoogleLoading(false);
+    },
+  });
+
   const onSubmit = (data: SignupFormData) => {
     setIsLoading(true);
     mutation.mutate({
@@ -88,6 +123,11 @@ export function SignupForm() {
       email: data.email,
       password: data.password,
     });
+  };
+
+  const handleGoogleSignup = () => {
+    setIsGoogleLoading(true);
+    googleMutation.mutate();
   };
 
   return (
@@ -165,7 +205,44 @@ export function SignupForm() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col gap-2">
+          <CardFooter className="flex flex-col gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={isGoogleLoading}
+              onClick={handleGoogleSignup}
+            >
+              {isGoogleLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connecting to Google...
+                </>
+              ) : (
+                <>
+                  <Image
+                    width={100}
+                    height={100}
+                    src="/icons/google-icon.png"
+                    alt="google-icon"
+                    className="size-5"
+                  />
+                  Continue with Google
+                </>
+              )}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Creating account...' : 'Sign up'}
             </Button>

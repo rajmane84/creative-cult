@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -21,6 +22,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { RoleSelection } from './role-selection';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -37,8 +40,17 @@ const loginMutation = async (data: LoginFormData) => {
   return response;
 };
 
+const googleLoginMutation = async () => {
+  const response = await authClient.signIn.social({
+    provider: 'google',
+    callbackURL: window.location.href,
+  });
+  return response;
+};
+
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const router = useRouter();
 
@@ -86,9 +98,53 @@ export function LoginForm() {
     },
   });
 
+  const googleMutation = useMutation({
+    mutationFn: googleLoginMutation,
+    onSuccess: (response) => {
+      if (response.error) {
+        toast.error(response.error.message || 'Google login failed');
+        setIsGoogleLoading(false);
+      } else if ('url' in response.data && response.data.url) {
+        // Redirect to Google OAuth URL
+        window.location.href = response.data.url;
+      } else if ('user' in response.data && response.data.user) {
+        toast.success('Google login successful!');
+        setIsGoogleLoading(false);
+        // Check if user has a role
+        const user = response.data.user;
+        if (user.role) {
+          // User has a role, redirect to appropriate dashboard
+          if (user.role === 'CLIENT') {
+            router.push('/dashboard/client');
+          } else if (user.role === 'CREATIVE') {
+            router.push('/dashboard/creative');
+          } else if (user.role === 'ADMIN') {
+            router.push('/dashboard/admin');
+          } else {
+            router.push('/');
+          }
+        } else {
+          // User doesn't have a role, show role selection modal
+          setShowRoleModal(true);
+        }
+      }
+    },
+    onError: (error: unknown) => {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Google login failed';
+      toast.error(errorMessage);
+      setIsGoogleLoading(false);
+    },
+  });
+
   const onSubmit = (data: LoginFormData) => {
     setIsLoading(true);
     mutation.mutate(data);
+  };
+
+  const handleGoogleLogin = () => {
+    setIsGoogleLoading(true);
+    googleMutation.mutate();
   };
 
   return (
@@ -135,15 +191,52 @@ export function LoginForm() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col gap-2">
+          <CardFooter className="flex flex-col gap-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={isGoogleLoading}
+              onClick={handleGoogleLogin}
+            >
+              {isGoogleLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connecting to Google...
+                </>
+              ) : (
+                <>
+                  <Image
+                    width={100}
+                    height={100}
+                    src="/icons/google-icon.png"
+                    alt="google-icon"
+                    className="size-5"
+                  />
+                  Continue with Google
+                </>
+              )}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
             <p className="text-sm text-center text-gray-600 dark:text-gray-400">
               Don't have an account?{' '}
-              <a href="/signup" className="text-blue-600 hover:underline">
+              <Link href="/signup" className="text-blue-600 hover:underline">
                 Sign up
-              </a>
+              </Link>
             </p>
           </CardFooter>
         </form>
