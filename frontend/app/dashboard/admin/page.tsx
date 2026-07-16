@@ -22,7 +22,8 @@ const AdminDashboard = () => {
       } else if (role === 'CREATIVE') {
         router.push('/dashboard/creative');
       } else {
-        router.push('/select-role');
+        // No role selected, redirect to home to show role selection modal
+        router.push('/');
       }
     }
   }, [session, isPending, router]);

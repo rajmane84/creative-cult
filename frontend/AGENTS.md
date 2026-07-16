@@ -85,6 +85,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - ❌ Modify font configuration without understanding Tailwind 4 CSS variable system
 - ❌ Assume traditional Tailwind v3 configuration methods work
 - ❌ Create project-specific ESLint config files - use root config
+- ❌ Use native `fetch` for backend API requests - use the configured axios instance instead
+- ❌ Create new axios instances - use the configured instance from `@/lib/axios`
 
 ## DO DO
 
@@ -96,6 +98,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - ✅ Test changes with `npm run dev` before committing
 - ✅ Run `bun run lint` from root to check code quality
 - ✅ Run `bun run lint:fix` from root to auto-fix ESLint issues
+- ✅ Use the configured axios instance from `@/lib/axios` for all backend API requests
 
 ## Font Configuration
 
@@ -126,6 +129,141 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - When installing shadcn components, the cn utility is expected to be at `@/lib/utils` by default
 - Update the import path in installed components from `@/lib/utils` to `@/lib/cn`
 - Install components using: `bunx --bun shadcn@latest add <component_name>`
+
+## Backend API Requests
+
+**CRITICAL**: Always use the configured axios instance for backend API requests. Never use native `fetch` or create new axios instances.
+
+### Axios Instance Location
+
+- **Axios instance**: `@/lib/axios` (frontend/lib/axios.ts)
+
+### Usage Pattern
+
+```typescript
+import axios, { ApiError } from '@/lib/axios';
+import type { SuccessResponse, ErrorResponse } from '@/lib/axios';
+
+// GET request
+const response = await axios.get('/api/v1/users');
+const data = response.data as SuccessResponse<User[]>;
+console.log(data.data); // Array of users
+
+// POST request
+const response = await axios.post('/api/v1/users', { name: 'John' });
+const data = response.data as SuccessResponse<User>;
+console.log(data.data); // Created user
+
+// PUT/PATCH request
+const response = await axios.put('/api/v1/users/1', { name: 'Jane' });
+const data = response.data as SuccessResponse<User>;
+
+// DELETE request
+const response = await axios.delete('/api/v1/users/1');
+const data = response.data as SuccessResponse<void>;
+```
+
+### Axios Instance Features
+
+The configured axios instance includes:
+
+- **Base URL**: Automatically set from `NEXT_PUBLIC_API_URL` environment variable (defaults to `http://localhost:5000`)
+- **Timeout**: 10 second timeout for all requests
+- **Default headers**: `Content-Type: application/json` automatically set
+- **withCredentials**: `true` - Includes cookies for authentication (required for better-auth session management)
+- **Request interceptor**: Ready for auth token injection (commented out for future use)
+- **Response interceptor**: Automatic error handling and response validation
+- **TypeScript interfaces**: Exported interfaces for type-safe API responses
+- **Custom ApiError class**: Enhanced error handling with statusCode, context, and stack
+
+### Automatic Error Handling
+
+The axios response interceptor automatically:
+
+1. **Throws ApiError for failed responses**: If `response.data.success === false`, it throws an `ApiError` with the error details
+2. **Handles HTTP status codes**: Automatic logging and handling for 401, 403, 404, 500 errors
+3. **Redirects on 401**: Automatically redirects to `/login` on unauthorized responses
+4. **Preserves error context**: Includes statusCode, context, and stack from backend error responses
+
+### Error Handling Pattern
+
+```typescript
+import axios, { ApiError } from '@/lib/axios';
+
+try {
+  const response = await axios.get('/api/v1/users');
+  const data = response.data; // Automatically validated as success
+  console.log(data.data); // Your actual data
+} catch (error) {
+  if (error instanceof ApiError) {
+    // Handle API errors from backend
+    console.error('API Error:', error.message);
+    console.error('Status code:', error.statusCode);
+    console.error('Context:', error.context);
+  } else {
+    // Handle network/axios errors
+    console.error('Network error:', error);
+  }
+}
+```
+
+### Available TypeScript Interfaces
+
+```typescript
+// Success response with data
+interface SuccessResponse<T = unknown> {
+  success: true;
+  data: T;
+  message?: string;
+  meta?: ResponseMeta;
+  pagination?: PaginationMeta;
+}
+
+// Error response
+interface ErrorResponse {
+  success: false;
+  error: string;
+  statusCode?: number;
+  context?: Record<string, unknown>;
+  stack?: string;
+}
+
+// Pagination metadata
+interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+}
+
+// Response metadata
+interface ResponseMeta {
+  timestamp: string;
+  path: string;
+  method: string;
+  statusCode: number;
+}
+
+// Custom error class
+class ApiError extends Error {
+  statusCode?: number;
+  context?: Record<string, unknown>;
+  stack?: string;
+}
+```
+
+### Key Principles
+
+1. **Always use the axios instance** - Never use native `fetch` or create new axios instances
+2. **Import from `@/lib/axios`** - Use the configured instance with all interceptors
+3. **Automatic success validation** - Response interceptor throws `ApiError` for failed responses, so you don't need to check `response.data.success`
+4. **Type-safe responses** - Use exported interfaces for type safety
+5. **Environment-based base URL** - Respects `NEXT_PUBLIC_API_URL` for different environments
+6. **Automatic error handling** - Response interceptor handles common HTTP errors automatically
+7. **Authentication ready** - `withCredentials: true` ensures cookies are sent for better-auth sessions
+8. **Use ApiError class** - Catch `ApiError` instances for backend-specific error handling
 
 ## When in Doubt
 

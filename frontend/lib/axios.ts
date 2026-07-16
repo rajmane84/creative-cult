@@ -1,11 +1,17 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { ApiError, type ApiResponse, type ErrorResponse } from '@/types/api';
+
+const baseURL = `${
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000'
+}/api/v1`;
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+  baseURL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Include cookies for authentication
 });
 
 // Request interceptor
@@ -26,16 +32,47 @@ axiosInstance.interceptors.request.use(
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
+    const data = response.data as ApiResponse;
+
+    // If response indicates failure, throw an error
+    if (data.success === false) {
+      const errorResponse = data as ErrorResponse;
+      throw new ApiError(
+        errorResponse.error || 'Request failed',
+        errorResponse.statusCode,
+        errorResponse.context,
+        errorResponse.stack
+      );
+    }
+
+    // Return the response with typed data
     return response;
   },
-  (error) => {
+  (error: AxiosError<ErrorResponse>) => {
     // Handle common error cases
     if (error.response) {
-      // Server responded with error status
+      const data = error.response.data;
+
+      // If backend returned an error response format
+      if (data && typeof data === 'object' && 'success' in data) {
+        if (data.success === false) {
+          throw new ApiError(
+            data.error || 'Request failed',
+            data.statusCode || error.response.status,
+            data.context,
+            data.stack
+          );
+        }
+      }
+
+      // Handle HTTP status codes
       switch (error.response.status) {
         case 401:
           // Unauthorized - redirect to login or refresh token
           console.error('Unauthorized access');
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
           break;
         case 403:
           console.error('Forbidden access');
@@ -47,10 +84,7 @@ axiosInstance.interceptors.response.use(
           console.error('Server error');
           break;
         default:
-          console.error(
-            'An error occurred:',
-            error.response.data?.message || error.message
-          );
+          console.error('An error occurred:', data?.error || error.message);
       }
     } else if (error.request) {
       // Request made but no response received
@@ -59,6 +93,8 @@ axiosInstance.interceptors.response.use(
       // Error in request setup
       console.error('Request setup error:', error.message);
     }
+
+    // Reject with original error if not handled above
     return Promise.reject(error);
   }
 );

@@ -35,6 +35,11 @@ const Page = () => {
 
   if (isPending) return <Loader />;
 
+  // If user is logged in with a role, show loader while redirecting
+  if (session && user?.role) {
+    return <Loader />;
+  }
+
   // If user is logged in but has no role, show role selection modal
   if (session && !user?.role) {
     return (

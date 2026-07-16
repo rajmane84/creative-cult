@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
+import axios from '@/lib/axios';
+import { ApiError } from '@/types/api';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -24,20 +26,8 @@ import {
 type UserRole = 'CLIENT' | 'CREATIVE';
 
 const updateRoleMutation = async (role: UserRole) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:5000'}/api/user/role`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ role }),
-    }
-  );
-
-  const data = await response.json();
-  return data;
+  const response = await axios.post('/user/role', { role });
+  return response.data;
 };
 
 interface RoleSelectionProps {
@@ -53,27 +43,28 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
     mutationFn: updateRoleMutation,
     onSuccess: async (response) => {
       console.log('Update role response:', response);
-      if (response.error) {
-        toast.error(response.error || 'Failed to update role');
-        setIsLoading(null);
-      } else {
-        toast.success('Role selected successfully!');
-        setIsLoading(null);
-        // Refetch session to get updated role
-        await refetch();
-        // Close dialog if provided
-        if (onClose) {
-          onClose();
-        }
-        // Note: Redirection is handled by the parent component's useEffect
-        // that monitors the session role, avoiding double redirects
+      // Response is automatically validated by axios interceptor
+      // onSuccess only runs for successful responses
+      toast.success('Role selected successfully!');
+      setIsLoading(null);
+      // Refetch session to get updated role
+      await refetch();
+      // Close dialog if provided
+      if (onClose) {
+        onClose();
       }
+      // Note: Redirection is handled by the parent component's useEffect
+      // that monitors the session role, avoiding double redirects
     },
     onError: (error: unknown) => {
       console.error('Update role error:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to update role';
-      toast.error(errorMessage);
+      if (error instanceof ApiError) {
+        toast.error(error.message || 'Failed to update role');
+      } else {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to update role';
+        toast.error(errorMessage);
+      }
       setIsLoading(null);
     },
   });
