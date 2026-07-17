@@ -1,5 +1,3 @@
-// Backend response interfaces
-
 export interface PaginationMeta {
   page: number;
   limit: number;
@@ -34,6 +32,20 @@ export interface ErrorResponse {
 
 export type ApiResponse<T = unknown> = SuccessResponse<T> | ErrorResponse;
 
+// Type guard to check if response is a success response
+export function isSuccessResponse<T>(
+  response: ApiResponse<T>
+): response is SuccessResponse<T> {
+  return response.success === true;
+}
+
+// Type guard to check if response is an error response
+export function isErrorResponse(
+  response: ApiResponse
+): response is ErrorResponse {
+  return response.success === false;
+}
+
 // Custom error class for API errors.
 // Note: `stack` here is intentionally overridden with the backend's
 // reported stack trace (if provided), not the JS runtime's captured trace.
@@ -55,3 +67,11 @@ export class ApiError extends Error {
     this.stack = stack;
   }
 }
+
+export type {
+  UserResponse,
+  UpdateRoleResponse,
+  CheckUsernameResponse,
+  CreativeProfileResponse,
+  CreativeOnboardingResponse,
+} from './responses';

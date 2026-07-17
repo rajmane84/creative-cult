@@ -3,6 +3,10 @@ import { authService } from '@/services/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { ROLE_ROUTES } from '@/constants';
+import type {
+  BetterAuthLoginResponse,
+  BetterAuthSocialResponse,
+} from '@/types/auth';
 
 export function useLoginMutation(options?: {
   onSuccess?: () => void;
@@ -13,7 +17,7 @@ export function useLoginMutation(options?: {
 
   const loginMutation = useMutation({
     mutationFn: authService.login,
-    onSuccess: (response) => {
+    onSuccess: (response: BetterAuthLoginResponse) => {
       if (response.error) {
         toast.error(response.error.message || 'Login failed');
         options?.onError?.();
@@ -38,7 +42,7 @@ export function useLoginMutation(options?: {
 
   const googleLoginMutation = useMutation({
     mutationFn: authService.googleLogin,
-    onSuccess: (response) => {
+    onSuccess: (response: BetterAuthSocialResponse) => {
       if (response.error) {
         toast.error(response.error.message || 'Google login failed');
         options?.onError?.();

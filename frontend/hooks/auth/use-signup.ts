@@ -3,6 +3,10 @@ import { authService } from '@/services/auth';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { ROLE_ROUTES } from '@/constants';
+import type {
+  BetterAuthSignupResponse,
+  BetterAuthSocialResponse,
+} from '@/types/auth';
 
 export function useSignupMutation(options?: {
   onSuccess?: () => void;
@@ -13,7 +17,7 @@ export function useSignupMutation(options?: {
 
   const signupMutation = useMutation({
     mutationFn: authService.signUp,
-    onSuccess: async (response) => {
+    onSuccess: async (response: BetterAuthSignupResponse) => {
       console.log('Signup response', response);
       if (response.error) {
         toast.error(response.error.message || 'Failed to create account');
@@ -39,7 +43,7 @@ export function useSignupMutation(options?: {
 
   const googleSignupMutation = useMutation({
     mutationFn: authService.googleSignUp,
-    onSuccess: (response) => {
+    onSuccess: (response: BetterAuthSocialResponse) => {
       if (response.error) {
         toast.error(response.error.message || 'Google signup failed');
         options?.onError?.();

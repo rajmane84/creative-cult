@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { ApiError, type ApiResponse, type ErrorResponse } from '@/types/api';
+import { ApiError, type ErrorResponse, isSuccessResponse } from '@/types/api';
 
 const baseURL = `${
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000'
@@ -14,14 +14,8 @@ const axiosInstance = axios.create({
   withCredentials: true, // Include cookies for authentication
 });
 
-// Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // You can add auth headers here if needed
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
     return config;
   },
   (error) => {
@@ -29,14 +23,11 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    const data = response.data as ApiResponse;
-
     // If response indicates failure, throw an error
-    if (data.success === false) {
-      const errorResponse = data as ErrorResponse;
+    if (!isSuccessResponse(response.data)) {
+      const errorResponse = response.data as ErrorResponse;
       throw new ApiError(
         errorResponse.error || 'Request failed',
         errorResponse.statusCode,
@@ -45,57 +36,99 @@ axiosInstance.interceptors.response.use(
       );
     }
 
-    // Return the response with typed data
-    return response.data;
+    return response;
   },
   (error: AxiosError<ErrorResponse>) => {
-    // Handle common error cases
     if (error.response) {
+      // Request made, and an error response received ( 4**, 5** status code response )
       const data = error.response.data;
+      const status = error.response.status || data.statusCode;
 
-      // If backend returned an error response format
-      if (data && typeof data === 'object' && 'success' in data) {
-        if (data.success === false) {
-          throw new ApiError(
-            data.error || 'Request failed',
-            data.statusCode || error.response.status,
-            data.context,
-            data.stack
-          );
+      // Fallback: If backend didn't return proper error format, handle by status code
+      if (!(
+        data &&
+        typeof data === 'object' &&
+        'success' in data &&
+        data.success === false
+      )) {
+        switch (status) {
+          case 400: // BadRequestError
+            console.error('Bad request:', data?.error || error.message);
+            throw new ApiError(
+              data?.error || 'Bad request',
+              400,
+              data?.context
+            );
+          case 401: // UnauthorizedError
+            console.error('Unauthorized access');
+            if (typeof window !== 'undefined') {
+              window.location.href = '/login';
+            }
+            throw new ApiError(
+              data?.error || 'Unauthorized',
+              401,
+              data?.context
+            );
+          case 403: // ForbiddenError
+            console.error('Forbidden access');
+            throw new ApiError(data?.error || 'Forbidden', 403, data?.context);
+          case 404: // NotFoundError
+            console.error('Resource not found');
+            throw new ApiError(
+              data?.error || 'Resource not found',
+              404,
+              data?.context
+            );
+          case 409: // ConflictError
+            console.error('Conflict:', data?.error || error.message);
+            throw new ApiError(data?.error || 'Conflict', 409, data?.context);
+          case 422: // ValidationError
+            console.error('Validation error:', data?.error || error.message);
+            throw new ApiError(
+              data?.error || 'Validation failed',
+              422,
+              data?.context
+            );
+          case 500: // InternalServerError
+            console.error('Server error');
+            throw new ApiError(
+              data?.error || 'Internal server error',
+              500,
+              data?.context
+            );
+          case 503: // ServiceUnavailableError
+            console.error('Service unavailable');
+            throw new ApiError(
+              data?.error || 'Service unavailable',
+              503,
+              data?.context
+            );
+          default:
+            console.error('An error occurred:', data?.error || error.message);
+            throw new ApiError(
+              data?.error || 'Request failed',
+              status,
+              data?.context
+            );
         }
       }
 
-      // Handle HTTP status codes
-      switch (error.response.status) {
-        case 401:
-          // Unauthorized - redirect to login or refresh token
-          console.error('Unauthorized access');
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
-          break;
-        case 403:
-          console.error('Forbidden access');
-          break;
-        case 404:
-          console.error('Resource not found');
-          break;
-        case 500:
-          console.error('Server error');
-          break;
-        default:
-          console.error('An error occurred:', data?.error || error.message);
-      }
+      // Backend returned proper error response format - use it directly
+      throw new ApiError(
+        data.error || 'Request failed',
+        data.statusCode || status,
+        data.context,
+        data.stack
+      );
     } else if (error.request) {
       // Request made but no response received
       console.error('No response received:', error.message);
+      throw new ApiError('Network error - no response received');
     } else {
       // Error in request setup
       console.error('Request setup error:', error.message);
+      throw new ApiError('Request setup error');
     }
-
-    // Reject with original error if not handled above
-    return Promise.reject(error);
   }
 );
 

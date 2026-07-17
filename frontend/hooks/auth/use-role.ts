@@ -20,8 +20,8 @@ export function useRoleMutation(options?: {
       toast.success('Role selected successfully!');
       await refetch();
 
-      // Redirect based on role
-      const role = response.role;
+      // Redirect based on role - response.data now has proper typing
+      const role = response.data.role;
       console.log('Role', role);
 
       if (role === UserRole.CREATIVE) {

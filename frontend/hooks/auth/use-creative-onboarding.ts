@@ -16,6 +16,10 @@ export function useCreativeOnboarding(options?: {
       authService.completeCreativeOnboarding(data),
     onSuccess: async (response) => {
       console.log('Creative onboarding response:', response);
+      // response.data now has proper typing with user and creativeProfile
+      console.log('Updated user:', response.data.user);
+      console.log('Creative profile:', response.data.creativeProfile);
+
       toast.success('Profile completed successfully!');
       await refetch();
       options?.onSuccess?.();
