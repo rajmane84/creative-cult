@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Define public routes
+const publicRoutes = ['/login', '/signup', '/'];
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-
-  // Allow access to auth pages
-  const publicPaths = ['/login', '/signup', '/'];
-  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
   // Allow static files and API routes
   if (
@@ -17,12 +16,26 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // For public paths, allow access
-  if (isPublicPath) {
+  // Check if this is a public route
+  const isPublicRoute = publicRoutes.some((path) => pathname.startsWith(path));
+
+  // For public routes, allow access (but redirect authenticated users to dashboard)
+  if (isPublicRoute) {
+    const sessionCookie = request.cookies.get('better-auth.session_token');
+
+    // If user is authenticated and trying to access login/signup, redirect to home
+    // This is an optimistic check - the actual role-based redirect happens on the page
+    if (
+      sessionCookie &&
+      (pathname.startsWith('/login') || pathname.startsWith('/signup'))
+    ) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+
     return NextResponse.next();
   }
 
-  // For protected paths, check if user has a session
+  // For protected routes, check if user has a session cookie
   const sessionCookie = request.cookies.get('better-auth.session_token');
 
   if (!sessionCookie) {
@@ -30,9 +43,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // User has a session, let them through
-  // The role check will be done on the page level using the auth client
-  // This is because we need to fetch the session data to check the role
+  // User has a session cookie - let them through to the page
+  // The page will do server-side session verification and role checks
+  // This avoids database calls in the proxy while still providing security
   return NextResponse.next();
 }
 

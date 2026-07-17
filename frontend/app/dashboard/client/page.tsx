@@ -1,43 +1,28 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth-client';
+import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import { ROLE_ROUTES } from '@/constants';
-import Loader from '@/components/loader';
-import { useSignOut } from '@/hooks/auth/use-sign-out';
+import { requireRole } from '@/lib/session';
 import { UserRole } from '@/types';
+import { SignOutButton } from '@/components/auth/sign-out-button';
 
-const ClientDashboard = () => {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
+export default async function ClientDashboard() {
+  const session = await requireRole('CLIENT');
 
-  useEffect(() => {
-    if (!isPending && !session) {
-      router.push('/login');
-    } else if (!isPending && session && session.user?.role !== 'CLIENT') {
-      const role = session.user?.role;
-
-      if (role && ROLE_ROUTES[role]) {
-        router.push(ROLE_ROUTES[role]);
-      } else {
-        router.push('/');
-      }
-    }
-  }, [session, isPending, router]);
-
-  const handleSignOut = useSignOut();
-
-  const user = session?.user;
-
-  if (isPending) {
-    return <Loader />;
+  if (!session) {
+    // Redirect to appropriate page based on authentication/authorization
+    redirect('/login');
   }
 
-  if (!session || session.user?.role !== UserRole.CLIENT) {
-    return null; // Will redirect
+  const user = session.user;
+
+  // Double-check role for security
+  if (user.role !== UserRole.CLIENT) {
+    const role = user.role;
+    if (role && ROLE_ROUTES[role]) {
+      redirect(ROLE_ROUTES[role]);
+    } else {
+      redirect('/');
+    }
   }
 
   return (
@@ -48,9 +33,7 @@ const ClientDashboard = () => {
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
               Client Dashboard
             </h1>
-            <Button variant="outline" onClick={handleSignOut}>
-              Sign Out
-            </Button>
+            <SignOutButton variant="outline" />
           </div>
         </div>
       </nav>
@@ -109,6 +92,4 @@ const ClientDashboard = () => {
       </main>
     </div>
   );
-};
-
-export default ClientDashboard;
+}

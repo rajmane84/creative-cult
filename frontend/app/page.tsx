@@ -1,65 +1,22 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { authClient } from '@/lib/auth-client';
-import { RoleSelection } from '@/components/auth/role-selection';
-import Loader from '@/components/loader';
+import { redirect } from 'next/navigation';
+import { verifySession } from '@/lib/session';
 import { ROLE_ROUTES } from '@/constants';
+import { RoleSelectionWrapper } from '@/components/auth/role-selection-wrapper';
 
-const Page = () => {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-  const [showRoleModal, setShowRoleModal] = useState(false);
+export default async function HomePage() {
+  const session = await verifySession();
 
-  useEffect(() => {
-    // Don't redirect unauthenticated users - let them see the landing page
-  }, [session, isPending, router]);
-
-  const user = session?.user;
-
-  // Redirect based on user role
-  useEffect(() => {
-    if (!isPending && session) {
-      if (!user?.role) {
-        // Show role selection modal
-        setShowRoleModal(true);
-      } else if (ROLE_ROUTES[user.role]) {
-        router.push(ROLE_ROUTES[user.role]);
-      }
-    }
-  }, [session, isPending, user?.role, router]);
-
-  if (isPending) return <Loader />;
-
-  // If user is logged in with a role, show loader while redirecting
-  if (session && user?.role) {
-    return <Loader />;
+  // If user is authenticated with a role, redirect to their dashboard
+  if (session && session.user?.role && ROLE_ROUTES[session.user.role]) {
+    redirect(ROLE_ROUTES[session.user.role]);
   }
 
-  // If user is logged in but has no role, show role selection modal
-  if (session && !user?.role) {
-    return (
-      <>
-        <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Welcome to Creative Cult
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Please select your role to continue
-            </p>
-          </div>
-        </div>
-        <RoleSelection
-          open={showRoleModal}
-          onClose={() => setShowRoleModal(false)}
-        />
-      </>
-    );
+  // If user is authenticated but has no role, show role selection
+  if (session && !session.user?.role) {
+    return <RoleSelectionWrapper />;
   }
 
-  // Show dummy landing page content (for unauthenticated users)
+  // Show landing page for unauthenticated users
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <div className="container mx-auto px-4 py-16">
@@ -100,6 +57,4 @@ const Page = () => {
       </div>
     </div>
   );
-};
-
-export default Page;
+}

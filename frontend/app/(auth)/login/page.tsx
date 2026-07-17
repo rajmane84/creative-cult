@@ -1,29 +1,6 @@
-'use client';
-
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { LoginForm } from '@/components/auth/login-form';
-import { authClient } from '@/lib/auth-client';
-import Loader from '@/components/loader';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-
-  useEffect(() => {
-    if (!isPending && session) {
-      router.push('/');
-    }
-  }, [session, isPending, router]);
-
-  if (isPending) {
-    return <Loader />;
-  }
-
-  if (session) {
-    return null; // Will redirect
-  }
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4">
       <div className="w-full max-w-md">
