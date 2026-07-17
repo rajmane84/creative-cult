@@ -1,24 +1,11 @@
 import type { Request, Response } from 'express';
-import { auth } from '../auth';
 import { prisma } from '../util/prisma';
 import { asyncHandler } from '../middlewares/asyncHandler';
-import {
-  UnauthorizedError,
-  BadRequestError,
-  ValidationError,
-} from '../util/errors/AppError';
+import { BadRequestError, ValidationError } from '../util/errors/AppError';
 import { ApiResponse } from '../util/response/ApiResponse';
 
 export const handleUpdateUserRole = asyncHandler(
   async (req: Request, res: Response) => {
-    const session = await auth.api.getSession({
-      headers: req.headers,
-    });
-
-    if (!session) {
-      throw new UnauthorizedError('User session not found');
-    }
-
     const { role } = req.body;
 
     if (!role) {
@@ -36,7 +23,7 @@ export const handleUpdateUserRole = asyncHandler(
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: req.user!.id },
       data: { role },
     });
 
@@ -45,5 +32,23 @@ export const handleUpdateUserRole = asyncHandler(
       updatedUser,
       'User role updated successfully'
     );
+  }
+);
+
+export const handleCheckUsername = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { username } = req.query;
+
+    if (!username || typeof username !== 'string') {
+      throw new BadRequestError('Username is required');
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    return ApiResponse.success(res, {
+      available: !existingUser,
+    });
   }
 );

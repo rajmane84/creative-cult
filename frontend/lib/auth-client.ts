@@ -1,5 +1,8 @@
 import { createAuthClient } from 'better-auth/react';
-import { inferAdditionalFields } from 'better-auth/client/plugins';
+import {
+  customSessionClient,
+  inferAdditionalFields,
+} from 'better-auth/client/plugins';
 import type { auth } from '../../backend/src/auth';
 
 export const authClient = createAuthClient({
@@ -7,5 +10,8 @@ export const authClient = createAuthClient({
   fetchOptions: {
     credentials: 'include',
   },
-  plugins: [inferAdditionalFields<typeof auth>()],
+  plugins: [
+    inferAdditionalFields<typeof auth>(),
+    customSessionClient<typeof auth>(),
+  ],
 });

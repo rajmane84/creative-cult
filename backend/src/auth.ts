@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './util/prisma';
 import { env } from './util/env';
+import { customSession } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -28,6 +29,21 @@ export const auth = betterAuth({
         type: 'string',
         required: false,
       },
+      username: {
+        type: 'string',
+        required: false,
+      },
     },
   },
+  plugins: [
+    customSession(async ({ user, session }) => {
+      const creativeProfile = await prisma.creativeProfile.findUnique({
+        where: { userId: user.id },
+      });
+      return {
+        user: { ...user, creativeProfile },
+        session,
+      };
+    }),
+  ],
 });

@@ -32,7 +32,6 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
   const { updateRoleMutation } = useRoleMutation({
     onSuccess: () => {
       setIsLoading(null);
-      if (onClose) onClose();
     },
     onError: () => setIsLoading(null),
   });
@@ -95,7 +94,7 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
   // If open prop is provided, render as Dialog
   if (open !== undefined) {
     return (
-      <Dialog open={open} onOpenChange={() => {}}>
+      <Dialog open={open} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-md" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Select your role</DialogTitle>

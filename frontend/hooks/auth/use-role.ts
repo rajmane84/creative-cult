@@ -3,12 +3,15 @@ import { authService } from '@/services/auth';
 import { toast } from 'sonner';
 import { ApiError } from '@/types/api';
 import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
+import { UserRole } from '@/types';
 
 export function useRoleMutation(options?: {
   onSuccess?: () => void;
   onError?: () => void;
 }) {
   const { refetch } = authClient.useSession();
+  const router = useRouter();
 
   const updateRoleMutation = useMutation({
     mutationFn: authService.updateRole,
@@ -16,6 +19,19 @@ export function useRoleMutation(options?: {
       console.log('Update role response:', response);
       toast.success('Role selected successfully!');
       await refetch();
+
+      // Redirect based on role
+      const role = response.role;
+      console.log('Role', role);
+
+      if (role === UserRole.CREATIVE) {
+        router.push('/onboarding/creative');
+      } else if (role === UserRole.CLIENT) {
+        router.push('/dashboard/client');
+      } else if (role === UserRole.ADMIN) {
+        router.push('/dashboard/admin');
+      }
+
       options?.onSuccess?.();
     },
     onError: (error: unknown) => {

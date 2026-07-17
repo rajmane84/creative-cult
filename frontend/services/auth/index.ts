@@ -1,5 +1,6 @@
 import { authClient } from '@/lib/auth-client';
 import { LoginFormData, SignupFormData } from '@/lib/validations/auth';
+import { CreativeOnboardingFormData } from '@/lib/validations/creative';
 import { UserRole } from '@/types';
 import axios from '@/lib/axios';
 
@@ -39,5 +40,10 @@ export const authService = {
       callbackURL: window.location.href,
     });
     return response;
+  },
+
+  completeCreativeOnboarding: async (data: CreativeOnboardingFormData) => {
+    const response = await axios.post('/creative/onboarding', data);
+    return response.data;
   },
 };

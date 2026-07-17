@@ -8,7 +8,6 @@
     "start": "bun src/index.ts",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "bun --bun prisma generate",
-    "prisma:migrate": "bun --bun prisma migrate dev",
     "prisma:studio": "bun --bun prisma studio",
     "prisma:reset": "bun --bun prisma migrate reset --force"
   },
