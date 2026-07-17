@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { ROLE_ROUTES } from '@/constants';
 import { requireRole } from '@/lib/session';
 import { UserRole } from '@/types';
-import { SignOutButton } from '@/components/auth/sign-out-button';
 
 export default async function ClientDashboard() {
   const session = await requireRole('CLIENT');
@@ -27,17 +26,6 @@ export default async function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <nav className="border-b bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Client Dashboard
-            </h1>
-            <SignOutButton variant="outline" />
-          </div>
-        </div>
-      </nav>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
           <div className="flex items-center space-x-4 mb-6">

@@ -1,6 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { authClient } from './auth-client';
+import type { User } from '@/types';
 
 /**
  * Server-side session verification
@@ -29,9 +30,9 @@ export async function verifySession() {
  * Get the current user from the session
  * Returns null if the user is not authenticated
  */
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<User | null> {
   const session = await verifySession();
-  return session?.user || null;
+  return (session?.user as User) || null;
 }
 
 /**

@@ -42,3 +42,17 @@ export enum UserRole {
   CLIENT = 'CLIENT',
   ADMIN = 'ADMIN',
 }
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role?: string;
+  username?: string;
+  image?: string;
+  creativeProfile?: {
+    onboardingCompleted?: boolean;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
