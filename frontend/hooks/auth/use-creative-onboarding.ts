@@ -3,7 +3,7 @@ import { authService } from '@/services/auth';
 import { toast } from 'sonner';
 import { ApiError } from '@/types/api';
 import { authClient } from '@/lib/auth-client';
-import { CreativeOnboardingFormData } from '@/lib/validations/creative';
+import { CreativeOnboardingFormData } from '@/validations/creative/onboarding';
 
 export function useCreativeOnboarding(options?: {
   onSuccess?: () => void;

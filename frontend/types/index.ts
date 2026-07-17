@@ -24,7 +24,7 @@ export enum Degree {
   OTHER = 'OTHER',
 }
 
-export enum SkillLevel {
+export enum SkillExpertiseLevel {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
   EXPERT = 'EXPERT',

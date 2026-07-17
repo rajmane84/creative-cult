@@ -6,7 +6,7 @@ import { ApiResponse } from '../util/response/ApiResponse';
 
 export const handleCreativeOnboarding = asyncHandler(
   async (req: Request, res: Response) => {
-    const { username, headline, bio } = req.body;
+    const { username, headline, bio, skills } = req.body;
 
     if (!username) {
       throw new BadRequestError('Username is required');
@@ -52,11 +52,80 @@ export const handleCreativeOnboarding = asyncHandler(
       });
     }
 
+    // Handle skills if provided
+    if (skills && Array.isArray(skills) && skills.length > 0) {
+      // Delete existing skills for this profile to avoid duplicates
+      await prisma.creativeSkill.deleteMany({
+        where: { creativeProfileId: creativeProfile.id },
+      });
+
+      // Process each skill
+      for (const skillInput of skills) {
+        if (!skillInput.name || skillInput.name.trim().length < 2) {
+          continue; // Skip invalid skills
+        }
+
+        const skillName = skillInput.name.trim();
+        const skillLevel: 'BEGINNER' | 'INTERMEDIATE' | 'EXPERT' =
+          skillInput.expertise || 'INTERMEDIATE';
+
+        // Check if skill exists in the Skill table (case-insensitive check)
+        const existingSkill = await prisma.skill.findFirst({
+          where: {
+            name: {
+              equals: skillName,
+              mode: 'insensitive',
+            },
+          },
+        });
+
+        let skill;
+        if (existingSkill) {
+          skill = existingSkill;
+        } else {
+          // Create slug from skill name
+          const slug = skillName
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+
+          skill = await prisma.skill.create({
+            data: {
+              name: skillName,
+              slug,
+            },
+          });
+        }
+
+        // Create CreativeSkill record connecting profile to skill
+        await prisma.creativeSkill.create({
+          data: {
+            creativeProfileId: creativeProfile.id,
+            skillId: skill.id,
+            level: skillLevel,
+            name: skill.name,
+          },
+        });
+      }
+    }
+
+    // Fetch updated profile with skills
+    const updatedProfile = await prisma.creativeProfile.findUnique({
+      where: { id: creativeProfile.id },
+      include: {
+        skills: {
+          include: {
+            skill: true,
+          },
+        },
+      },
+    });
+
     return ApiResponse.success(
       res,
       {
         user: updatedUser,
-        creativeProfile,
+        creativeProfile: updatedProfile,
       },
       'Creative onboarding completed successfully'
     );

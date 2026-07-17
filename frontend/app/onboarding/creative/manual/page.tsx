@@ -2,41 +2,86 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { authClient } from '@/lib/auth-client';
 import Loader from '@/components/loader';
 import { UserRole } from '@/types';
 import {
   creativeOnboardingSchema,
   CreativeOnboardingFormData,
-} from '@/lib/validations/creative';
+  Skill,
+} from '@/validations/creative/onboarding';
 import { useUsernameCheck } from '@/hooks/auth/use-username-check';
 import { useCreativeOnboarding } from '@/hooks/auth/use-creative-onboarding';
+import MultiStepOnboarding from '@/components/creative/onboarding/multi-step-onboarding';
+import BasicInfoStep from '@/components/creative/onboarding/basic-info-step';
+import SkillsStep from '@/components/creative/onboarding/skills-step';
+import StepNavigation from '@/components/creative/onboarding/step-navigation';
 
 const CreativeManualOnboarding = () => {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [usernameInput, setUsernameInput] = useState('');
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [currentStep, setCurrentStep] = useState(0);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<CreativeOnboardingFormData>({
+  const methods = useForm<CreativeOnboardingFormData>({
     resolver: zodResolver(creativeOnboardingSchema),
+    defaultValues: {
+      skills: [],
+    },
+    mode: 'onChange', // Validate on change for real-time feedback
   });
 
-  const { isCheckingUsername, isUsernameAvailable, checkUsername } =
-    useUsernameCheck();
+  const {
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setValue,
+    watch,
+  } = methods;
+
+  const { isUsernameAvailable } = useUsernameCheck();
+  const usernameValue = watch('username');
+
   const { onboardingMutation } = useCreativeOnboarding({
     onSuccess: () => {
       router.push('/dashboard/creative');
     },
   });
+
+  // Check if current step is valid for enabling next button
+  const isStepValid = () => {
+    if (currentStep === 0) {
+      // Step 1: Username must be filled and valid
+      const isUsernameValid =
+        usernameValue && usernameValue.length >= 3 && !errors.username;
+
+      // Allow proceeding if username is valid and either available or not yet checked
+      // This prevents getting stuck if availability check is slow
+      return isUsernameValid && isUsernameAvailable !== false;
+    }
+    // Step 2: Skills are optional, always valid
+    return true;
+  };
+
+  const steps = [
+    {
+      id: 1,
+      title: 'Basic Info',
+      description: 'Username, headline & bio',
+    },
+    {
+      id: 2,
+      title: 'Skills',
+      description: 'Your expertise',
+    },
+  ];
+
+  // Sync skills with form value
+  useEffect(() => {
+    setValue('skills', skills);
+  }, [skills, setValue]);
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -53,15 +98,23 @@ const CreativeManualOnboarding = () => {
     }
   }, [session, isPending, router]);
 
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setUsernameInput(value);
-    // Always trigger username check, but debouncing will handle the timing
-    checkUsername(value);
+  const handleNext = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+    e?.preventDefault();
+
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
   const onSubmit = async (data: CreativeOnboardingFormData) => {
-    if (!isUsernameAvailable) {
+    // Final check: ensure username is available before submitting
+    if (isUsernameAvailable === false) {
       return;
     }
     onboardingMutation.mutate(data);
@@ -77,108 +130,43 @@ const CreativeManualOnboarding = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
+      <div className="max-w-2xl w-full animate-in fade-in slide-in-from-bottom-4 duration-500 motion-reduce:animate-none motion-reduce:transition-none">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-wrap-balance">
             Set Up Your Profile
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Tell us about yourself (only username is required)
+            Complete your profile in just 2 steps
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Username *
-            </label>
-            <Input
-              id="username"
-              type="text"
-              placeholder="johndoe"
-              {...register('username')}
-              onChange={handleUsernameChange}
-              className={errors.username ? 'border-red-500' : ''}
-            />
-            {errors.username && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.username.message}
-              </p>
-            )}
-            {!errors.username &&
-              usernameInput.length >= 3 &&
-              !isCheckingUsername &&
-              isUsernameAvailable !== null && (
-                <p
-                  className={`mt-1 text-sm ${isUsernameAvailable ? 'text-green-600' : 'text-red-600'}`}
-                >
-                  {isUsernameAvailable
-                    ? 'Username is available'
-                    : 'Username is already taken'}
-                </p>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <MultiStepOnboarding currentStep={currentStep} steps={steps}>
+              {currentStep === 0 && (
+                <BasicInfoStep
+                  usernameInput={usernameInput}
+                  onUsernameChange={setUsernameInput}
+                />
               )}
-            {!errors.username && isCheckingUsername && (
-              <p className="mt-1 text-sm text-gray-500">
-                Checking username availability...
-              </p>
-            )}
-          </div>
+              {currentStep === 1 && (
+                <SkillsStep skills={skills} onSkillsChange={setSkills} />
+              )}
+            </MultiStepOnboarding>
 
-          <div>
-            <label
-              htmlFor="headline"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Headline
-            </label>
-            <Input
-              id="headline"
-              type="text"
-              placeholder="e.g., Senior Graphic Designer"
-              {...register('headline')}
+            <StepNavigation
+              currentStep={currentStep}
+              totalSteps={steps.length}
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              isSubmitting={isSubmitting || onboardingMutation.isPending}
+              isNextDisabled={!isStepValid()}
+              nextLabel={
+                currentStep === 0 ? 'Continue to Skills' : 'Complete Profile'
+              }
             />
-            {errors.headline && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.headline.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="bio"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Bio
-            </label>
-            <Textarea
-              id="bio"
-              placeholder="Tell us about yourself and your work..."
-              rows={4}
-              {...register('bio')}
-            />
-            {errors.bio && (
-              <p className="mt-1 text-sm text-red-600">{errors.bio.message}</p>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={
-              isSubmitting ||
-              onboardingMutation.isPending ||
-              isUsernameAvailable === false
-            }
-          >
-            {isSubmitting || onboardingMutation.isPending
-              ? 'Saving...'
-              : 'Complete Profile'}
-          </Button>
-        </form>
+          </form>
+        </FormProvider>
       </div>
     </div>
   );

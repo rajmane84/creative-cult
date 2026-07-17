@@ -19,7 +19,7 @@ import {
 import { RoleSelection } from './role-selection';
 import Image from 'next/image';
 
-import { signupSchema, type SignupFormData } from '@/lib/validations/auth';
+import { signupSchema, type SignupFormData } from '@/validations/auth';
 import { useSignupMutation } from '@/hooks/auth/use-signup';
 import Link from 'next/link';
 

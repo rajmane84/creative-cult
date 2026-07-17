@@ -1,6 +1,6 @@
 import { authClient } from '@/lib/auth-client';
-import { LoginFormData, SignupFormData } from '@/lib/validations/auth';
-import { CreativeOnboardingFormData } from '@/lib/validations/creative';
+import { LoginFormData, SignupFormData } from '@/validations/auth';
+import { CreativeOnboardingFormData } from '@/validations/creative/onboarding';
 import { UserRole } from '@/types';
 import axios from '@/lib/axios';
 import type {

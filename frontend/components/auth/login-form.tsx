@@ -20,7 +20,7 @@ import { RoleSelection } from './role-selection';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
+import { loginSchema, type LoginFormData } from '@/validations/auth';
 import { useLoginMutation } from '@/hooks/auth/use-login';
 
 export function LoginForm() {

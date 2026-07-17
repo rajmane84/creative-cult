@@ -21,3 +21,9 @@ export interface Education {
   fieldOfStudy: string; // eg information technology
   yearOfGraduation: string;
 }
+
+export interface Skill {
+  id: string;
+  name: string;
+  slug: string;
+}

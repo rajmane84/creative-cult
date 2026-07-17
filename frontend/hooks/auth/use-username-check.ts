@@ -32,7 +32,7 @@ export function useUsernameCheck() {
         const response = await axios.get(
           `/user/check-username?username=${username}`
         );
-        setIsUsernameAvailable(response.data.available);
+        setIsUsernameAvailable(response.data.data.available);
       } catch (error) {
         console.error('Username check error:', error);
         setIsUsernameAvailable(null); // Reset to neutral on error

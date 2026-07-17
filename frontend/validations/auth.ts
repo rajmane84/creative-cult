@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+// ------------------------------- Login schema -----------------------------------------
+
 export const loginSchema = z.object({
   email: z
     .string()
@@ -9,6 +11,8 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+
+// ------------------------------- Signup schema -----------------------------------------
 
 export const signupSchema = z
   .object({
