@@ -51,15 +51,17 @@ export function LoginForm() {
 
   return (
     <>
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Welcome back</CardTitle>
-          <CardDescription>
+      <Card className="w-full shadow-sm border-border/40">
+        <CardHeader className="space-y-1.5 pb-6">
+          <CardTitle className="text-xl font-semibold tracking-tight text-center">
+            Welcome back
+          </CardTitle>
+          <CardDescription className="text-center text-[13px]">
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pb-2">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -93,53 +95,55 @@ export function LoginForm() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={isGoogleLoading}
-              onClick={handleGoogleLogin}
-            >
-              {isGoogleLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Connecting to Google...
-                </>
-              ) : (
-                <>
-                  <Image
-                    width={100}
-                    height={100}
-                    src="/icons/google-icon.png"
-                    alt="google-icon"
-                    className="size-5"
-                  />
-                  Continue with Google
-                </>
-              )}
+          <CardFooter className="flex flex-col gap-5 pt-2">
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
 
-            <div className="relative">
+            <div className="relative w-full">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-border/40" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  Or continue with email
+              <div className="relative flex justify-center text-[11px] uppercase tracking-wider font-medium">
+                <span className="bg-card px-3 text-muted-foreground">
+                  Or continue with
                 </span>
               </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full bg-background hover:bg-muted/50 transition-colors"
+              disabled={isGoogleLoading}
+              onClick={handleGoogleLogin}
+            >
+              {isGoogleLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Image
+                  width={20}
+                  height={20}
+                  src="/icons/google-icon.png"
+                  alt="Google"
+                  className="mr-2 size-4 opacity-80"
+                />
+              )}
+              {isGoogleLoading ? 'Connecting...' : 'Google'}
             </Button>
-            <p className="text-sm text-center text-gray-600 dark:text-gray-400">
+
+            <div className="mt-2 text-center text-[13px] text-muted-foreground">
               Don't have an account?{' '}
-              <Link href="/signup" className="text-blue-600 hover:underline">
+              <Link
+                href="/signup"
+                className="text-foreground font-medium hover:underline transition-all"
+              >
                 Sign up
               </Link>
-            </p>
+            </div>
           </CardFooter>
         </form>
       </Card>
