@@ -3,28 +3,24 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { RoleSelection } from './role-selection';
-import Image from 'next/image';
+import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { signupSchema, type SignupFormData } from '@/validations/auth';
 import { useSignupMutation } from '@/hooks/auth/use-signup';
-import Link from 'next/link';
+
+const ease = [0.76, 0, 0.24, 1] as const;
 
 export function SignupForm() {
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -55,133 +51,163 @@ export function SignupForm() {
 
   return (
     <>
-      <Card className="w-full shadow-sm border-border/40">
-        <CardHeader className="space-y-1.5 pb-6">
-          <CardTitle className="text-xl font-semibold tracking-tight text-center">
-            Create an account
-          </CardTitle>
-          <CardDescription className="text-center text-[13px]">
-            Enter your information to create your account
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4 pb-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                {...register('name')}
-                disabled={isLoading}
-              />
-              {errors.name && (
-                <p className="text-sm text-destructive">
-                  {errors.name.message}
-                </p>
-              )}
-            </div>
+      <div className="mb-12 border-b border-border pb-8 md:mb-16 md:pb-14">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease }}
+          className="font-mono text-[11px] uppercase tracking-widest opacity-70 mb-4"
+        >
+          / Authentication
+        </motion.div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="john@example.com"
-                {...register('email')}
-                disabled={isLoading}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease }}
+          className="font-display text-5xl leading-[0.85] tracking-tight md:text-7xl"
+        >
+          Create <br className="hidden md:block" />
+          <span className="text-primary selection:text-background selection:bg-primary">
+            account.
+          </span>
+        </motion.h2>
+      </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+      <motion.form
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2, ease }}
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-10"
+      >
+        <div className="flex flex-col gap-8">
+          <div className="space-y-3">
+            <Label htmlFor="name">/01 — Name</Label>
+            <Input
+              id="name"
+              placeholder="John Doe"
+              {...register('name')}
+              disabled={isLoading}
+            />
+            {errors.name && (
+              <p className="font-mono text-[10px] text-destructive uppercase tracking-widest mt-2">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <Label htmlFor="email">/02 — Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="john@example.com"
+              {...register('email')}
+              disabled={isLoading}
+            />
+            {errors.email && (
+              <p className="font-mono text-[10px] text-destructive uppercase tracking-widest mt-2">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <Label htmlFor="password">/03 — Password</Label>
+            <div className="relative">
               <Input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 {...register('password')}
                 disabled={isLoading}
+                className="pr-10"
               />
-              {errors.password && (
-                <p className="text-sm text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                onPointerDown={(e) => e.preventDefault()}
+                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-foreground/50 hover:text-foreground transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
+                disabled={isLoading}
+              >
+                {showPassword ? (
+                  <EyeOff className="size-5" />
+                ) : (
+                  <Eye className="size-5" />
+                )}
+              </button>
             </div>
+            {errors.password && (
+              <p className="font-mono text-[10px] text-destructive uppercase tracking-widest mt-2">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <div className="space-y-3">
+            <Label htmlFor="confirmPassword">/04 — Confirm</Label>
+            <div className="relative">
               <Input
                 id="confirmPassword"
-                type="password"
+                type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 {...register('confirmPassword')}
                 disabled={isLoading}
+                className="pr-10"
               />
-              {errors.confirmPassword && (
-                <p className="text-sm text-destructive">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onPointerDown={(e) => e.preventDefault()}
+                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-foreground/50 hover:text-foreground transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded-sm"
+                disabled={isLoading}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="size-5" />
+                ) : (
+                  <Eye className="size-5" />
+                )}
+              </button>
             </div>
-          </CardContent>
+            {errors.confirmPassword && (
+              <p className="font-mono text-[10px] text-destructive uppercase tracking-widest mt-2">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+        </div>
 
-          <CardFooter className="flex flex-col gap-5 pt-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              {isLoading ? 'Creating account...' : 'Sign up'}
-            </Button>
+        <div className="flex flex-col gap-6 pt-4">
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Creating account...' : 'Continue →'}
+          </Button>
 
-            <div className="relative w-full">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border/40" />
-              </div>
-              <div className="relative flex justify-center text-[11px] uppercase tracking-wider font-medium">
-                <span className="bg-card px-3 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
-            </div>
-
+          <div className="flex items-center justify-between border-t border-border pt-6 font-mono text-[10px] uppercase tracking-widest">
+            <span className="opacity-60">or continue with</span>
             <Button
               type="button"
-              variant="outline"
-              className="w-full bg-background hover:bg-muted/50 transition-colors"
+              // variant="outline"
+              size="sm"
               disabled={isGoogleLoading}
               onClick={handleGoogleSignup}
+              className="hover:bg-border/5 px-5 lg:px-10"
             >
-              {isGoogleLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Image
-                  width={20}
-                  height={20}
-                  src="/icons/google-icon.png"
-                  alt="Google"
-                  className="mr-2 size-4 opacity-80"
-                />
-              )}
-              {isGoogleLoading ? 'Connecting...' : 'Google'}
+              {isGoogleLoading ? 'Connecting...' : 'Google →'}
             </Button>
+          </div>
 
-            <div className="mt-2 text-center text-[13px] text-muted-foreground">
-              Already have an account?{' '}
-              <Link
-                href="/login"
-                className="text-foreground font-medium hover:underline transition-all"
-              >
-                Sign in
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
+          <div className="font-mono text-[10px] uppercase tracking-widest opacity-60">
+            Already have an account?{' '}
+            <Link
+              href="/login"
+              className="text-primary hover:underline transition-all selection:text-background selection:bg-primary"
+            >
+              Sign in
+            </Link>
+          </div>
+        </div>
+      </motion.form>
 
       {showRoleModal && (
         <RoleSelection

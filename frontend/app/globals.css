@@ -165,8 +165,8 @@ a {
 }
 
 ::selection {
-  background: var(--signal);
-  color: #f4f4f0;
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 /* Lenis smooth scroll */

@@ -1,35 +1,10 @@
 import type { Metadata } from 'next';
-import {
-  Geist_Mono,
-  Inter,
-  Outfit,
-  Anton,
-  Manrope,
-  Syne,
-  JetBrains_Mono,
-} from 'next/font/google';
+import { Anton, Manrope, Syne, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
 import { Providers } from '@/components/providers';
 import { cn } from '@/lib/cn';
 import SmoothScroll from '@/components/smooth-scroll';
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-});
-
-const outfit = Outfit({
-  variable: '--font-outfit',
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-});
 
 export const anton = Anton({
   weight: '400',
@@ -63,10 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`h-full antialiased`}>
       <body
         className={cn(
           anton.variable,

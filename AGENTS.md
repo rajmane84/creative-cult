@@ -65,3 +65,11 @@ Follow proper code organization patterns - do not shove everything into a single
 3. **Consistent naming**: Use clear, descriptive file and directory names
 4. **Proper imports**: Import from appropriate locations based on the above structure
 5. **Avoid monolithic files**: If a file becomes too large (>300 lines), consider splitting it
+
+## Styling & Design Rules
+
+- **Text Selection Highlight**: The global selection color is set to primary (orange). Therefore, whenever you apply `text-primary` to any text or icon, you MUST also add the classes `selection:text-background selection:bg-primary` so that if the user selects that text, the highlight color inverses correctly instead of disappearing (orange on orange).
+
+## Code Quality & Cleanup
+
+- **Remove Unused Code**: If you find any unused variables, imports, components, or functions while working in a file, proactively remove them to keep the codebase clean. Never leave dead code behind.

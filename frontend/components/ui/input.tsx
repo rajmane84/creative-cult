@@ -5,15 +5,20 @@ import { cn } from '@/lib/cn';
 
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
-    <InputPrimitive
-      type={type}
-      data-slot="input"
+    <div
       className={cn(
-        'h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40',
+        'group relative flex w-full border-b-2 border-border transition-colors has-[[aria-invalid=true]]:border-destructive',
         className
       )}
-      {...props}
-    />
+    >
+      <InputPrimitive
+        type={type}
+        data-slot="input"
+        className="font-editorial peer flex-1 bg-transparent px-0 py-2 text-xl md:text-2xl tracking-tight outline-none placeholder:text-foreground/25 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+        {...props}
+      />
+      <span className="absolute bottom-[-2px] left-0 h-[2px] w-0 bg-primary transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] peer-focus-visible:w-full pointer-events-none group-has-[[aria-invalid=true]]:bg-destructive" />
+    </div>
   );
 }
 

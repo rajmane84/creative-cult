@@ -172,6 +172,16 @@ flavor, never load-bearing for navigation or core tasks.
    variant, reserve a suite, install a command) get the clearest, simplest
    interaction — flourish is reserved for secondary/exploratory surfaces.
 
+## 11. Impeccable Forms & Inputs
+
+**Source: impeccable.style**
+
+Inputs and buttons break away from typical rounded, boxed aesthetics. Instead, they embrace a raw, minimal, editorial look. Inputs use `border-b-2` with large, elegant typography (`font-editorial`), feeling more like signing a document than filling a web form. Buttons use thin borders, mono-spaced uppercase tracking, and a kinetic "fill" hover effect to add motion to an otherwise static element.
+
+**Applicable pattern:** Use this pattern for all core forms (login, signup, waitlist). Remove unnecessary boxing in favor of clear typography and ample whitespace.
+
+---
+
 ## Reminder
 
 None of the above should translate into copying fonts, colors, spacing systems,
