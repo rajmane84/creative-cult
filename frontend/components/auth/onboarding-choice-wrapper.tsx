@@ -1,8 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { FileText, User } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export function OnboardingChoiceWrapper() {
   const router = useRouter();
@@ -18,55 +24,65 @@ export function OnboardingChoiceWrapper() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 md:p-10">
+      <Card className="w-full max-w-4xl p-8 md:p-16">
+        <CardHeader className="border-b border-border pb-12 mb-12 space-y-4">
+          <div className="font-mono text-[11px] uppercase tracking-widest opacity-60">
+            /01 — Setup Profile
+          </div>
+
+          <CardTitle className="font-display text-5xl md:text-7xl leading-none tracking-normal">
             Complete Your Profile
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Choose how you'd like to set up your creative profile
-          </p>
-        </div>
+          </CardTitle>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Button
-            variant="outline"
-            className="h-auto p-8 flex flex-col items-center gap-4 hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-            onClick={handleManualOnboarding}
-          >
-            <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-              <User className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="text-center">
-              <div className="font-semibold text-lg text-gray-900 dark:text-white mb-2">
-                Manual Setup
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Fill in your profile details manually
-              </div>
-            </div>
-          </Button>
+          <CardDescription className="font-editorial text-xl text-foreground opacity-70 max-w-lg pt-2">
+            Choose how you'd like to set up your creative presence on the
+            platform.
+          </CardDescription>
+        </CardHeader>
 
-          <Button
-            variant="outline"
-            className="h-auto p-8 flex flex-col items-center gap-4 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-            onClick={handleResumeUpload}
-          >
-            <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-              <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div className="text-center">
-              <div className="font-semibold text-lg text-gray-900 dark:text-white mb-2">
-                Upload Resume
+        <CardContent className="px-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={handleManualOnboarding}
+              className="group relative w-full overflow-hidden p-6 md:p-8 text-left transition-colors cursor-pointer"
+            >
+              <span className="absolute inset-0 translate-y-full bg-foreground transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
+
+              <div className="relative z-10 flex flex-col h-full justify-between transition-colors duration-500 group-hover:text-background gap-8">
+                <User className="w-6 h-6 opacity-70" />
+                <div>
+                  <CardTitle className="text-3xl mb-2">Manual Setup</CardTitle>
+                  <CardDescription className="group-hover:text-background/70">
+                    Fill in your profile details manually
+                  </CardDescription>
+                </div>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Let us extract your details automatically
+            </Card>
+
+            <Card
+              role="button"
+              tabIndex={0}
+              onClick={handleResumeUpload}
+              className="group relative w-full overflow-hidden p-6 md:p-8 text-left transition-colors cursor-pointer"
+            >
+              <span className="absolute inset-0 translate-y-full bg-primary transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
+
+              <div className="relative z-10 flex flex-col h-full justify-between transition-colors duration-500 group-hover:text-primary-foreground gap-8">
+                <FileText className="w-6 h-6 opacity-70" />
+                <div>
+                  <CardTitle className="text-3xl mb-2">Upload Resume</CardTitle>
+                  <CardDescription className="group-hover:text-primary-foreground/70">
+                    Let us extract your details automatically
+                  </CardDescription>
+                </div>
               </div>
-            </div>
-          </Button>
-        </div>
-      </div>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

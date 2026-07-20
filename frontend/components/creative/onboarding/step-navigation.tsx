@@ -24,13 +24,13 @@ export default function StepNavigation({
   const isLastStep = currentStep === totalSteps - 1;
 
   return (
-    <div className="flex items-center justify-between pt-6 border-t">
+    <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-4 mt-8 pt-8 border-t border-border w-full">
       <Button
         type="button"
         variant="outline"
         onClick={onPrevious}
         disabled={currentStep === 0}
-        className="transition-colors duration-300 motion-reduce:transition-none"
+        className="w-full sm:w-auto transition-colors duration-300 motion-reduce:transition-none"
       >
         Previous
       </Button>
@@ -39,7 +39,7 @@ export default function StepNavigation({
         type={isLastStep ? 'submit' : 'button'}
         onClick={isLastStep ? undefined : onNext}
         disabled={isNextDisabled || isSubmitting}
-        className="transition-colors duration-300 motion-reduce:transition-none"
+        className="w-full sm:w-auto shrink-0 transition-colors duration-300 motion-reduce:transition-none"
       >
         {isSubmitting
           ? 'Saving...'

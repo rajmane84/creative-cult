@@ -15,6 +15,13 @@ import MultiStepOnboarding from '@/components/creative/onboarding/multi-step-onb
 import BasicInfoStep from '@/components/creative/onboarding/basic-info-step';
 import SkillsStep from '@/components/creative/onboarding/skills-step';
 import StepNavigation from '@/components/creative/onboarding/step-navigation';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export function CreativeManualOnboardingForm() {
   const router = useRouter();
@@ -102,45 +109,52 @@ export function CreativeManualOnboardingForm() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full animate-in fade-in slide-in-from-bottom-4 duration-500 motion-reduce:animate-none motion-reduce:transition-none">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-wrap-balance">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 md:p-10">
+      <Card className="w-full max-w-4xl p-8 md:p-16">
+        <CardHeader className="border-b border-border pb-12 mb-12 space-y-4">
+          <div className="font-mono text-[11px] uppercase tracking-widest opacity-60">
+            /02 — Manual Setup
+          </div>
+
+          <CardTitle className="font-display text-5xl md:text-7xl leading-none tracking-normal">
             Set Up Your Profile
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Complete your profile in just 2 steps
-          </p>
-        </div>
+          </CardTitle>
 
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <MultiStepOnboarding currentStep={currentStep} steps={steps}>
-              {currentStep === 0 && (
-                <BasicInfoStep
-                  usernameInput={usernameInput}
-                  onUsernameChange={setUsernameInput}
-                />
-              )}
-              {currentStep === 1 && (
-                <SkillsStep skills={skills} onSkillsChange={setSkills} />
-              )}
-            </MultiStepOnboarding>
+          <CardDescription className="font-editorial text-xl text-foreground opacity-70 max-w-lg pt-2">
+            Complete your profile in just 2 steps.
+          </CardDescription>
+        </CardHeader>
 
-            <StepNavigation
-              currentStep={currentStep}
-              totalSteps={steps.length}
-              onPrevious={handlePrevious}
-              onNext={handleNext}
-              isSubmitting={isSubmitting || onboardingMutation.isPending}
-              isNextDisabled={!isStepValid()}
-              nextLabel={
-                currentStep === 0 ? 'Continue to Skills' : 'Complete Profile'
-              }
-            />
-          </form>
-        </FormProvider>
-      </div>
+        <CardContent className="px-0">
+          <FormProvider {...methods}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <MultiStepOnboarding currentStep={currentStep} steps={steps}>
+                {currentStep === 0 && (
+                  <BasicInfoStep
+                    usernameInput={usernameInput}
+                    onUsernameChange={setUsernameInput}
+                  />
+                )}
+                {currentStep === 1 && (
+                  <SkillsStep skills={skills} onSkillsChange={setSkills} />
+                )}
+              </MultiStepOnboarding>
+
+              <StepNavigation
+                currentStep={currentStep}
+                totalSteps={steps.length}
+                onPrevious={handlePrevious}
+                onNext={handleNext}
+                isSubmitting={isSubmitting || onboardingMutation.isPending}
+                isNextDisabled={!isStepValid()}
+                nextLabel={
+                  currentStep === 0 ? 'Continue to Skills' : 'Complete Profile'
+                }
+              />
+            </form>
+          </FormProvider>
+        </CardContent>
+      </Card>
     </div>
   );
 }

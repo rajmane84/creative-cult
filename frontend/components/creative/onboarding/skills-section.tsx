@@ -61,11 +61,11 @@ export default function SkillsSection({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Label
           htmlFor="skills"
-          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
         >
           Skills
         </Label>
@@ -74,7 +74,7 @@ export default function SkillsSection({
           variant="ghost"
           size="sm"
           onClick={() => setIsAdding(!isAdding)}
-          className="h-7 gap-1.5 text-xs transition-colors duration-200 hover:bg-muted/80 motion-reduce:transition-none"
+          className="h-8 gap-1.5 transition-colors duration-200 hover:bg-muted/80 motion-reduce:transition-none"
         >
           {isAdding ? (
             <>Cancel</>
@@ -90,16 +90,16 @@ export default function SkillsSection({
       {isAdding && (
         <div
           className={cn(
-            'space-y-3 p-4 rounded-lg border bg-background',
+            'space-y-4 p-6 rounded-none border border-border bg-background',
             'animate-in fade-in duration-300',
-            'focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-300',
+            'transition-all duration-300',
             'motion-reduce:animate-none motion-reduce:transition-none'
           )}
         >
-          <div className="space-y-2">
+          <div className="space-y-4">
             <Label
               htmlFor="skill-name"
-              className="text-xs font-medium text-gray-600 dark:text-gray-400"
+              className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
             >
               Skill Name
             </Label>
@@ -110,15 +110,15 @@ export default function SkillsSection({
               value={skillName}
               onChange={(e) => setSkillName(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="h-9 text-sm transition-colors duration-300 focus-visible:ring-primary/20"
+              className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors"
               autoFocus
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-4 pt-2">
             <Label
               htmlFor="expertise"
-              className="text-xs font-medium text-gray-600 dark:text-gray-400"
+              className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
             >
               Expertise Level
             </Label>
@@ -129,12 +129,12 @@ export default function SkillsSection({
                   type="button"
                   onClick={() => setSelectedExpertise(level)}
                   className={cn(
-                    'px-2 py-1 rounded-md text-xs font-medium border transition-colors duration-300',
-                    'focus-visible:ring-2 focus-visible:ring-primary/20',
+                    'px-4 py-2 rounded-none font-mono text-[10px] uppercase tracking-widest border transition-colors duration-300',
+                    'focus-visible:border-primary focus-visible:ring-0 outline-none cursor-pointer',
                     'motion-reduce:transition-none',
                     selectedExpertise === level
                       ? EXPERTISE_COLORS[level]
-                      : 'bg-muted text-muted-foreground border-border hover:bg-muted/80'
+                      : 'bg-background text-foreground border-border hover:bg-muted/80'
                   )}
                 >
                   {level}
@@ -143,16 +143,18 @@ export default function SkillsSection({
             </div>
           </div>
 
-          <Button
-            type="button"
-            onClick={handleAddSkill}
-            disabled={skillName.trim().length < 2}
-            className="w-full h-9 text-sm gap-1.5 transition-colors duration-300 motion-reduce:transition-none"
-            size="sm"
-          >
-            <Plus className="size-3.5" />
-            Add Skill
-          </Button>
+          <div className="pt-2">
+            <Button
+              type="button"
+              onClick={handleAddSkill}
+              disabled={skillName.trim().length < 2}
+              className="w-full h-10 gap-1.5 transition-colors duration-300 motion-reduce:transition-none"
+              size="sm"
+            >
+              <Plus className="size-3.5" />
+              Add Skill
+            </Button>
+          </div>
         </div>
       )}
 
@@ -162,9 +164,9 @@ export default function SkillsSection({
             <div
               key={index}
               className={cn(
-                'group inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border',
+                'group inline-flex items-center gap-2 px-4 py-2 rounded-none font-mono text-[10px] uppercase tracking-widest border border-border',
                 'animate-in fade-in duration-300',
-                'hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300',
+                'transition-colors duration-300',
                 'motion-reduce:animate-none motion-reduce:transition-none',
                 EXPERTISE_COLORS[skill.expertise]
               )}
@@ -182,9 +184,8 @@ export default function SkillsSection({
                 type="button"
                 onClick={() => handleRemoveSkill(index)}
                 className={cn(
-                  'ml-1 rounded-full p-0.5 opacity-0 group-hover:opacity-100',
-                  'transition-opacity duration-300',
-                  'hover:bg-black/10 dark:hover:bg-white/10'
+                  'ml-2 p-1 opacity-50 hover:opacity-100 cursor-pointer',
+                  'transition-opacity duration-300'
                 )}
               >
                 <X className="size-3" />
@@ -197,18 +198,18 @@ export default function SkillsSection({
       {skills.length === 0 && !isAdding && (
         <div
           className={cn(
-            'text-center py-8 px-4 rounded-lg border border-dashed',
-            'text-sm text-muted-foreground',
-            'hover:border-border/50 transition-colors duration-300'
+            'text-center py-12 px-4 rounded-none border border-dashed border-border',
+            'font-editorial text-lg text-foreground opacity-50',
+            'transition-colors duration-300'
           )}
         >
-          <Sparkles className="size-5 mx-auto mb-2 opacity-40" />
+          <Sparkles className="size-6 mx-auto mb-3 opacity-40" />
           Add your skills to showcase your expertise
         </div>
       )}
 
       {error && (
-        <p className="text-sm text-destructive animate-in fade-in duration-300 motion-reduce:animate-none">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-red-600 mt-2 animate-in fade-in duration-300 motion-reduce:animate-none">
           {error}
         </p>
       )}

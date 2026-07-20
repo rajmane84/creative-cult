@@ -5,7 +5,6 @@ import { UserRole } from '@/types';
 import { Briefcase, Palette } from 'lucide-react';
 import { useRoleMutation } from '@/hooks/auth/use-role';
 
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -42,51 +41,61 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
   };
 
   const content = (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-4">
       <div className="grid grid-cols-1 gap-4">
-        <Button
-          variant="outline"
-          className="h-auto p-6 flex flex-col items-start gap-2"
+        <button
+          type="button"
           onClick={() => handleRoleSelect(UserRole.CLIENT)}
           disabled={isLoading !== null}
+          className="group relative w-full overflow-hidden border border-border p-6 text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <div className="flex items-center gap-3 w-full">
-            <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-              <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div className="text-left flex-1">
-              <div className="font-semibold">Client</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Post projects and hire creatives
+          <span className="absolute inset-0 translate-y-full bg-foreground transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
+
+          <div className="relative z-10 flex items-start justify-between transition-colors duration-500 group-hover:text-background">
+            <div className="flex gap-4">
+              <Briefcase className="w-5 h-5 mt-1 opacity-70" />
+              <div>
+                <div className="font-display text-2xl mb-1">Client</div>
+                <div className="font-editorial text-lg opacity-70">
+                  Post projects and hire creatives
+                </div>
               </div>
             </div>
-            {isLoading === 'CLIENT' && (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
+
+            {isLoading === UserRole.CLIENT && (
+              <div className="font-mono text-[11px] uppercase tracking-widest animate-pulse mt-1">
+                Setting...
+              </div>
             )}
           </div>
-        </Button>
+        </button>
 
-        <Button
-          variant="outline"
-          className="h-auto p-6 flex flex-col items-start gap-2"
+        <button
+          type="button"
           onClick={() => handleRoleSelect(UserRole.CREATIVE)}
           disabled={isLoading !== null}
+          className="group relative w-full overflow-hidden border border-border p-6 text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <div className="flex items-center gap-3 w-full">
-            <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-              <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div className="text-left flex-1">
-              <div className="font-semibold">Creative</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Showcase work and find opportunities
+          <span className="absolute inset-0 translate-y-full bg-primary transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
+
+          <div className="relative z-10 flex items-start justify-between transition-colors duration-500 group-hover:text-primary-foreground">
+            <div className="flex gap-4">
+              <Palette className="w-5 h-5 mt-1 opacity-70" />
+              <div>
+                <div className="font-display text-2xl mb-1">Creative</div>
+                <div className="font-editorial text-lg opacity-70">
+                  Showcase work and find opportunities
+                </div>
               </div>
             </div>
-            {isLoading === 'CREATIVE' && (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900"></div>
+
+            {isLoading === UserRole.CREATIVE && (
+              <div className="font-mono text-[11px] uppercase tracking-widest animate-pulse mt-1">
+                Setting...
+              </div>
             )}
           </div>
-        </Button>
+        </button>
       </div>
     </div>
   );
@@ -95,11 +104,14 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
   if (open !== undefined) {
     return (
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md" showCloseButton={false}>
+        <DialogContent showCloseButton={false}>
           <DialogHeader>
+            <div className="font-mono text-[11px] uppercase tracking-widest opacity-60 mb-3">
+              / Identity
+            </div>
             <DialogTitle>Select your role</DialogTitle>
             <DialogDescription>
-              Choose how you want to use the platform
+              Choose how you want to use the platform.
             </DialogDescription>
           </DialogHeader>
           {content}
@@ -112,12 +124,15 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
+        <div className="font-mono text-[11px] uppercase tracking-widest opacity-60 mb-3">
+          / Identity
+        </div>
         <CardTitle>Select your role</CardTitle>
         <CardDescription>
-          Choose how you want to use the platform
+          Choose how you want to use the platform.
         </CardDescription>
       </CardHeader>
-      <CardContent>{content}</CardContent>
+      <CardContent className="pt-6">{content}</CardContent>
     </Card>
   );
 }

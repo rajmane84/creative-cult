@@ -41,20 +41,20 @@ export default function BasicInfoStep({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+    <div className="space-y-8">
+      <div className="mb-10 space-y-2">
+        <h3 className="font-display text-4xl text-foreground leading-none tracking-normal">
           Basic Information
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="font-editorial text-lg text-foreground opacity-70">
           Let's start with the essentials (only username is required)
         </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Label
           htmlFor="username"
-          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
         >
           Username *
         </Label>
@@ -65,14 +65,12 @@ export default function BasicInfoStep({
           value={localUsername}
           onChange={handleUsernameChange}
           className={cn(
-            'transition-all duration-200 motion-reduce:transition-none',
-            errors.username
-              ? 'border-red-500 focus-visible:ring-red-500/20'
-              : 'focus-visible:ring-primary/20'
+            'rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors',
+            errors.username ? 'border-red-500 focus-visible:border-red-500' : ''
           )}
         />
         {errors.username && (
-          <p className="mt-1 text-sm text-red-600 animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:animate-none">
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-red-600">
             {errors.username.message as string}
           </p>
         )}
@@ -82,7 +80,7 @@ export default function BasicInfoStep({
           isUsernameAvailable !== null && (
             <p
               className={cn(
-                'mt-1 text-sm animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:animate-none',
+                'mt-2 font-mono text-[11px] uppercase tracking-widest',
                 isUsernameAvailable ? 'text-green-600' : 'text-red-600'
               )}
             >
@@ -92,16 +90,16 @@ export default function BasicInfoStep({
             </p>
           )}
         {!errors.username && isCheckingUsername && (
-          <p className="mt-1 text-sm text-gray-500 animate-in fade-in duration-200 motion-reduce:animate-none">
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-foreground opacity-50">
             Checking username availability...
           </p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Label
           htmlFor="headline"
-          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
         >
           Headline
         </Label>
@@ -110,19 +108,19 @@ export default function BasicInfoStep({
           type="text"
           placeholder="e.g., Senior Graphic Designer"
           {...register('headline')}
-          className="transition-all duration-200 focus-visible:ring-primary/20 motion-reduce:transition-none"
+          className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors"
         />
         {errors.headline && (
-          <p className="mt-1 text-sm text-red-600 animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:animate-none">
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-red-600">
             {errors.headline.message as string}
           </p>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         <Label
           htmlFor="bio"
-          className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
         >
           Bio
         </Label>
@@ -131,10 +129,10 @@ export default function BasicInfoStep({
           placeholder="Tell us about yourself and your work..."
           rows={4}
           {...register('bio')}
-          className="transition-all duration-200 focus-visible:ring-primary/20 resize-none motion-reduce:transition-none"
+          className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary resize-none transition-colors"
         />
         {errors.bio && (
-          <p className="mt-1 text-sm text-red-600 animate-in fade-in slide-in-from-top-1 duration-200 motion-reduce:animate-none">
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-red-600">
             {errors.bio.message as string}
           </p>
         )}

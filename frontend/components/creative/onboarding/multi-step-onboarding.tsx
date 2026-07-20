@@ -24,19 +24,30 @@ export default function MultiStepOnboarding({
     <div className="w-full">
       {/* Step Progress Indicator */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
+        <div className="flex w-full">
           {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center flex-1">
-              <div className="flex flex-col items-center flex-1">
+            <div
+              key={step.id}
+              className="relative flex flex-col items-center flex-1"
+            >
+              <div className="w-full flex items-center justify-center relative h-10">
+                {index < steps.length - 1 && (
+                  <div
+                    className={cn(
+                      'absolute left-[50%] w-full top-1/2 -translate-y-1/2 h-px transition-colors duration-300',
+                      index < currentStep ? 'bg-foreground' : 'bg-border'
+                    )}
+                  />
+                )}
                 <div
                   className={cn(
-                    'w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300',
+                    'relative z-10 w-10 h-10 rounded-none flex items-center justify-center font-mono text-sm transition-all duration-300 border',
                     'motion-reduce:transition-none',
                     index < currentStep
-                      ? 'bg-primary text-primary-foreground'
+                      ? 'bg-foreground text-background border-foreground'
                       : index === currentStep
-                        ? 'bg-primary text-primary-foreground ring-4 ring-primary/10'
-                        : 'bg-muted text-muted-foreground'
+                        ? 'bg-foreground text-background border-foreground'
+                        : 'bg-background text-muted-foreground border-border'
                   )}
                 >
                   {index < currentStep ? (
@@ -57,35 +68,29 @@ export default function MultiStepOnboarding({
                     step.id
                   )}
                 </div>
-                <div className="mt-2 text-center">
-                  <p
-                    className={cn(
-                      'text-xs font-medium transition-colors duration-200',
-                      index === currentStep
-                        ? 'text-foreground'
-                        : 'text-muted-foreground'
-                    )}
-                  >
-                    {step.title}
-                  </p>
-                  <p
-                    className={cn(
-                      'text-[10px] text-muted-foreground mt-0.5',
-                      index === currentStep ? 'opacity-100' : 'opacity-0'
-                    )}
-                  >
-                    {step.description}
-                  </p>
-                </div>
               </div>
-              {index < steps.length - 1 && (
-                <div
+              <div className="mt-4 text-center px-2">
+                <p
                   className={cn(
-                    'flex-1 h-px mx-4 transition-colors duration-300',
-                    index < currentStep ? 'bg-primary' : 'bg-muted'
+                    'text-[11px] font-mono uppercase tracking-widest transition-colors duration-200',
+                    index === currentStep || index < currentStep
+                      ? 'text-foreground'
+                      : 'text-muted-foreground'
                   )}
-                />
-              )}
+                >
+                  {step.title}
+                </p>
+                <p
+                  className={cn(
+                    'text-sm font-editorial transition-colors duration-200 mt-2 max-w-[120px] mx-auto',
+                    index === currentStep
+                      ? 'text-foreground opacity-70'
+                      : 'text-muted-foreground opacity-0'
+                  )}
+                >
+                  {step.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>
