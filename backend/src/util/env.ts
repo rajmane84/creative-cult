@@ -21,21 +21,12 @@ const envSchema = z.object({
   // CORS
   CORS_ORIGINS: z
     .string()
-    .default('http://localhost:3000,http://localhost:3001')
+    .min(1, 'CORS_ORIGINS is required')
     .transform((val) => {
-      // Try to parse as JSON array first, otherwise split by comma
-      try {
-        const parsed = JSON.parse(val);
-        if (Array.isArray(parsed)) {
-          return parsed;
-        }
-      } catch {
-        // If not valid JSON, fall back to comma-separated
-        console.warn(
-          'CORS_ORIGINS is not valid JSON, falling back to comma-separated format'
-        );
-      }
-      return val.split(',');
+      return val
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean);
     }),
 });
 
