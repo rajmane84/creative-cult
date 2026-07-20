@@ -1,10 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
-import https from 'https';
-import http from 'http';
-import fs from 'fs';
-import path from 'path';
 import { auth } from './auth';
 import { prisma } from './util/prisma';
 import { env } from './util/env';
@@ -14,16 +10,12 @@ import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 const port = env.PORT;
-const isProd = env.NODE_ENV === 'production';
 
 app.use(
   cors({
     origin(origin, callback) {
       // allow no-origin requests (curl, server-to-server, some mobile clients)
       if (!origin) return callback(null, true);
-
-      console.log('Incoming Origin:', origin);
-      console.log('Allowed Origins:', env.CORS_ORIGINS);
 
       if (env.CORS_ORIGINS.includes(origin)) {
         return callback(null, true);
@@ -59,31 +51,9 @@ async function startServer() {
     process.exit(1);
   }
 
-  // app.listen(port, () => {
-  //   console.log(`✅ Server started on port ${port}`);
-  // });
-
-  if (!isProd) {
-    // Dev: real HTTPS on api.local, mirrors how Render terminates TLS in prod
-    const certDir = path.resolve(__dirname, '../certs');
-
-    https
-      .createServer(
-        {
-          key: fs.readFileSync(path.join(certDir, 'web.local+1-key.pem')),
-          cert: fs.readFileSync(path.join(certDir, 'web.local+1.pem')),
-        },
-        app
-      )
-      .listen(port, () => {
-        console.log(`✅ Server started on https://api.local:${port}`);
-      });
-  } else {
-    // Prod: plain HTTP — Render's load balancer terminates TLS for you
-    http.createServer(app).listen(port, () => {
-      console.log(`✅ Server started on port ${port}`);
-    });
-  }
+  app.listen(port, () => {
+    console.log(`✅ Server started on port ${port}`);
+  });
 }
 
 startServer();

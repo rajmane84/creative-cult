@@ -18,7 +18,6 @@ export function useLoginMutation(options?: {
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (response: BetterAuthLoginResponse) => {
-      console.log('response', response);
       if (response.error) {
         toast.error(response.error.message || 'Login failed');
         options?.onError?.();
@@ -27,7 +26,6 @@ export function useLoginMutation(options?: {
         const user = response.data?.user;
         if (user?.role) {
           options?.onSuccess?.();
-          console.log(ROLE_ROUTES[user.role]);
           window.location.href = ROLE_ROUTES[user.role] || '/';
         } else {
           options?.onRequireRole?.();

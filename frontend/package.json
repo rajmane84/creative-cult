@@ -6,10 +6,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "dev:next": "NODE_TLS_REJECT_UNAUTHORIZED=0 next dev",
-    "dev:https": "local-ssl-proxy --source 3443 --target 3000 --cert certs/web.local+1.pem --key certs/web.local+1-key.pem",
-    "dev": "concurrently -n next,proxy -c blue,magenta \"bun run dev:next\" \"bun run dev:https\"",
-    "dev:prod": "next dev"
+    "dev": "next dev"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -39,7 +36,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "concurrently": "^10.0.3",
     "eslint": "^10.7.0",
     "eslint-config-next": "16.2.10",
     "prettier": "^3.9.5",

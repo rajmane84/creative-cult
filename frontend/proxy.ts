@@ -24,7 +24,6 @@ export function proxy(request: NextRequest) {
     const sessionCookie =
       request.cookies.get('better-auth.session_token') ||
       request.cookies.get('__Secure-better-auth.session_token');
-    console.log('session cookie', sessionCookie);
 
     // If user is authenticated and trying to access login/signup, redirect to home
     // This is an optimistic check - the actual role-based redirect happens on the page

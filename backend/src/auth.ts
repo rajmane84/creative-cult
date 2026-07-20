@@ -5,8 +5,6 @@ import { env } from './util/env';
 import { customSession } from 'better-auth/plugins';
 
 const isProd = env.NODE_ENV === 'production';
-const isHTTPS = env.BETTER_AUTH_URL.startsWith('https://');
-console.log('isHTTPS', isHTTPS);
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL, // Your backend url
@@ -25,15 +23,17 @@ export const auth = betterAuth({
   },
   trustedOrigins: env.CORS_ORIGINS, // Your frontend urls
   advanced: {
-    useSecureCookies: isHTTPS && isProd,
-    crossSubDomainCookies: {
-      enabled: true,
-      domain: 'rajmane.dev',
-    },
+    useSecureCookies: isProd,
+    crossSubDomainCookies: isProd
+      ? {
+          enabled: true,
+          domain: 'rajmane.dev',
+        }
+      : undefined,
     defaultCookieAttributes: {
       httpOnly: true,
-      secure: isHTTPS,
-      sameSite: isHTTPS ? 'none' : 'lax',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
     },
   },
   user: {
