@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { auth } from '../util/auth';
+import { auth } from '../auth';
 import { UnauthorizedError } from '../util/errors/AppError';
 
 /**

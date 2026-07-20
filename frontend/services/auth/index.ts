@@ -36,6 +36,7 @@ export const authService = {
       email: data.email,
       password: data.password,
     });
+    console.log('raw login response', response.data?.token);
     return response as BetterAuthLoginResponse;
   },
 

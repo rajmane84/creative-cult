@@ -10,10 +10,11 @@ import type { User } from '@/types';
  */
 export async function verifySession() {
   try {
+    const cookieStore = await cookies();
     const session = await authClient.getSession({
       fetchOptions: {
         headers: {
-          cookie: (await cookies()).toString(),
+          cookie: cookieStore.toString(),
         },
       },
     });

@@ -21,7 +21,10 @@ export function proxy(request: NextRequest) {
 
   // For public routes, allow access (but redirect authenticated users to dashboard)
   if (isPublicRoute) {
-    const sessionCookie = request.cookies.get('better-auth.session_token');
+    const sessionCookie =
+      request.cookies.get('better-auth.session_token') ||
+      request.cookies.get('__Secure-better-auth.session_token');
+    console.log('session cookie', sessionCookie);
 
     // If user is authenticated and trying to access login/signup, redirect to home
     // This is an optimistic check - the actual role-based redirect happens on the page
@@ -36,7 +39,9 @@ export function proxy(request: NextRequest) {
   }
 
   // For protected routes, check if user has a session cookie
-  const sessionCookie = request.cookies.get('better-auth.session_token');
+  const sessionCookie =
+    request.cookies.get('better-auth.session_token') ||
+    request.cookies.get('__Secure-better-auth.session_token');
 
   if (!sessionCookie) {
     // No session, redirect to login
