@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { authService } from '@/services/auth';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { ROLE_ROUTES } from '@/constants';
 import type {
   BetterAuthLoginResponse,
@@ -13,7 +13,7 @@ export function useLoginMutation(options?: {
   onError?: () => void;
   onRequireRole?: () => void;
 }) {
-  const router = useRouter();
+  // const router = useRouter();
 
   const loginMutation = useMutation({
     mutationFn: authService.login,
@@ -25,8 +25,8 @@ export function useLoginMutation(options?: {
         toast.success('Login successful!');
         const user = response.data?.user;
         if (user?.role) {
-          router.push(ROLE_ROUTES[user.role] || '/');
           options?.onSuccess?.();
+          window.location.href = ROLE_ROUTES[user.role] || '/';
         } else {
           options?.onRequireRole?.();
         }
@@ -52,8 +52,8 @@ export function useLoginMutation(options?: {
         toast.success('Google login successful!');
         const user = response.data.user;
         if (user.role) {
-          router.push(ROLE_ROUTES[user.role] || '/');
           options?.onSuccess?.();
+          window.location.href = ROLE_ROUTES[user.role] || '/';
         } else {
           options?.onRequireRole?.();
         }

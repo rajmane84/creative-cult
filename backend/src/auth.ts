@@ -4,8 +4,10 @@ import { prisma } from './util/prisma';
 import { env } from './util/env';
 import { customSession } from 'better-auth/plugins';
 
+const isProd = env.NODE_ENV === 'production';
+
 export const auth = betterAuth({
-  baseURL: env.BETTER_AUTH_URL,
+  baseURL: env.BETTER_AUTH_URL, // Your backend url
   secret: env.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
@@ -19,9 +21,15 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
-  trustedOrigins: env.CORS_ORIGINS,
+  trustedOrigins: env.CORS_ORIGINS, // Your frontend urls
   advanced: {
-    useSecureCookies: false,
+    useSecureCookies: isProd,
+
+    defaultCookieAttributes: {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+    },
   },
   user: {
     additionalFields: {
