@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { redirect } from 'next/navigation';
 import { verifySession } from '@/lib/session';
 import { ROLE_ROUTES } from '@/constants';

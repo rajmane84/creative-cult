@@ -13,7 +13,6 @@ export async function verifySession() {
     const session = await authClient.getSession({
       fetchOptions: {
         headers: {
-          // Forward cookies from the current request
           cookie: (await cookies()).toString(),
         },
       },
@@ -21,6 +20,17 @@ export async function verifySession() {
 
     return session.data;
   } catch (error) {
+    // Next.js throws this internally during static-render attempts when a
+    // dynamic API (cookies, headers, etc.) is accessed — it's not a real
+    // auth failure, it's Next telling itself to bail out of static rendering.
+    // Let it propagate so Next can handle it correctly.
+    if (
+      error instanceof Error &&
+      (error as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE'
+    ) {
+      throw error;
+    }
+
     console.error('Failed to verify session:', error);
     return null;
   }
