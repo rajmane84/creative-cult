@@ -1,8 +1,13 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { AppError } from '../util/errors/AppError';
 import { ApiResponse } from '../util/response/ApiResponse';
 
-export const errorHandler = (err: AppError, req: Request, res: Response) => {
+export const errorHandler = (
+  err: AppError,
+  req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
   const isOperational = err.isOperational ?? false;
@@ -17,11 +22,11 @@ export const errorHandler = (err: AppError, req: Request, res: Response) => {
     context: err.context,
   });
 
-  // Prepare context for response
-  const responseContext: Record<string, unknown> = {
-    ...(err.context && { context: err.context }),
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-  };
-
-  return ApiResponse.error(res, message, statusCode, responseContext);
+  return ApiResponse.error(
+    res,
+    message,
+    statusCode,
+    err.context,
+    process.env.NODE_ENV === 'development' ? err.stack : undefined
+  );
 };

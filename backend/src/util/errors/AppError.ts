@@ -1,3 +1,8 @@
+type ValidationErrorContext = {
+  errors: Record<string, string[] | undefined>;
+  formErrors?: string[];
+};
+
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;
@@ -65,7 +70,7 @@ export class ConflictError extends AppError {
 export class ValidationError extends AppError {
   constructor(
     message: string = 'Validation failed',
-    context?: Record<string, unknown>
+    context?: ValidationErrorContext
   ) {
     super(message, 422, true, context);
   }

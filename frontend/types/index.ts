@@ -43,6 +43,12 @@ export enum UserRole {
   ADMIN = 'ADMIN',
 }
 
+export enum JoinAs {
+  FREELANCER = 'FREELANCER',
+  COLLECTIVE = 'COLLECTIVE',
+  CLIENT = 'CLIENT',
+}
+
 export interface User {
   id: string;
   email: string;

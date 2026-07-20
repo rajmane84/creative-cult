@@ -11,6 +11,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// ---------------------------- Enums -----------------------------------
+
 enum Role {
   ADMIN
   CLIENT
@@ -61,6 +63,15 @@ enum Degree {
   PHD
   OTHER
 }
+
+enum JoinAs {
+  FREELANCER
+  COLLECTIVE
+  CLIENT
+}
+
+
+// ---------------------- Schemas -----------------------------
 
 model User {
   id              String           @id
@@ -196,4 +207,13 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  joinAs    JoinAs
+  createdAt DateTime @default(now())
+  notifiedAt DateTime?
+  inviteToken String? @unique
 }

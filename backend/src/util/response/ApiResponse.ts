@@ -43,13 +43,14 @@ export class ApiResponse {
     res: Response,
     data: T,
     message?: string,
-    statusCode: number = 200
+    statusCode: number = 200,
+    includeMeta: boolean = false
   ): Response {
     const response: SuccessResponse<T> = {
       success: true,
       data,
       ...(message && { message }),
-      meta: this.getMeta(res, statusCode),
+      ...(includeMeta && { meta: this.getMeta(res, statusCode) }),
     };
 
     return res.status(statusCode).json(response);
@@ -100,13 +101,15 @@ export class ApiResponse {
     res: Response,
     message: string,
     statusCode: number = 500,
-    context?: Record<string, unknown>
+    context?: Record<string, unknown>,
+    stack?: string
   ): Response {
     const response: ErrorResponse = {
       success: false,
       error: message,
       statusCode,
       ...(context && { context }),
+      ...(stack && { stack }),
     };
 
     return res.status(statusCode).json(response);

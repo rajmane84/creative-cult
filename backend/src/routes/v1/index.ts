@@ -5,11 +5,13 @@ import { ApiResponse } from '../../util/response/ApiResponse';
 // Routes
 import userRouter from './user.route';
 import creativeRouter from './creative.route';
+import waitlistRouter from './waitlist.route';
 
 const router = Router();
 
 router.use('/user', userRouter);
 router.use('/creative', creativeRouter);
+router.use('/waitlist', waitlistRouter);
 
 router.get('/health', (_, res) => {
   const healthCheck = {
