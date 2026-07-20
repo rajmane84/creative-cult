@@ -13,7 +13,12 @@ const port = env.PORT;
 
 app.use(
   cors({
-    origin: env.CORS_ORIGINS,
+    origin(origin, callback) {
+      console.log('Incoming Origin:', origin);
+      console.log('Allowed Origins:', env.CORS_ORIGINS);
+
+      callback(null, true);
+    },
     methods: ['GET', 'POST', 'PATCH', 'PUT'],
     credentials: true,
   })
