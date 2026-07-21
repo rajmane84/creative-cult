@@ -30,15 +30,10 @@ export function useJoinWaitlist() {
     },
     onSuccess: (data) => {
       toast.success(`You're #${data.position.toLocaleString()} in line.`);
-      queryClient.setQueryData(
-        WAITLIST_COUNT_KEY,
-        (old: { count: number } | undefined) => ({
-          ...old,
-          count: data.position,
-        })
-      );
+      queryClient.setQueryData(WAITLIST_COUNT_KEY, () => data.position);
     },
     onError: (error) => {
+      console.log('inside error hook');
       handleApiError(error, 'Failed to join waitlist');
     },
   });
