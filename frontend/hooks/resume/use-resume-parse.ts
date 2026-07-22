@@ -16,7 +16,14 @@ export function useResumeParse(options?: {
     onError: (error: unknown) => {
       console.error('Resume parse error:', error);
       if (error instanceof ApiError) {
-        toast.error(error.message || 'Failed to parse resume');
+        // Show specific message for feature disabled (503)
+        if (error.statusCode === 503) {
+          toast.error(
+            'Resume upload feature is temporarily disabled. Please complete onboarding manually.'
+          );
+        } else {
+          toast.error(error.message || 'Failed to parse resume');
+        }
       } else {
         const errorMessage =
           error instanceof Error ? error.message : 'Failed to parse resume';

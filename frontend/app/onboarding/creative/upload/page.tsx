@@ -22,5 +22,12 @@ export default async function CreativeResumeUpload() {
     redirect('/dashboard');
   }
 
+  // Check if resume upload feature is enabled
+  const resumeUploadEnabled =
+    process.env.NEXT_PUBLIC_RESUME_UPLOAD_ENABLED === 'true';
+  if (!resumeUploadEnabled) {
+    redirect('/onboarding/creative');
+  }
+
   return <CreativeResumeUploadForm />;
 }

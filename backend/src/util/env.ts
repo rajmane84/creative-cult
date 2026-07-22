@@ -36,6 +36,12 @@ const envSchema = z.object({
 
   // Anthropic Claude AI
   ANTHROPIC_API_KEY: z.string().optional(),
+
+  // Feature Flags
+  RESUME_UPLOAD_ENABLED: z
+    .string()
+    .default('false')
+    .transform((val) => val.toLowerCase() === 'true'),
 });
 
 export const env = envSchema.parse(process.env);

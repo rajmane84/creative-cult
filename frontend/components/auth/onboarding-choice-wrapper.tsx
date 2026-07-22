@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FileText, User } from 'lucide-react';
+import { AlertCircle, FileText, User } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Card,
   CardContent,
@@ -12,12 +13,21 @@ import {
 
 export function OnboardingChoiceWrapper() {
   const router = useRouter();
+  const resumeUploadEnabled =
+    process.env.NEXT_PUBLIC_RESUME_UPLOAD_ENABLED === 'true';
 
   const handleManualOnboarding = () => {
     router.push('/onboarding/creative/manual');
   };
 
   const handleResumeUpload = () => {
+    if (!resumeUploadEnabled) {
+      toast.error(
+        'Resume upload feature is temporarily disabled. Please complete onboarding manually.'
+      );
+      return;
+    }
+
     router.push('/onboarding/creative/upload');
   };
 
@@ -64,7 +74,11 @@ export function OnboardingChoiceWrapper() {
               role="button"
               tabIndex={0}
               onClick={handleResumeUpload}
-              className="group relative w-full overflow-hidden p-6 md:p-8 text-left transition-colors cursor-pointer"
+              className={`group relative w-full overflow-hidden p-6 md:p-8 text-left transition-colors ${
+                resumeUploadEnabled
+                  ? 'cursor-pointer'
+                  : 'pointer-events-none opacity-60 border border-border/60'
+              }`}
             >
               <span className="absolute inset-0 translate-y-full bg-primary transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
 
@@ -79,6 +93,26 @@ export function OnboardingChoiceWrapper() {
               </div>
             </Card>
           </div>
+
+          {!resumeUploadEnabled && (
+            <div className="mt-8 flex gap-4 border border-border bg-foreground/3 p-6">
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 opacity-70" />
+              <div className="space-y-2">
+                <div className="font-mono text-[11px] uppercase tracking-widest opacity-60">
+                  Temporarily unavailable
+                </div>
+                <p className="text-sm leading-relaxed">
+                  <span className="text-foreground">
+                    Resume upload is currently unavailable.
+                  </span>{' '}
+                  <span className="text-foreground/70">
+                    Please complete your profile manually using the form option
+                    above. We're working to bring this feature back soon.
+                  </span>
+                </p>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
