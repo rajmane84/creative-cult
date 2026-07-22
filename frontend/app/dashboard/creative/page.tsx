@@ -24,6 +24,11 @@ export default async function CreativeDashboard() {
     }
   }
 
+  // Check if user has completed onboarding
+  if (!user?.creativeProfile?.onboardingCompleted) {
+    redirect('/onboarding/creative');
+  }
+
   return (
     <div className="h-full bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
