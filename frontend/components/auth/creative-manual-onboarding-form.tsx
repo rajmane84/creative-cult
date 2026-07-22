@@ -1,19 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   creativeOnboardingSchema,
   CreativeOnboardingFormData,
   Skill,
+  Education,
 } from '@/validations/creative/onboarding';
 import { useUsernameCheck } from '@/hooks/auth/use-username-check';
 import { useCreativeOnboarding } from '@/hooks/auth/use-creative-onboarding';
 import MultiStepOnboarding from '@/components/creative/onboarding/multi-step-onboarding';
 import BasicInfoStep from '@/components/creative/onboarding/basic-info-step';
 import SkillsStep from '@/components/creative/onboarding/skills-step';
+import EducationStep from '@/components/creative/onboarding/education-step';
 import StepNavigation from '@/components/creative/onboarding/step-navigation';
 import type { ResumeParseResponse } from '@/services/creative/resume';
 import {
@@ -25,9 +26,9 @@ import {
 } from '@/components/ui/card';
 
 export function CreativeManualOnboardingForm() {
-  const router = useRouter();
   const [usernameInput, setUsernameInput] = useState('');
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [educationList, setEducationList] = useState<Education[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [resumeData, setResumeData] = useState<ResumeParseResponse | null>(
     null
@@ -37,6 +38,7 @@ export function CreativeManualOnboardingForm() {
     resolver: zodResolver(creativeOnboardingSchema),
     defaultValues: {
       skills: [],
+      education: [],
     },
     mode: 'onChange', // Validate on change for real-time feedback
   });
@@ -54,7 +56,7 @@ export function CreativeManualOnboardingForm() {
 
   const { onboardingMutation } = useCreativeOnboarding({
     onSuccess: () => {
-      router.push('/dashboard/creative');
+      window.location.href = '/dashboard/creative';
     },
   });
 
@@ -66,10 +68,10 @@ export function CreativeManualOnboardingForm() {
         usernameValue && usernameValue.length >= 3 && !errors.username;
 
       // Allow proceeding if username is valid and either available or not yet checked
-      // This prevents getting stuck if availability check is slow
       return isUsernameValid && isUsernameAvailable !== false;
     }
     // Step 2: Skills are optional, always valid
+    // Step 3: Education is optional, always valid
     return true;
   };
 
@@ -84,12 +86,22 @@ export function CreativeManualOnboardingForm() {
       title: 'Skills',
       description: 'Your expertise',
     },
+    {
+      id: 3,
+      title: 'Education',
+      description: 'Degrees & qualifications',
+    },
   ];
 
   // Sync skills with form value
   useEffect(() => {
     setValue('skills', skills);
   }, [skills, setValue]);
+
+  // Sync education with form value
+  useEffect(() => {
+    setValue('education', educationList);
+  }, [educationList, setValue]);
 
   // Check for resume data from session storage (when coming from upload flow)
   useEffect(() => {
@@ -168,7 +180,7 @@ export function CreativeManualOnboardingForm() {
           </CardTitle>
 
           <CardDescription className="font-editorial text-xl text-foreground opacity-70 max-w-lg pt-2">
-            Complete your profile in just 2 steps.
+            Complete your profile in just 3 steps.
           </CardDescription>
         </CardHeader>
 
@@ -189,6 +201,13 @@ export function CreativeManualOnboardingForm() {
                 {currentStep === 1 && (
                   <SkillsStep skills={skills} onSkillsChange={setSkills} />
                 )}
+
+                {currentStep === 2 && (
+                  <EducationStep
+                    educationList={educationList}
+                    onEducationChange={setEducationList}
+                  />
+                )}
               </MultiStepOnboarding>
 
               <StepNavigation
@@ -199,7 +218,11 @@ export function CreativeManualOnboardingForm() {
                 isSubmitting={isSubmitting || onboardingMutation.isPending}
                 isNextDisabled={!isStepValid()}
                 nextLabel={
-                  currentStep === 0 ? 'Continue to Skills' : 'Complete Profile'
+                  currentStep === 0
+                    ? 'Continue to Skills'
+                    : currentStep === 1
+                      ? 'Continue to Education'
+                      : 'Complete Profile'
                 }
               />
             </form>

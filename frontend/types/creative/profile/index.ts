@@ -91,3 +91,14 @@ export interface UpdateSkillsData {
 export interface UpdateAvailabilityData {
   availability: AvailabilityStatus;
 }
+
+export interface UpdateEducationData {
+  education: Array<{
+    id?: string;
+    school: string;
+    degree: Degree;
+    fieldOfStudy: string;
+    country: string;
+    yearOfGraduation: string;
+  }>;
+}

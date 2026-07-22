@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { JoinAs } from '@/types';
 import {
   useWaitlistCount,

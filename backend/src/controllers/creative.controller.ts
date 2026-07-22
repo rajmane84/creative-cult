@@ -7,8 +7,15 @@ import { deleteFromCloudinary } from '../util/cloudinary';
 
 export const handleCreativeOnboarding = asyncHandler(
   async (req: Request, res: Response) => {
-    const { username, headline, bio, skills, resumeUrl, resumePublicId } =
-      req.body;
+    const {
+      username,
+      headline,
+      bio,
+      skills,
+      education,
+      resumeUrl,
+      resumePublicId,
+    } = req.body;
 
     if (!username) {
       throw new BadRequestError('Username is required');
@@ -133,7 +140,26 @@ export const handleCreativeOnboarding = asyncHandler(
       }
     }
 
-    // Fetch updated profile with skills
+    // Handle education if provided
+    if (education && Array.isArray(education) && education.length > 0) {
+      // Delete existing education records to avoid duplicates
+      await prisma.education.deleteMany({
+        where: { creativeProfileId: creativeProfile.id },
+      });
+
+      await prisma.education.createMany({
+        data: education.map((item: any) => ({
+          creativeProfileId: creativeProfile.id,
+          school: item.school.trim(),
+          degree: item.degree,
+          fieldOfStudy: item.fieldOfStudy.trim(),
+          country: item.country.trim(),
+          yearOfGraduation: item.yearOfGraduation.trim(),
+        })),
+      });
+    }
+
+    // Fetch updated profile with skills and education
     const updatedProfile = await prisma.creativeProfile.findUnique({
       where: { id: creativeProfile.id },
       include: {
@@ -142,6 +168,7 @@ export const handleCreativeOnboarding = asyncHandler(
             skill: true,
           },
         },
+        education: true,
       },
     });
 
