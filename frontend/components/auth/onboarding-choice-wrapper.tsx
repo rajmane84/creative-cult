@@ -18,9 +18,7 @@ export function OnboardingChoiceWrapper() {
   };
 
   const handleResumeUpload = () => {
-    alert(
-      'Resume upload feature coming soon! For now, please complete onboarding manually.'
-    );
+    router.push('/onboarding/creative/upload');
   };
 
   return (

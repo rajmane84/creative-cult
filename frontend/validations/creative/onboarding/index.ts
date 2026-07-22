@@ -29,6 +29,8 @@ export const creativeOnboardingSchema = z.object({
   headline: z.string().optional(),
   bio: z.string().optional(),
   skills: z.array(skillSchema).optional(),
+  resumeUrl: z.string().optional(),
+  resumePublicId: z.string().optional(),
 });
 
 export type CreativeOnboardingFormData = z.infer<

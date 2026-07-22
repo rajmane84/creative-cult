@@ -6,12 +6,14 @@ import { ApiResponse } from '../../util/response/ApiResponse';
 import userRouter from './user.route';
 import creativeRouter from './creative.route';
 import waitlistRouter from './waitlist.route';
+import resumeRouter from './resume.route';
 
 const router = Router();
 
 router.use('/user', userRouter);
 router.use('/creative', creativeRouter);
 router.use('/waitlist', waitlistRouter);
+router.use('/resume', resumeRouter);
 
 router.get('/health', (_, res) => {
   const healthCheck = {

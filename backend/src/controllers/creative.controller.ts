@@ -3,10 +3,12 @@ import { prisma } from '../util/prisma';
 import { asyncHandler } from '../middlewares/asyncHandler';
 import { BadRequestError } from '../util/errors/AppError';
 import { ApiResponse } from '../util/response/ApiResponse';
+import { deleteFromCloudinary } from '../util/cloudinary';
 
 export const handleCreativeOnboarding = asyncHandler(
   async (req: Request, res: Response) => {
-    const { username, headline, bio, skills } = req.body;
+    const { username, headline, bio, skills, resumeUrl, resumePublicId } =
+      req.body;
 
     if (!username) {
       throw new BadRequestError('Username is required');
@@ -38,15 +40,37 @@ export const handleCreativeOnboarding = asyncHandler(
           userId: req.user!.id,
           headline,
           bio,
+          resumeUrl,
+          resumeFileName: resumePublicId, // Storing publicId for now, can be updated later
+          resumeUploadedAt: resumeUrl ? new Date() : null,
           onboardingCompleted: true,
         },
       });
     } else {
+      // Delete old resume from Cloudinary if updating with a new one
+      if (
+        resumeUrl &&
+        creativeProfile.resumeFileName &&
+        resumePublicId !== creativeProfile.resumeFileName
+      ) {
+        try {
+          await deleteFromCloudinary(creativeProfile.resumeFileName, 'raw');
+        } catch (error) {
+          console.error('Failed to delete old resume from Cloudinary:', error);
+          // Continue with update even if deletion fails
+        }
+      }
+
       creativeProfile = await prisma.creativeProfile.update({
         where: { id: creativeProfile.id },
         data: {
           headline,
           bio,
+          resumeUrl: resumeUrl || creativeProfile.resumeUrl,
+          resumeFileName: resumePublicId || creativeProfile.resumeFileName,
+          resumeUploadedAt: resumeUrl
+            ? new Date()
+            : creativeProfile.resumeUploadedAt,
           onboardingCompleted: true,
         },
       });

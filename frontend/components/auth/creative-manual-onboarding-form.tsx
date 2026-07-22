@@ -15,6 +15,7 @@ import MultiStepOnboarding from '@/components/creative/onboarding/multi-step-onb
 import BasicInfoStep from '@/components/creative/onboarding/basic-info-step';
 import SkillsStep from '@/components/creative/onboarding/skills-step';
 import StepNavigation from '@/components/creative/onboarding/step-navigation';
+import type { ResumeParseResponse } from '@/services/resume';
 import {
   Card,
   CardContent,
@@ -28,6 +29,9 @@ export function CreativeManualOnboardingForm() {
   const [usernameInput, setUsernameInput] = useState('');
   const [skills, setSkills] = useState<Skill[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
+  const [resumeData, setResumeData] = useState<ResumeParseResponse | null>(
+    null
+  );
 
   const methods = useForm<CreativeOnboardingFormData>({
     resolver: zodResolver(creativeOnboardingSchema),
@@ -86,6 +90,40 @@ export function CreativeManualOnboardingForm() {
     setValue('skills', skills);
   }, [skills, setValue]);
 
+  // Check for resume data from session storage (when coming from upload flow)
+  useEffect(() => {
+    const storedResumeData = sessionStorage.getItem('resumeParseData');
+    if (storedResumeData) {
+      try {
+        const parsedData: ResumeParseResponse = JSON.parse(storedResumeData);
+        setResumeData(parsedData);
+
+        // Pre-fill form with parsed data if available
+        if (parsedData.parsedData) {
+          if (parsedData.parsedData.skills) {
+            const parsedSkills = parsedData.parsedData.skills.map((skill) => ({
+              name: skill,
+              expertise: 'INTERMEDIATE' as const,
+            }));
+            setSkills(parsedSkills);
+          }
+
+          // Set resume data in form
+          setValue('resumeUrl', parsedData.cloudinary.url);
+          setValue('resumePublicId', parsedData.cloudinary.publicId);
+        }
+
+        // Clear the session storage after loading
+        sessionStorage.removeItem('resumeParseData');
+      } catch (error) {
+        console.error(
+          'Failed to parse resume data from session storage:',
+          error
+        );
+      }
+    }
+  }, [setValue]);
+
   const handleNext = async (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
 
@@ -105,7 +143,15 @@ export function CreativeManualOnboardingForm() {
     if (isUsernameAvailable === false) {
       return;
     }
-    onboardingMutation.mutate(data);
+
+    // Include resume data if available from upload flow
+    const submissionData = {
+      ...data,
+      resumeUrl: data.resumeUrl || resumeData?.cloudinary.url,
+      resumePublicId: data.resumePublicId || resumeData?.cloudinary.publicId,
+    };
+
+    onboardingMutation.mutate(submissionData);
   };
 
   return (

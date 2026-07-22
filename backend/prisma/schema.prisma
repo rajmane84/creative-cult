@@ -99,6 +99,10 @@ model CreativeProfile {
   availability        AvailabilityStatus @default(AVAILABLE)
   onboardingCompleted Boolean            @default(false)
 
+  resumeUrl        String?
+  resumeFileName   String?
+  resumeUploadedAt DateTime?
+
   skills         CreativeSkill[]
   experiences    Experience[]
   education      Education[]
