@@ -11,8 +11,7 @@ const buttonVariants = cva(
         default: 'border-border bg-transparent text-foreground',
         outline:
           'border-border bg-transparent hover:bg-muted hover:text-foreground',
-        secondary:
-          'border-border bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]',
+        secondary: 'border-border text-secondary-foreground text-foreground',
         ghost: 'border-transparent hover:bg-muted hover:text-foreground',
         destructive: 'border-border text-destructive',
         link: 'border-transparent text-primary underline-offset-4 hover:underline',
@@ -51,6 +50,9 @@ function Button({
       {variant === 'default' && (
         <span className="absolute inset-0 translate-y-full bg-primary transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
       )}
+      {variant === 'secondary' && (
+        <span className="absolute inset-0 translate-y-full bg-foreground transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
+      )}
       {variant === 'destructive' && (
         <span className="absolute inset-0 translate-y-full bg-destructive transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
       )}
@@ -58,7 +60,9 @@ function Button({
         className={cn(
           'relative z-10 flex items-center justify-center gap-2 transition-colors duration-500',
           variant === 'default' && 'group-hover:text-primary-foreground',
-          variant === 'destructive' && 'group-hover:text-destructive-foreground'
+          variant === 'destructive' &&
+            'group-hover:text-destructive-foreground',
+          variant === 'secondary' && 'group-hover:text-background'
         )}
       >
         {children}

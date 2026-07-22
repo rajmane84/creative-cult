@@ -33,3 +33,12 @@ export const updateSkillsSchema = z.object({
     )
     .min(1, 'At least one skill is required'),
 });
+
+export const updateAvailabilitySchema = z.object({
+  availability: z.enum(AvailabilityStatus, {
+    error: (issue) =>
+      issue.input === undefined
+        ? 'Availability status is required'
+        : 'Invalid availability status. Must be one of: AVAILABLE, BUSY, NOT_AVAILABLE',
+  }),
+});

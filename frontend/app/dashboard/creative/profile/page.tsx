@@ -4,8 +4,7 @@ import { useProfile } from '@/hooks/creative/profile/use-profile';
 import ProfileHeader from '@/components/creative/profile/profile-header';
 import ProfileAbout from '@/components/creative/profile/profile-about';
 import ProfileSkills from '@/components/creative/profile/profile-skills';
-// import ProfileExperience from '@/components/creative/profile/profile-experience';
-// import ProfileEducation from '@/components/creative/profile/profile-education';
+import EmailVerificationCard from '@/components/creative/profile/email-verification-card';
 import Loader from '@/components/loader';
 
 export default function CreativeProfilePage() {
@@ -40,12 +39,13 @@ export default function CreativeProfilePage() {
   }));
 
   return (
-    <div className="container max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div className="container max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-10">
       <ProfileHeader
         user={{
           name: user.name,
           username: user.username || '',
           email: user.email,
+          emailVerified: user.emailVerified ?? false,
           image: user.image ?? undefined,
         }}
         profile={{
@@ -55,16 +55,16 @@ export default function CreativeProfilePage() {
         }}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mt-12">
+      {/* Email Verification Section */}
+      <EmailVerificationCard
+        email={user.email}
+        isVerified={user.emailVerified ?? false}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mt-8">
         {/* Main content column */}
         <div className="lg:col-span-8 space-y-0">
           <ProfileAbout bio={creativeProfile.bio || ''} />
-          {/* {creativeProfile.experiences && creativeProfile.experiences.length > 0 && (
-            <ProfileExperience experiences={creativeProfile.experiences} />
-          )}
-          {creativeProfile.education && creativeProfile.education.length > 0 && (
-            <ProfileEducation education={creativeProfile.education} />
-          )} */}
         </div>
 
         {/* Sidebar */}

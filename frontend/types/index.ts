@@ -61,6 +61,7 @@ export enum AvailabilityStatus {
 export interface User {
   id: string;
   email: string;
+  emailVerified?: boolean;
   name: string;
   role?: string;
   username?: string;

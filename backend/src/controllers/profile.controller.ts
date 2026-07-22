@@ -174,3 +174,31 @@ export const handleUpdateSkills = asyncHandler(
     );
   }
 );
+
+export const handleUpdateAvailability = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { availability } = req.body;
+
+    const creativeProfile = await prisma.creativeProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!creativeProfile) {
+      throw new NotFoundError('Creative profile not found');
+    }
+
+    const updatedProfile = await prisma.creativeProfile.update({
+      where: { id: creativeProfile.id },
+      data: {
+        availability,
+      },
+    });
+
+    return ApiResponse.success(
+      res,
+      updatedProfile,
+      'Availability status updated successfully'
+    );
+  }
+);

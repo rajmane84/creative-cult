@@ -87,6 +87,7 @@ When building new features, always adhere to the following strictly separated fl
 
 ## Styling & Design Rules
 
+- **No Dark Mode**: Do NOT use or support dark mode (`dark:` variants, dark mode toggles, or dark theme overrides). All components and styles must strictly target the standard light design system.
 - **Text Selection Highlight**: The global selection color is set to primary (orange). Therefore, whenever you apply `text-primary` to any text or icon, you MUST also add the classes `selection:text-background selection:bg-primary` so that if the user selects that text, the highlight color inverses correctly instead of disappearing (orange on orange).
 
 ## Code Quality & Cleanup

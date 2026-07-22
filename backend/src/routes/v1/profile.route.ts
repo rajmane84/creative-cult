@@ -4,11 +4,13 @@ import { validate } from '../../middlewares/validate';
 import {
   updateProfileSchema,
   updateSkillsSchema,
+  updateAvailabilitySchema,
 } from '../../validations/profile';
 import {
   handleGetProfile,
   handleUpdateProfile,
   handleUpdateSkills,
+  handleUpdateAvailability,
 } from '../../controllers/profile.controller';
 
 const router = Router();
@@ -26,6 +28,12 @@ router.patch(
   authenticate,
   validate(updateSkillsSchema),
   handleUpdateSkills
+);
+router.patch(
+  '/availability',
+  authenticate,
+  validate(updateAvailabilitySchema),
+  handleUpdateAvailability
 );
 
 export default router;

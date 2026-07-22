@@ -4,6 +4,7 @@ import type {
   ProfileData,
   UpdateProfileData,
   UpdateSkillsData,
+  UpdateAvailabilityData,
 } from '@/types/creative/profile';
 
 export const profileService = {
@@ -23,6 +24,13 @@ export const profileService = {
     data: UpdateSkillsData
   ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
     const response = await axios.patch('/profile/skills', data);
+    return response.data as SuccessResponse<ProfileData['creativeProfile']>;
+  },
+
+  updateAvailability: async (
+    data: UpdateAvailabilityData
+  ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
+    const response = await axios.patch('/profile/availability', data);
     return response.data as SuccessResponse<ProfileData['creativeProfile']>;
   },
 };

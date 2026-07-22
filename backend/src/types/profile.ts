@@ -87,3 +87,7 @@ export interface UpdateSkillsData {
     expertise?: SkillLevel;
   }>;
 }
+
+export interface UpdateAvailabilityData {
+  availability: AvailabilityStatus;
+}
