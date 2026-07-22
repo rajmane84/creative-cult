@@ -47,7 +47,7 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
           type="button"
           onClick={() => handleRoleSelect(UserRole.CLIENT)}
           disabled={isLoading !== null}
-          className="group relative w-full overflow-hidden border border-border p-6 text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="group relative w-full overflow-hidden border border-foreground p-6 text-left transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="absolute inset-0 translate-y-full bg-foreground transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
 
@@ -74,7 +74,7 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
           type="button"
           onClick={() => handleRoleSelect(UserRole.CREATIVE)}
           disabled={isLoading !== null}
-          className="group relative w-full overflow-hidden border border-border p-6 text-left transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="group relative w-full overflow-hidden border border-primary p-6 text-left transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="absolute inset-0 translate-y-full bg-primary transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
 

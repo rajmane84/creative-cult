@@ -5,17 +5,23 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/cn';
-import { useUsernameCheck } from '@/hooks/auth/use-username-check';
 import { useState, useEffect } from 'react';
+import { Check, X, Loader2 } from 'lucide-react';
 
 interface BasicInfoStepProps {
   usernameInput: string;
   onUsernameChange: (value: string) => void;
+  isCheckingUsername: boolean;
+  isUsernameAvailable: boolean | null;
+  checkUsername: (username: string) => void;
 }
 
 export default function BasicInfoStep({
   usernameInput,
   onUsernameChange,
+  isCheckingUsername,
+  isUsernameAvailable,
+  checkUsername,
 }: BasicInfoStepProps) {
   const {
     register,
@@ -23,14 +29,17 @@ export default function BasicInfoStep({
     setValue,
   } = useFormContext();
 
-  const { isCheckingUsername, isUsernameAvailable, checkUsername } =
-    useUsernameCheck();
-
   const [localUsername, setLocalUsername] = useState(usernameInput);
 
   useEffect(() => {
     setLocalUsername(usernameInput);
   }, [usernameInput]);
+
+  useEffect(() => {
+    if (localUsername && localUsername.length >= 3) {
+      checkUsername(localUsername);
+    }
+  }, [localUsername, checkUsername]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -58,17 +67,39 @@ export default function BasicInfoStep({
         >
           Username *
         </Label>
-        <Input
-          id="username"
-          type="text"
-          placeholder="johndoe"
-          value={localUsername}
-          onChange={handleUsernameChange}
-          className={cn(
-            'rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors',
-            errors.username ? 'border-red-500 focus-visible:border-red-500' : ''
-          )}
-        />
+        <div className="relative">
+          <Input
+            id="username"
+            type="text"
+            placeholder="johndoe"
+            value={localUsername}
+            onChange={handleUsernameChange}
+            className={cn(
+              'rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors pr-10',
+              errors.username
+                ? 'border-red-500 focus-visible:border-red-500'
+                : ''
+            )}
+          />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+            {isCheckingUsername && (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            )}
+            {!isCheckingUsername &&
+              !errors.username &&
+              localUsername.length >= 3 &&
+              isUsernameAvailable !== null && (
+                <>
+                  {isUsernameAvailable ? (
+                    <Check className="w-4 h-4 text-emerald-600 selection:text-background selection:bg-primary" />
+                  ) : (
+                    <X className="w-4 h-4 text-red-600" />
+                  )}
+                </>
+              )}
+          </div>
+        </div>
+
         {errors.username && (
           <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-red-600">
             {errors.username.message as string}
@@ -80,8 +111,8 @@ export default function BasicInfoStep({
           isUsernameAvailable !== null && (
             <p
               className={cn(
-                'mt-2 font-mono text-[11px] uppercase tracking-widest',
-                isUsernameAvailable ? 'text-green-600' : 'text-red-600'
+                'mt-2 font-mono text-[11px] uppercase tracking-widest flex items-center gap-1.5',
+                isUsernameAvailable ? 'text-emerald-600' : 'text-red-600'
               )}
             >
               {isUsernameAvailable
@@ -89,11 +120,13 @@ export default function BasicInfoStep({
                 : 'Username is already taken'}
             </p>
           )}
-        {!errors.username && isCheckingUsername && (
-          <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-foreground opacity-50">
-            Checking username availability...
-          </p>
-        )}
+        {!errors.username &&
+          localUsername.length >= 3 &&
+          isCheckingUsername && (
+            <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-foreground opacity-50 flex items-center gap-1.5">
+              Checking username availability...
+            </p>
+          )}
       </div>
 
       <div className="space-y-4">

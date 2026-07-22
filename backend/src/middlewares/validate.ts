@@ -22,8 +22,24 @@ export const validate = (
       );
     }
 
-    // overwrite with parsed data so downstream code gets typed/transformed values
-    req[target] = parsed.data;
+    // Safely overwrite target with parsed data even if req[target] is a read-only property
+    try {
+      req[target] = parsed.data;
+    } catch {
+      try {
+        Object.defineProperty(req, target, {
+          value: parsed.data,
+          writable: true,
+          configurable: true,
+          enumerable: true,
+        });
+      } catch {
+        if (req[target] && typeof req[target] === 'object') {
+          Object.assign(req[target], parsed.data);
+        }
+      }
+    }
+
     next();
   };
 };

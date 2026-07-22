@@ -48,7 +48,8 @@ export function CreativeManualOnboardingForm() {
     watch,
   } = methods;
 
-  const { isUsernameAvailable } = useUsernameCheck();
+  const { isCheckingUsername, isUsernameAvailable, checkUsername } =
+    useUsernameCheck();
   const usernameValue = watch('username');
 
   const { onboardingMutation } = useCreativeOnboarding({
@@ -179,8 +180,12 @@ export function CreativeManualOnboardingForm() {
                   <BasicInfoStep
                     usernameInput={usernameInput}
                     onUsernameChange={setUsernameInput}
+                    isCheckingUsername={isCheckingUsername}
+                    isUsernameAvailable={isUsernameAvailable}
+                    checkUsername={checkUsername}
                   />
                 )}
+
                 {currentStep === 1 && (
                   <SkillsStep skills={skills} onSkillsChange={setSkills} />
                 )}
