@@ -4,7 +4,7 @@ import { cn } from '@/lib/cn';
 interface Skill {
   id: string;
   name: string;
-  level: string;
+  level: string | null | undefined;
 }
 
 interface ProfileSkillsProps {
@@ -24,23 +24,29 @@ export default function ProfileSkills({ skills }: ProfileSkillsProps) {
   if (!skills || skills.length === 0) return null;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-sm space-y-4">
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-        Skills & Expertise
-      </h3>
-      <div className="flex flex-wrap gap-2">
-        {skills.map((skill) => (
+    <div className="space-y-6">
+      <div className="font-mono text-xs uppercase tracking-widest opacity-60">
+        / Skills & Expertise
+      </div>
+      <div className="flex flex-wrap gap-3">
+        {skills.map((skill, index) => (
           <div
             key={skill.id}
             className={cn(
-              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border',
-              EXPERTISE_COLORS[skill.level] || EXPERTISE_COLORS['INTERMEDIATE']
+              'group inline-flex items-center gap-2 px-4 py-2 rounded-none font-mono text-[10px] uppercase tracking-widest border transition-all duration-300',
+              EXPERTISE_COLORS[skill.level || 'INTERMEDIATE'] ||
+                EXPERTISE_COLORS['INTERMEDIATE']
             )}
+            style={{
+              animationDelay: `${index * 30}ms`,
+            }}
           >
-            <span className="flex items-center gap-1">
-              <Sparkles className="w-3 h-3 opacity-70" />
+            <span className="flex items-center gap-1.5">
+              <Sparkles className="size-3 opacity-60" />
               {skill.name}
             </span>
+            <span className="opacity-60">·</span>
+            <span className="opacity-80">{skill.level}</span>
           </div>
         ))}
       </div>

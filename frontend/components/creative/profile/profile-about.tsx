@@ -6,16 +6,22 @@ export default function ProfileAbout({ bio }: ProfileAboutProps) {
   if (!bio) return null;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-sm space-y-4">
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-        About Me
-      </h3>
-      <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300">
-        {bio.split('\n').map((paragraph, idx) => (
-          <p key={idx} className="mb-2 last:mb-0">
-            {paragraph}
-          </p>
-        ))}
+    <div className="border-t border-border pt-12 md:pt-16">
+      <div className="grid grid-cols-12 gap-8 md:gap-12">
+        <div className="col-span-12 md:col-span-4">
+          <div className="font-mono text-xs uppercase tracking-widest opacity-60 sticky top-8">
+            / About
+          </div>
+        </div>
+        <div className="col-span-12 md:col-span-8">
+          <div className="font-editorial text-xl md:text-2xl lg:text-3xl leading-relaxed space-y-6 opacity-90">
+            {bio.split('\n').map((paragraph, idx) => (
+              <p key={idx} className="mb-6 last:mb-0">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

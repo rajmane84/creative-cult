@@ -1,117 +1,77 @@
-import { redirect } from 'next/navigation';
-import { requireRole } from '@/lib/session';
-import { UserRole } from '@/types';
+'use client';
+
+import { useProfile } from '@/hooks/creative/profile/use-profile';
 import ProfileHeader from '@/components/creative/profile/profile-header';
 import ProfileAbout from '@/components/creative/profile/profile-about';
 import ProfileSkills from '@/components/creative/profile/profile-skills';
-import ProfileExperience from '@/components/creative/profile/profile-experience';
-import ProfileEducation from '@/components/creative/profile/profile-education';
+// import ProfileExperience from '@/components/creative/profile/profile-experience';
+// import ProfileEducation from '@/components/creative/profile/profile-education';
+import Loader from '@/components/loader';
 
-export default async function CreativeProfilePage() {
-  const session = await requireRole('CREATIVE');
+export default function CreativeProfilePage() {
+  const { data: profileData, isLoading, error } = useProfile();
 
-  if (!session) {
-    redirect('/login');
+  if (isLoading) {
+    return <Loader />;
   }
 
-  const user = session.user;
-
-  // Double-check role for security
-  if (user.role !== UserRole.CREATIVE) {
-    redirect('/dashboard');
+  if (error || !profileData) {
+    return (
+      <div className="container max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div className="border-b border-border pb-8">
+          <h2 className="font-display text-4xl font-bold tracking-tight mb-4">
+            Error loading profile
+          </h2>
+          <p className="font-editorial text-xl opacity-70">
+            Failed to load your profile data. Please try again later.
+          </p>
+        </div>
+      </div>
+    );
   }
 
-  // Check if user has completed onboarding
-  if (!user?.creativeProfile?.onboardingCompleted) {
-    redirect('/onboarding/creative');
-  }
+  const { user, creativeProfile } = profileData.data;
 
-  // Dummy data for the profile
-  const dummyProfileData = {
-    user: {
-      name: 'Alex Designer',
-      username: 'alexdesigner',
-      email: 'alex@creativecult.com',
-      image: 'https://api.dicebear.com/7.x/avataaars/svg?seed=alexdesigner',
-    },
-    profile: {
-      headline: 'Senior UI/UX Designer & Frontend Developer',
-      bio: "I'm a passionate multidisciplinary designer with over 8 years of experience creating digital products. I specialize in bridging the gap between design and engineering, ensuring beautiful interfaces are implemented with pixel perfection.\n\nWhen I'm not designing, I enjoy contributing to open-source projects, writing articles about design systems, and experimenting with new web technologies like WebGL and Three.js.",
-      location: 'San Francisco, CA',
-      availability: 'AVAILABLE',
-    },
-    skills: [
-      { id: '1', name: 'Figma', level: 'EXPERT' },
-      { id: '2', name: 'React', level: 'INTERMEDIATE' },
-      { id: '3', name: 'Tailwind CSS', level: 'EXPERT' },
-      { id: '4', name: 'UI Design', level: 'EXPERT' },
-      { id: '5', name: 'TypeScript', level: 'INTERMEDIATE' },
-      { id: '6', name: 'Motion Design', level: 'BEGINNER' },
-    ],
-    experiences: [
-      {
-        id: '1',
-        title: 'Senior Product Designer',
-        companyName: 'Acme Corp',
-        employmentType: 'FULL_TIME',
-        industry: 'Technology',
-        startDate: '2021-03-01T00:00:00Z',
-        endDate: null,
-        currentlyWorking: true,
-        description:
-          'Leading the design of the core SaaS platform. Redesigned the entire component library and established a comprehensive design system used by 5 product teams.\n\nCollaborating closely with engineering and product management to define product strategy and roadmaps.',
-        skills: [
-          { name: 'Design Systems' },
-          { name: 'Figma' },
-          { name: 'React' },
-        ],
-      },
-      {
-        id: '2',
-        title: 'UI/UX Designer',
-        companyName: 'Creative Studio',
-        employmentType: 'FULL_TIME',
-        industry: 'Agency',
-        startDate: '2018-06-01T00:00:00Z',
-        endDate: '2021-02-28T00:00:00Z',
-        currentlyWorking: false,
-        description:
-          'Delivered end-to-end design solutions for various clients ranging from early-stage startups to Fortune 500 companies. Conducted user research, created wireframes, and produced high-fidelity prototypes.',
-        skills: [
-          { name: 'UI Design' },
-          { name: 'Prototyping' },
-          { name: 'User Research' },
-        ],
-      },
-    ],
-    education: [
-      {
-        id: '1',
-        school: 'Rhode Island School of Design',
-        degree: 'BFA',
-        fieldOfStudy: 'Graphic Design',
-        country: 'USA',
-        yearOfGraduation: '2018',
-      },
-    ],
-  };
+  // Transform skills data to match component expectations
+  const skills = creativeProfile.skills.map((skill) => ({
+    id: skill.id,
+    name: skill.name,
+    level: skill.level ?? 'INTERMEDIATE',
+  }));
 
   return (
-    <div className="container max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+    <div className="container max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <ProfileHeader
-        user={dummyProfileData.user}
-        profile={dummyProfileData.profile}
+        user={{
+          name: user.name,
+          username: user.username || '',
+          email: user.email,
+          image: user.image ?? undefined,
+        }}
+        profile={{
+          headline: creativeProfile.headline || '',
+          location: creativeProfile.location || 'Not specified',
+          availability: creativeProfile.availability,
+        }}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <ProfileAbout bio={dummyProfileData.profile.bio} />
-          <ProfileExperience experiences={dummyProfileData.experiences} />
-          <ProfileEducation education={dummyProfileData.education} />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mt-12">
+        {/* Main content column */}
+        <div className="lg:col-span-8 space-y-0">
+          <ProfileAbout bio={creativeProfile.bio || ''} />
+          {/* {creativeProfile.experiences && creativeProfile.experiences.length > 0 && (
+            <ProfileExperience experiences={creativeProfile.experiences} />
+          )}
+          {creativeProfile.education && creativeProfile.education.length > 0 && (
+            <ProfileEducation education={creativeProfile.education} />
+          )} */}
         </div>
 
-        <div className="space-y-6">
-          <ProfileSkills skills={dummyProfileData.skills} />
+        {/* Sidebar */}
+        <div className="lg:col-span-4">
+          <div className="lg:sticky lg:top-12 space-y-12">
+            <ProfileSkills skills={skills} />
+          </div>
         </div>
       </div>
     </div>

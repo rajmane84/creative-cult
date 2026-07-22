@@ -56,7 +56,7 @@ function Button({
       )}
       <span
         className={cn(
-          'relative z-10 flex items-center justify-center transition-colors duration-500',
+          'relative z-10 flex items-center justify-center gap-2 transition-colors duration-500',
           variant === 'default' && 'group-hover:text-primary-foreground',
           variant === 'destructive' && 'group-hover:text-destructive-foreground'
         )}

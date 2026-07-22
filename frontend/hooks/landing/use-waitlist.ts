@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { waitlistService } from '@/services/waitlist';
+import { waitlistService } from '@/services/landing';
 import { toast } from 'sonner';
 import { handleApiError } from '@/lib/handle-error';
 export const WAITLIST_COUNT_KEY = ['waitlist-count'];

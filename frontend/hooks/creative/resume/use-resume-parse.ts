@@ -1,5 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { resumeService, type ResumeParseResponse } from '@/services/resume';
+import {
+  resumeService,
+  type ResumeParseResponse,
+} from '@/services/creative/resume';
 import { toast } from 'sonner';
 import { ApiError } from '@/types/api';
 

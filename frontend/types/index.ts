@@ -30,6 +30,9 @@ export enum SkillExpertiseLevel {
   EXPERT = 'EXPERT',
 }
 
+// Alias for backward compatibility
+export const SkillLevel = SkillExpertiseLevel;
+
 export enum EmploymentType {
   FULL_TIME = 'FULL_TIME',
   PART_TIME = 'PART_TIME',
@@ -47,6 +50,12 @@ export enum JoinAs {
   FREELANCER = 'FREELANCER',
   COLLECTIVE = 'COLLECTIVE',
   CLIENT = 'CLIENT',
+}
+
+export enum AvailabilityStatus {
+  AVAILABLE = 'AVAILABLE',
+  BUSY = 'BUSY',
+  NOT_AVAILABLE = 'NOT_AVAILABLE',
 }
 
 export interface User {

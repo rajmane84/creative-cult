@@ -6,7 +6,7 @@ import { JoinAs } from '@/types';
 import {
   useWaitlistCount,
   useJoinWaitlist,
-} from '@/hooks/waitlist/use-waitlist';
+} from '@/hooks/landing/use-waitlist';
 
 export default function Waitlist() {
   const [email, setEmail] = useState('');

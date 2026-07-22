@@ -1,5 +1,3 @@
-import { Briefcase } from 'lucide-react';
-
 interface Skill {
   name: string;
 }
@@ -41,77 +39,68 @@ export default function ProfileExperience({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-sm space-y-6">
-      <div className="flex items-center gap-2">
-        <Briefcase className="w-5 h-5 text-slate-400" />
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-          Experience
-        </h3>
-      </div>
-
-      <div className="space-y-8">
-        {experiences.map((exp, index) => (
-          <div key={exp.id} className="relative">
-            {/* Timeline line */}
-            {index !== experiences.length - 1 && (
-              <div className="absolute top-8 bottom-[-24px] left-[11px] w-px bg-slate-200 dark:bg-slate-700" />
-            )}
-
-            <div className="flex gap-4">
-              {/* Timeline dot */}
-              <div className="mt-1.5 h-6 w-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 flex items-center justify-center shrink-0 z-10">
-                <div className="h-2 w-2 rounded-full bg-slate-400 dark:bg-slate-500" />
-              </div>
-
-              <div className="space-y-3 flex-1">
-                <div>
-                  <h4 className="text-base font-semibold text-slate-900 dark:text-white">
-                    {exp.title}
-                  </h4>
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm mt-1">
-                    <span className="font-medium text-slate-700 dark:text-slate-300">
-                      {exp.companyName}
-                    </span>
-                    <span className="text-slate-300 dark:text-slate-600">
-                      •
-                    </span>
-                    <span className="text-slate-500 dark:text-slate-400">
-                      {formatEmploymentType(exp.employmentType)}
-                    </span>
-                    <span className="text-slate-300 dark:text-slate-600">
-                      •
-                    </span>
-                    <span className="text-slate-500 dark:text-slate-400 text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800">
-                      {formatDate(exp.startDate)} -{' '}
-                      {exp.currentlyWorking
-                        ? 'Present'
-                        : exp.endDate
-                          ? formatDate(exp.endDate)
-                          : ''}
-                    </span>
+    <div className="border-t border-border pt-12 md:pt-16">
+      <div className="grid grid-cols-12 gap-8 md:gap-12">
+        <div className="col-span-12 md:col-span-4">
+          <div className="font-mono text-xs uppercase tracking-widest opacity-60 sticky top-8">
+            / Experience
+          </div>
+        </div>
+        <div className="col-span-12 md:col-span-8 space-y-12">
+          {experiences.map((exp, index) => (
+            <div key={exp.id} className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                {/* Date column */}
+                <div className="md:col-span-3">
+                  <div className="font-mono text-xs uppercase tracking-wider opacity-60">
+                    {formatDate(exp.startDate)} —{' '}
+                    {exp.currentlyWorking
+                      ? 'Present'
+                      : exp.endDate
+                        ? formatDate(exp.endDate)
+                        : ''}
                   </div>
                 </div>
 
-                <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-line">
-                  {exp.description}
-                </p>
-
-                {exp.skills && exp.skills.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {exp.skills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                      >
-                        {skill.name}
-                      </span>
-                    ))}
+                {/* Content column */}
+                <div className="md:col-span-9 space-y-4">
+                  <div>
+                    <h4 className="font-display text-2xl md:text-3xl font-bold tracking-tight leading-none">
+                      {exp.title}
+                    </h4>
+                    <div className="font-mono text-sm uppercase tracking-wider opacity-70 mt-2">
+                      {exp.companyName}
+                      <span className="mx-2 opacity-40">·</span>
+                      {formatEmploymentType(exp.employmentType)}
+                    </div>
                   </div>
-                )}
+
+                  <p className="font-editorial text-lg leading-relaxed opacity-80 whitespace-pre-line">
+                    {exp.description}
+                  </p>
+
+                  {exp.skills && exp.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {exp.skills.map((skill, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center px-3 py-1 text-xs font-mono uppercase tracking-wider border border-border bg-muted opacity-70"
+                        >
+                          {skill.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Divider between experiences */}
+              {index !== experiences.length - 1 && (
+                <div className="mt-12 border-t border-border opacity-30" />
+              )}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

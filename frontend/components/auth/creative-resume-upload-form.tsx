@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { ResumeUpload } from '@/components/resume/resume-upload';
-import type { ResumeParseResponse } from '@/services/resume';
+import type { ResumeParseResponse } from '@/services/creative/resume';
 import {
   Card,
   CardContent,

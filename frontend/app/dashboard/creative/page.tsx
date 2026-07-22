@@ -1,28 +1,10 @@
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
-import { ROLE_ROUTES } from '@/constants';
-import { requireRole } from '@/lib/session';
-import { UserRole } from '@/types';
+import { verifySession } from '@/lib/session';
 
 export default async function CreativeDashboard() {
-  const session = await requireRole('CREATIVE');
-
-  if (!session) {
-    // Redirect to appropriate page based on authentication/authorization
-    redirect('/login');
-  }
-
-  const user = session.user;
-
-  // Double-check role for security
-  if (user.role !== UserRole.CREATIVE) {
-    const role = user.role;
-    if (role && ROLE_ROUTES[role]) {
-      redirect(ROLE_ROUTES[role]);
-    } else {
-      redirect('/');
-    }
-  }
+  const session = await verifySession();
+  const user = session?.user;
 
   // Check if user has completed onboarding
   if (!user?.creativeProfile?.onboardingCompleted) {

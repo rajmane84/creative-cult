@@ -15,7 +15,7 @@ import MultiStepOnboarding from '@/components/creative/onboarding/multi-step-onb
 import BasicInfoStep from '@/components/creative/onboarding/basic-info-step';
 import SkillsStep from '@/components/creative/onboarding/skills-step';
 import StepNavigation from '@/components/creative/onboarding/step-navigation';
-import type { ResumeParseResponse } from '@/services/resume';
+import type { ResumeParseResponse } from '@/services/creative/resume';
 import {
   Card,
   CardContent,

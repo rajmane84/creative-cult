@@ -3,8 +3,8 @@
 import { useState, useRef } from 'react';
 import { Upload, FileText, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/cn';
-import { useResumeParse } from '@/hooks/resume/use-resume-parse';
-import type { ResumeParseResponse } from '@/services/resume';
+import { useResumeParse } from '@/hooks/creative/resume/use-resume-parse';
+import type { ResumeParseResponse } from '@/services/creative/resume';
 
 interface ResumeUploadProps {
   onParseComplete?: (data: ResumeParseResponse) => void;
