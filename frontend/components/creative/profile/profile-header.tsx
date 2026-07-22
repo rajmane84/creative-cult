@@ -79,7 +79,7 @@ export default function ProfileHeader({ user, profile }: ProfileHeaderProps) {
               <span
                 className={`px-3 py-1 font-mono text-xs uppercase tracking-wider border ${
                   profile.availability === 'AVAILABLE'
-                    ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800'
+                    ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
                     : 'bg-muted text-muted-foreground border-border'
                 }`}
               >

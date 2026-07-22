@@ -5,13 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSignOut } from '@/hooks/auth/use-sign-out';
 import {
-  Briefcase,
-  Users,
-  Settings,
   LayoutDashboard,
-  FileText,
-  Calendar,
-  Star,
   User as UserIcon,
   Menu,
   X,
@@ -22,6 +16,7 @@ import type { User } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/cn';
+import { DASHBOARD_NAVIGATION } from '@/constants';
 
 interface NavbarClientProps {
   user: User | null;
@@ -69,87 +64,9 @@ export function NavbarClient({ user }: NavbarClientProps) {
 
   const getNavLinks = () => {
     if (!user || !user.role) return [];
-
-    switch (user.role) {
-      case 'CREATIVE':
-        return [
-          {
-            href: '/dashboard/creative',
-            label: 'Dashboard',
-            icon: LayoutDashboard,
-          },
-          {
-            href: '/dashboard/creative/profile',
-            label: 'Profile',
-            icon: UserIcon,
-          },
-          {
-            href: '/dashboard/creative/projects',
-            label: 'Projects',
-            icon: Briefcase,
-          },
-          {
-            href: '/dashboard/creative/proposals',
-            label: 'Proposals',
-            icon: FileText,
-          },
-          {
-            href: '/dashboard/creative/calendar',
-            label: 'Calendar',
-            icon: Calendar,
-          },
-        ];
-      case 'CLIENT':
-        return [
-          {
-            href: '/dashboard/client',
-            label: 'Dashboard',
-            icon: LayoutDashboard,
-          },
-          {
-            href: '/dashboard/client/profile',
-            label: 'Profile',
-            icon: UserIcon,
-          },
-          {
-            href: '/dashboard/client/browse',
-            label: 'Browse Creatives',
-            icon: Users,
-          },
-          {
-            href: '/dashboard/client/projects',
-            label: 'Active Projects',
-            icon: Briefcase,
-          },
-          { href: '/dashboard/client/saved', label: 'Saved', icon: Star },
-        ];
-      case 'ADMIN':
-        return [
-          {
-            href: '/dashboard/admin',
-            label: 'Dashboard',
-            icon: LayoutDashboard,
-          },
-          {
-            href: '/dashboard/admin/profile',
-            label: 'Profile',
-            icon: UserIcon,
-          },
-          { href: '/dashboard/admin/users', label: 'Users', icon: Users },
-          {
-            href: '/dashboard/admin/projects',
-            label: 'Projects',
-            icon: Briefcase,
-          },
-          {
-            href: '/dashboard/admin/settings',
-            label: 'Settings',
-            icon: Settings,
-          },
-        ];
-      default:
-        return [];
-    }
+    return (
+      DASHBOARD_NAVIGATION[user.role as keyof typeof DASHBOARD_NAVIGATION] || []
+    );
   };
 
   const navLinks = getNavLinks();
@@ -219,7 +136,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    'group flex items-center gap-1.5 py-1.5 px-1.5 transition-colors duration-200 min-h-[40px]',
+                    'group flex items-center gap-1.5 py-1.5 px-1.5 transition-colors duration-200 min-h-10',
                     active
                       ? 'text-foreground font-semibold'
                       : 'text-muted-foreground hover:text-foreground'
@@ -227,7 +144,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                 >
                   <Icon
                     className={cn(
-                      'w-3.5 h-3.5 shrink-0 transition-transform group-hover:scale-110',
+                      'w-3.5 h-3.5 shrink-0 transition-transform',
                       active &&
                         'text-primary selection:text-background selection:bg-primary'
                     )}
@@ -236,7 +153,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                     {link.label}
                     <span
                       className={cn(
-                        'absolute -bottom-1 left-0 h-[2px] bg-primary selection:text-background selection:bg-primary transition-all duration-300 ease-out',
+                        'absolute -bottom-1 left-0 h-0.5 bg-primary selection:text-background selection:bg-primary transition-all duration-300 ease-out',
                         active ? 'w-full' : 'w-0 group-hover:w-full'
                       )}
                     />

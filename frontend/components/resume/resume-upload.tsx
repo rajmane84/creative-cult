@@ -97,10 +97,10 @@ export function ResumeUpload({ onParseComplete, onError }: ResumeUploadProps) {
               <Upload className="h-12 w-12 text-gray-400" />
             </div>
             <div>
-              <p className="text-lg font-medium text-gray-900 dark:text-white">
+              <p className="text-lg font-medium text-gray-900">
                 Upload your resume
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-sm text-gray-500 mt-1">
                 Drag and drop a PDF file, or click to browse
               </p>
             </div>
@@ -118,10 +118,10 @@ export function ResumeUpload({ onParseComplete, onError }: ResumeUploadProps) {
             <div className="flex items-center justify-center space-x-3">
               <FileText className="h-8 w-8 text-primary" />
               <div className="text-left">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                <p className="text-sm font-medium text-gray-900">
                   {selectedFile.name}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500">
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
@@ -129,7 +129,7 @@ export function ResumeUpload({ onParseComplete, onError }: ResumeUploadProps) {
                 type="button"
                 onClick={handleRemoveFile}
                 disabled={isParsing}
-                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1 hover:bg-gray-200 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <X className="h-4 w-4 text-gray-500" />
               </button>
