@@ -3,6 +3,7 @@ import { authService } from '@/services/auth';
 import { toast } from 'sonner';
 // import { useRouter } from 'next/navigation';
 import { ROLE_ROUTES } from '@/constants';
+import type { LoginFormData } from '@/validations/auth';
 import type {
   BetterAuthLoginResponse,
   BetterAuthSocialResponse,
@@ -16,26 +17,35 @@ export function useLoginMutation(options?: {
   // const router = useRouter();
 
   const loginMutation = useMutation({
-    mutationFn: authService.login,
-    onSuccess: (response: BetterAuthLoginResponse) => {
-      if (response.error) {
-        toast.error(response.error.message || 'Login failed');
-        options?.onError?.();
-      } else {
-        toast.success('Login successful!');
-        const user = response.data?.user;
-        if (user?.role) {
-          options?.onSuccess?.();
-          window.location.href = ROLE_ROUTES[user.role] || '/';
-        } else {
-          options?.onRequireRole?.();
+    mutationFn: async (
+      data: LoginFormData
+    ): Promise<BetterAuthLoginResponse> => {
+      const loginPromise = (async () => {
+        const response = await authService.login(data);
+        if (response.error) {
+          throw new Error(response.error.message || 'Login failed');
         }
+        return response;
+      })();
+
+      toast.promise(loginPromise, {
+        loading: 'Signing in...',
+        success: 'Login successful!',
+        error: (err) => (err instanceof Error ? err.message : 'Login failed'),
+      });
+
+      return loginPromise;
+    },
+    onSuccess: (response: BetterAuthLoginResponse) => {
+      const user = response.data?.user;
+      if (user?.role) {
+        options?.onSuccess?.();
+        window.location.href = ROLE_ROUTES[user.role] || '/';
+      } else {
+        options?.onRequireRole?.();
       }
     },
-    onError: (error: unknown) => {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Login failed';
-      toast.error(errorMessage);
+    onError: () => {
       options?.onError?.();
     },
   });

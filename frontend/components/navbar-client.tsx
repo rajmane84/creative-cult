@@ -89,7 +89,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border transition-all">
-      <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 py-3 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 py-3">
         {/* Logo Section */}
         {user && user.role ? (
           <Link

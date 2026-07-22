@@ -8,13 +8,21 @@ import { authClient } from '@/lib/auth-client';
 export const useSignOut = () => {
   const router = useRouter();
 
-  return useCallback(async () => {
-    try {
-      await authClient.signOut();
-      toast.success('Signed out successfully');
+  return useCallback(() => {
+    const signOutPromise = async () => {
+      const res = await authClient.signOut();
+      if (res?.error) {
+        throw new Error(res.error.message || 'Failed to sign out');
+      }
       router.push('/login');
-    } catch {
-      toast.error('Failed to sign out');
-    }
+      return res;
+    };
+
+    toast.promise(signOutPromise(), {
+      loading: 'Signing out...',
+      success: 'Signed out successfully',
+      error: (err) =>
+        err instanceof Error ? err.message : 'Failed to sign out',
+    });
   }, [router]);
 };
