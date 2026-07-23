@@ -4,6 +4,7 @@ import { asyncHandler } from '../middlewares/asyncHandler';
 import { BadRequestError } from '../util/errors/AppError';
 import { ApiResponse } from '../util/response/ApiResponse';
 import { deleteFromCloudinary } from '../util/cloudinary';
+import type { EducationItemInput } from '../types/profile';
 
 export const handleCreativeOnboarding = asyncHandler(
   async (req: Request, res: Response) => {
@@ -148,7 +149,7 @@ export const handleCreativeOnboarding = asyncHandler(
       });
 
       await prisma.education.createMany({
-        data: education.map((item: any) => ({
+        data: education.map((item: EducationItemInput) => ({
           creativeProfileId: creativeProfile.id,
           school: item.school.trim(),
           degree: item.degree,

@@ -88,13 +88,13 @@ export function NavbarClient({ user }: NavbarClientProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border transition-all">
+    <header className="fixed h-16 top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border transition-all">
       <div className="flex items-center justify-between px-4 md:px-6 lg:px-8 py-3">
         {/* Logo Section */}
         {user && user.role ? (
           <Link
             href={`/dashboard/${user.role.toLowerCase()}`}
-            className="font-editorial font-bold text-base md:text-lg lg:text-xl tracking-tight flex items-center shrink-0 min-h-[44px]"
+            className="font-editorial font-bold text-base md:text-lg lg:text-xl tracking-tight flex items-center shrink-0 min-h-11"
           >
             cre8ive
             <span className="text-primary selection:text-background selection:bg-primary">
@@ -108,7 +108,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
         ) : (
           <Link
             href="/"
-            className="font-editorial font-bold text-base md:text-lg lg:text-xl tracking-tight flex items-center shrink-0 min-h-[44px]"
+            className="font-editorial font-bold text-base md:text-lg lg:text-xl tracking-tight flex items-center shrink-0 min-h-11"
           >
             cre8ive
             <span className="text-primary selection:text-background selection:bg-primary">
@@ -125,7 +125,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
         {user && navLinks.length > 0 && (
           <nav
             aria-label="Main Navigation"
-            className="hidden md:flex items-center gap-3 lg:gap-6 xl:gap-8 font-mono text-[10px] lg:text-[11px] uppercase tracking-wider"
+            className="hidden md:flex items-center gap-2 text-[9px] lg:gap-6 xl:gap-8 font-mono lg:text-[11px] uppercase tracking-wider"
           >
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -172,7 +172,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
               size="sm"
               onClick={handleSignOut}
               title="Sign Out"
-              className="hidden md:inline-flex items-center gap-1.5 font-mono text-[10px] lg:text-[11px] uppercase tracking-wider h-8 lg:h-9 px-3 shrink-0"
+              className="hidden md:inline-flex items-center gap-1.5 font-mono text-[9px] lg:text-[11px] uppercase tracking-wider h-8 lg:h-9 px-3 shrink-0"
             >
               <LogOut className="w-3.5 h-3.5 shrink-0" />
               <span>Sign Out</span>
@@ -181,7 +181,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
             <div className="hidden md:flex items-center gap-2 lg:gap-3 font-mono text-[10px] lg:text-[11px] uppercase tracking-wider">
               <Link
                 href="/login"
-                className="px-2.5 py-1.5 opacity-70 hover:opacity-100 transition-opacity min-h-[40px] flex items-center"
+                className="px-2.5 py-1.5 opacity-70 hover:opacity-100 transition-opacity min-h-10 flex items-center"
               >
                 Sign in
               </Link>

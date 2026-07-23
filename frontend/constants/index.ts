@@ -1,12 +1,14 @@
 import {
   LayoutDashboard,
   Briefcase,
-  FileText,
-  Calendar,
   Users,
-  Star,
+  Heart,
+  MessageSquare,
+  Receipt,
   Settings,
   User,
+  FileText,
+  Calendar,
 } from 'lucide-react';
 
 export const ROLE_ROUTES: Record<string, string> = {
@@ -51,24 +53,29 @@ export const DASHBOARD_NAVIGATION = {
       icon: LayoutDashboard,
     },
     {
-      href: '/dashboard/client/profile',
-      label: 'Profile',
-      icon: User,
-    },
-    {
-      href: '/dashboard/client/browse',
-      label: 'Browse Creatives',
-      icon: Users,
-    },
-    {
-      href: '/dashboard/client/projects',
-      label: 'Active Projects',
+      href: '/dashboard/client/listings',
+      label: 'Listings',
       icon: Briefcase,
     },
     {
+      href: '/dashboard/client/applications',
+      label: 'Applications',
+      icon: Users,
+    },
+    {
       href: '/dashboard/client/saved',
-      label: 'Saved',
-      icon: Star,
+      label: 'Saved Creatives',
+      icon: Heart,
+    },
+    {
+      href: '/dashboard/client/messages',
+      label: 'Messages',
+      icon: MessageSquare,
+    },
+    {
+      href: '/dashboard/client/invoices',
+      label: 'Invoices',
+      icon: Receipt,
     },
   ],
 

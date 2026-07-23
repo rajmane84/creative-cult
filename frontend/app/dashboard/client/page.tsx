@@ -1,83 +1,82 @@
-import { redirect } from 'next/navigation';
-import Image from 'next/image';
-import { ROLE_ROUTES } from '@/constants';
-import { requireRole } from '@/lib/session';
-import { UserRole } from '@/types';
+'use client';
 
-export default async function ClientDashboard() {
-  const session = await requireRole('CLIENT');
+import Link from 'next/link';
+import { motion } from 'motion/react';
+import { Plus } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
+import { Button } from '@/components/ui/button';
+import {
+  ProfileCompletionCard,
+  EmailVerificationCard,
+} from '@/components/client/dashboard';
 
-  if (!session) {
-    // Redirect to appropriate page based on authentication/authorization
-    redirect('/login');
-  }
+const ease = [0.76, 0, 0.24, 1] as const;
 
-  const user = session.user;
+export default function ClientDashboard() {
+  const { data: sessionData, isPending } = authClient.useSession();
+  const user = sessionData?.user;
 
-  // Double-check role for security
-  if (user.role !== UserRole.CLIENT) {
-    const role = user.role;
-    if (role && ROLE_ROUTES[role]) {
-      redirect(ROLE_ROUTES[role]);
-    } else {
-      redirect('/');
-    }
-  }
+  if (isPending) return null;
+
+  const fullName = user?.name;
+  const displayName = fullName ? fullName.split(' ')[0] : 'Client';
+  const userEmail = user?.email;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 to-slate-100">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <div className="flex items-center space-x-4 mb-6">
-            {user?.image ? (
-              <Image
-                src={user.image}
-                alt={user.name || 'User'}
-                className="h-16 w-16 rounded-full object-cover"
-                height={100}
-                width={100}
-              />
-            ) : (
-              <div className="h-16 w-16 rounded-full bg-slate-700 flex items-center justify-center text-white text-2xl font-bold">
-                {user?.name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-            )}
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Welcome, {user?.name || 'Client'}!
-              </h2>
-              <p className="text-gray-600">{user?.email}</p>
+    <div className="min-h-[calc(100vh-64px)] bg-background">
+      <div className="w-full space-y-8 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        {/* Top Welcome Header & Action */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6 sm:pb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="space-y-2"
+          >
+            <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <span>/ Client Dashboard</span>
+              <span className="w-1.5 h-1.5 bg-primary selection:text-background selection:bg-primary inline-block" />
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div className="bg-slate-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Post a Project
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Create a new project and hire talented creatives
-              </p>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Browse Creatives
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Find and connect with creative professionals
-              </p>
-            </div>
-            <div className="bg-slate-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                My Projects
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Manage your ongoing and past projects
-              </p>
-            </div>
-          </div>
+            <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+              Welcome back,{' '}
+              <span className="text-primary selection:text-background selection:bg-primary">
+                {displayName}!
+              </span>
+            </h1>
+
+            <p className="font-body text-sm sm:text-base text-muted-foreground">
+              Let&apos;s get your first listing live.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15, ease }}
+            className="flex flex-col items-start sm:items-end gap-1.5 shrink-0"
+          >
+            <Link
+              href="/dashboard/client/listings/new"
+              className="w-full sm:w-auto"
+            >
+              <Button className="w-full sm:w-auto cursor-pointer gap-2">
+                <Plus className="size-4" />
+                <span>Post a Job / Listing</span>
+              </Button>
+            </Link>
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
+              It only takes a few minutes!
+            </span>
+          </motion.div>
         </div>
-      </main>
+
+        {/* Side-by-Side Notice Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ProfileCompletionCard completedSteps={2} totalSteps={5} />
+          <EmailVerificationCard email={userEmail} />
+        </div>
+      </div>
     </div>
   );
 }
