@@ -16,15 +16,22 @@ import {
   ActionCardFooter,
 } from '@/components/ui/action-card';
 
-interface EmailVerificationCardProps {
+export interface EmailVerificationCardProps {
   email?: string | null;
+  onDismiss?: () => void;
 }
 
 export function EmailVerificationCard({
   email = 'rajesh@creativeminds.com',
+  onDismiss,
 }: EmailVerificationCardProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [isSending, setIsSending] = useState(false);
+
+  const handleDismiss = () => {
+    setIsVisible(false);
+    onDismiss?.();
+  };
 
   const handleResendEmail = async () => {
     setIsSending(true);
@@ -56,7 +63,7 @@ export function EmailVerificationCard({
             </ActionCardDescription>
           </div>
         </div>
-        <ActionCardDismiss onClick={() => setIsVisible(false)} />
+        <ActionCardDismiss onClick={handleDismiss} />
       </ActionCardHeader>
 
       <ActionCardFooter>

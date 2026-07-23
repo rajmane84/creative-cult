@@ -1,19 +1,29 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Plus } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/cn';
 import {
   ProfileCompletionCard,
   EmailVerificationCard,
 } from '@/components/client/dashboard';
 
 const ease = [0.76, 0, 0.24, 1] as const;
+const smoothSpring = {
+  type: 'spring',
+  stiffness: 220,
+  damping: 26,
+  mass: 0.8,
+} as const;
 
 export default function ClientDashboard() {
   const { data: sessionData, isPending } = authClient.useSession();
+  const [isEmailClosing, setIsEmailClosing] = useState(false);
+  const [isEmailDismissed, setIsEmailDismissed] = useState(false);
   const user = sessionData?.user;
 
   if (isPending) return null;
@@ -21,6 +31,15 @@ export default function ClientDashboard() {
   const fullName = user?.name;
   const displayName = fullName ? fullName.split(' ')[0] : 'Client';
   const userEmail = user?.email;
+
+  const handleEmailDismiss = () => {
+    setIsEmailClosing(true);
+  };
+
+  const handleExitComplete = () => {
+    // Smoothly start card growth immediately after the email card finishes its exit
+    setIsEmailDismissed(true);
+  };
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-background">
@@ -71,11 +90,42 @@ export default function ClientDashboard() {
           </motion.div>
         </div>
 
-        {/* Side-by-Side Notice Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ProfileCompletionCard completedSteps={2} totalSteps={5} />
-          <EmailVerificationCard email={userEmail} />
-        </div>
+        {/* Dynamic Responsive Notice Cards Grid */}
+        <motion.div
+          layout
+          transition={smoothSpring}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        >
+          <motion.div
+            layout
+            transition={smoothSpring}
+            className={cn('w-full', isEmailDismissed && 'lg:col-span-2')}
+          >
+            <ProfileCompletionCard completedSteps={2} totalSteps={5} />
+          </motion.div>
+
+          <AnimatePresence onExitComplete={handleExitComplete}>
+            {!isEmailClosing && (
+              <motion.div
+                key="email-verification-card"
+                layout
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
+                  y: -20,
+                  transition: { duration: 0.35, ease },
+                }}
+                transition={smoothSpring}
+              >
+                <EmailVerificationCard
+                  email={userEmail}
+                  onDismiss={handleEmailDismiss}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
