@@ -9,15 +9,10 @@ import { cn } from '@/lib/cn';
 import {
   ProfileCompletionCard,
   EmailVerificationCard,
+  ClientStatsCards,
 } from '@/components/client/dashboard';
 
 const ease = [0.76, 0, 0.24, 1] as const;
-const smoothSpring = {
-  type: 'spring',
-  stiffness: 220,
-  damping: 26,
-  mass: 0.8,
-} as const;
 
 export default function ClientDashboard() {
   const { data: sessionData, isPending } = authClient.useSession();
@@ -80,38 +75,32 @@ export default function ClientDashboard() {
         </div>
 
         {/* Dynamic Responsive Notice Cards Grid */}
-        <motion.div
-          layout
-          transition={smoothSpring}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
-          <motion.div
-            layout
-            transition={smoothSpring}
-            className={cn('w-full', isEmailVerified && 'lg:col-span-2')}
-          >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className={cn('w-full', isEmailVerified && 'lg:col-span-2')}>
             <ProfileCompletionCard completedSteps={2} totalSteps={5} />
-          </motion.div>
+          </div>
 
           <AnimatePresence>
             {!isEmailVerified && (
               <motion.div
                 key="email-verification-card"
-                layout
-                initial={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{
                   opacity: 0,
-                  y: -20,
-                  transition: { duration: 0.35, ease },
+                  y: -10,
+                  transition: { duration: 0.2 },
                 }}
-                transition={smoothSpring}
+                transition={{ duration: 0.3 }}
               >
                 <EmailVerificationCard email={userEmail} />
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.div>
+        </div>
+
+        {/* Section 2: Key Metrics & Stat Cards */}
+        <ClientStatsCards />
       </div>
     </div>
   );
