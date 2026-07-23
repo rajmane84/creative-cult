@@ -1,11 +1,13 @@
 'use client';
 
 import { useProfile } from '@/hooks/creative/profile/use-profile';
-import ProfileHeader from '@/components/creative/profile/profile-header';
-import ProfileAbout from '@/components/creative/profile/profile-about';
-import ProfileSkills from '@/components/creative/profile/profile-skills';
-import EmailVerificationCard from '@/components/creative/profile/email-verification-card';
+import {
+  ProfileHeader,
+  ProfileAbout,
+  ProfileSkills,
+} from '@/components/creative/profile';
 import Loader from '@/components/loader';
+import { EmailVerificationCard } from '@/components/auth/email-verification-card';
 
 export default function CreativeProfilePage() {
   const { data: profileData, isLoading, error } = useProfile();

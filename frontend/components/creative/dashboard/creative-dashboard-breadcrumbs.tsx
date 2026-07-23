@@ -14,40 +14,35 @@ import {
 
 const PATH_NAME_MAP: Record<string, string> = {
   dashboard: 'Dashboard',
-  client: 'Client',
-  listings: 'Listings',
-  new: 'New Listing',
-  applications: 'Applications',
-  saved: 'Saved Creatives',
-  messages: 'Messages',
-  invoices: 'Invoices',
-  profile: 'Company Profile',
+  creative: 'Creative',
+  profile: 'Profile',
+  projects: 'Projects',
+  proposals: 'Proposals',
+  calendar: 'Calendar',
   settings: 'Settings',
 };
 
-export function DashboardBreadcrumbs() {
+export function CreativeDashboardBreadcrumbs() {
   const pathname = usePathname();
 
-  // Break pathname into non-empty segments
   const segments = pathname.split('/').filter(Boolean);
 
-  // Check if we are at /dashboard/client
   const isRootDashboard =
-    pathname === '/dashboard/client' || pathname === '/dashboard/client/';
+    pathname === '/dashboard/creative' || pathname === '/dashboard/creative/';
 
   return (
-    <div className="w-full border-b border-border bg-card/40 px-4 sm:px-6 lg:px-8 py-3 h-11.5">
+    <div className="w-full border-b border-border bg-card/40 px-4 sm:px-6 lg:px-8 py-3">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <Breadcrumb>
           <BreadcrumbList>
             {/* Root item */}
             <BreadcrumbItem>
               <BreadcrumbLink
-                render={<Link href="/dashboard/client" />}
+                render={<Link href="/dashboard/creative" />}
                 className="flex items-center gap-1.5"
               >
                 <LayoutDashboard className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
-                <span>Client</span>
+                <span>Creative</span>
               </BreadcrumbLink>
             </BreadcrumbItem>
 
@@ -64,7 +59,7 @@ export function DashboardBreadcrumbs() {
             ) : (
               segments.slice(2).map((segment, index, array) => {
                 const isLast = index === array.length - 1;
-                const href = `/dashboard/client/${array
+                const href = `/dashboard/creative/${array
                   .slice(0, index + 1)
                   .join('/')}`;
                 const label =
@@ -98,7 +93,7 @@ export function DashboardBreadcrumbs() {
 
         <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-2 self-start sm:self-auto">
           <span className="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 selection:text-background selection:bg-primary font-semibold">
-            Client Portal
+            Creative Portal
           </span>
         </div>
       </div>

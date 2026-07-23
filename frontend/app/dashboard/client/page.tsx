@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import {
   ProfileCompletionCard,
-  EmailVerificationCard,
   ClientStatsCards,
 } from '@/components/client/dashboard';
+import { EmailVerificationCard } from '@/components/auth/email-verification-card';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 

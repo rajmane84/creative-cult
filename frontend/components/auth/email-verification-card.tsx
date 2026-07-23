@@ -18,10 +18,20 @@ import {
 
 export interface EmailVerificationCardProps {
   email?: string | null;
+  callbackPath?: string;
+  isVerified?: boolean;
 }
 
-export function EmailVerificationCard({ email }: EmailVerificationCardProps) {
+export function EmailVerificationCard({
+  email,
+  callbackPath,
+  isVerified,
+}: EmailVerificationCardProps) {
   const [isSending, setIsSending] = useState(false);
+
+  if (isVerified) {
+    return null;
+  }
 
   const handleResendEmail = async () => {
     if (!email) {
@@ -30,7 +40,14 @@ export function EmailVerificationCard({ email }: EmailVerificationCardProps) {
     }
     setIsSending(true);
     try {
-      const callbackURL = `${window.location.origin}/dashboard/client`;
+      const defaultPath =
+        typeof window !== 'undefined' &&
+        window.location.pathname.startsWith('/dashboard/creative')
+          ? '/dashboard/creative'
+          : '/dashboard/client';
+      const targetPath = callbackPath || defaultPath;
+      const callbackURL = `${window.location.origin}${targetPath}`;
+
       const { error } = await authClient.sendVerificationEmail({
         email,
         callbackURL,

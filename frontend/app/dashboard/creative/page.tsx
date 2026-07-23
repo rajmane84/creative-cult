@@ -1,18 +1,101 @@
-import { redirect } from 'next/navigation';
-import { verifySession } from '@/lib/session';
+'use client';
 
-export default async function CreativeDashboard() {
-  const session = await verifySession();
-  const user = session?.user;
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
+import { Search } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/cn';
+import { CreativeProfileCompletionCard } from '@/components/creative/dashboard';
+import { EmailVerificationCard } from '@/components/auth/email-verification-card';
 
-  // Check if user has completed onboarding
-  if (!user?.creativeProfile?.onboardingCompleted) {
-    redirect('/onboarding/creative');
-  }
+const ease = [0.76, 0, 0.24, 1] as const;
+
+export default function CreativeDashboard() {
+  const { data: sessionData, isPending } = authClient.useSession();
+  const user = sessionData?.user;
+
+  if (isPending || !user) return null;
+
+  const fullName = user.name;
+  const displayName = fullName ? fullName.split(' ')[0] : 'Creative';
+  const userEmail = user.email;
+  const isEmailVerified = Boolean(user.emailVerified);
 
   return (
-    <div className="min-h-[calc(100vh-64px)]">
-      This is creative dashboard page Welcome, {user?.name}
+    <div className="min-h-[calc(100vh-64px)] bg-background">
+      <div className="w-full space-y-8 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        {/* Top Welcome Header & Action */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6 sm:pb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="space-y-2"
+          >
+            <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <span>/ Creative Dashboard</span>
+              <span className="w-1.5 h-1.5 bg-primary selection:text-background selection:bg-primary inline-block" />
+            </div>
+
+            <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+              Welcome back,{' '}
+              <span className="text-primary selection:text-background selection:bg-primary">
+                {displayName}!
+              </span>
+            </h1>
+
+            <p className="font-body text-sm sm:text-base text-muted-foreground">
+              Explore open project briefs and connect with top clients.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15, ease }}
+            className="flex flex-col items-start sm:items-end gap-1.5 shrink-0"
+          >
+            <Link
+              href="/dashboard/creative/projects"
+              className="w-full sm:w-auto"
+            >
+              <Button className="w-full sm:w-auto cursor-pointer gap-2">
+                <Search className="size-4" />
+                <span>Find Gigs / Projects</span>
+              </Button>
+            </Link>
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
+              Explore open client listings!
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Dynamic Responsive Notice Cards Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className={cn('w-full', isEmailVerified && 'lg:col-span-2')}>
+            <CreativeProfileCompletionCard completedSteps={2} totalSteps={5} />
+          </div>
+
+          <AnimatePresence>
+            {!isEmailVerified && (
+              <motion.div
+                key="creative-email-verification-card"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
+                  y: -10,
+                  transition: { duration: 0.2 },
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <EmailVerificationCard email={userEmail} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }
