@@ -3,6 +3,7 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './util/prisma';
 import { env } from './util/env';
 import { customSession } from 'better-auth/plugins';
+import { emailService } from './services/email/email.service';
 
 const isProd = env.NODE_ENV === 'production';
 
@@ -14,6 +15,18 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: false,
+  },
+  emailVerification: {
+    sendOnSignUp: false,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await emailService.sendVerificationEmail({
+        to: user.email,
+        name: user.name,
+        url,
+      });
+    },
   },
   socialProviders: {
     google: {

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus } from 'lucide-react';
@@ -22,24 +21,14 @@ const smoothSpring = {
 
 export default function ClientDashboard() {
   const { data: sessionData, isPending } = authClient.useSession();
-  const [isEmailClosing, setIsEmailClosing] = useState(false);
-  const [isEmailDismissed, setIsEmailDismissed] = useState(false);
   const user = sessionData?.user;
 
-  if (isPending) return null;
+  if (isPending || !user) return null;
 
-  const fullName = user?.name;
+  const fullName = user.name;
   const displayName = fullName ? fullName.split(' ')[0] : 'Client';
-  const userEmail = user?.email;
-
-  const handleEmailDismiss = () => {
-    setIsEmailClosing(true);
-  };
-
-  const handleExitComplete = () => {
-    // Smoothly start card growth immediately after the email card finishes its exit
-    setIsEmailDismissed(true);
-  };
+  const userEmail = user.email;
+  const isEmailVerified = Boolean(user.emailVerified);
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-background">
@@ -99,13 +88,13 @@ export default function ClientDashboard() {
           <motion.div
             layout
             transition={smoothSpring}
-            className={cn('w-full', isEmailDismissed && 'lg:col-span-2')}
+            className={cn('w-full', isEmailVerified && 'lg:col-span-2')}
           >
             <ProfileCompletionCard completedSteps={2} totalSteps={5} />
           </motion.div>
 
-          <AnimatePresence onExitComplete={handleExitComplete}>
-            {!isEmailClosing && (
+          <AnimatePresence>
+            {!isEmailVerified && (
               <motion.div
                 key="email-verification-card"
                 layout
@@ -118,10 +107,7 @@ export default function ClientDashboard() {
                 }}
                 transition={smoothSpring}
               >
-                <EmailVerificationCard
-                  email={userEmail}
-                  onDismiss={handleEmailDismiss}
-                />
+                <EmailVerificationCard email={userEmail} />
               </motion.div>
             )}
           </AnimatePresence>

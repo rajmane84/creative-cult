@@ -14,6 +14,23 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().min(1, 'GOOGLE_CLIENT_ID is required'),
   GOOGLE_CLIENT_SECRET: z.string().min(1, 'GOOGLE_CLIENT_SECRET is required'),
 
+  // Email Configuration
+  RESEND_API_KEY: z.string().optional(),
+  EMAIL_FROM: z.string().default('Creative Cult <onboarding@resend.dev>'),
+
+  // SMTP Configuration (for Nodemailer development)
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z
+    .string()
+    .optional()
+    .transform((val) => (val ? Number(val) : undefined)),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_SECURE: z
+    .string()
+    .optional()
+    .transform((val) => val === 'true'),
+
   // Server
   PORT: z.string().default('3000').transform(Number),
   NODE_ENV: z.string().default('development'),

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Mail, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 import {
   ActionCard,
   ActionCardHeader,
@@ -12,37 +13,47 @@ import {
   ActionCardBadge,
   ActionCardTitle,
   ActionCardDescription,
-  ActionCardDismiss,
   ActionCardFooter,
 } from '@/components/ui/action-card';
 
 export interface EmailVerificationCardProps {
   email?: string | null;
-  onDismiss?: () => void;
 }
 
-export function EmailVerificationCard({
-  email = 'rajesh@creativeminds.com',
-  onDismiss,
-}: EmailVerificationCardProps) {
-  const [isVisible, setIsVisible] = useState(true);
+export function EmailVerificationCard({ email }: EmailVerificationCardProps) {
   const [isSending, setIsSending] = useState(false);
 
-  const handleDismiss = () => {
-    setIsVisible(false);
-    onDismiss?.();
-  };
-
   const handleResendEmail = async () => {
+    if (!email) {
+      toast.error('Email address is missing');
+      return;
+    }
     setIsSending(true);
-    // Simulate API email dispatch
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setIsSending(false);
-    toast.success(`Verification email resent to ${email}`);
+    try {
+      const callbackURL = `${window.location.origin}/dashboard/client`;
+      const { error } = await authClient.sendVerificationEmail({
+        email,
+        callbackURL,
+      });
+
+      if (error) {
+        toast.error(error.message || 'Failed to send verification email');
+      } else {
+        toast.success(`Verification email sent to ${email}`);
+      }
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Failed to send verification email';
+      toast.error(message);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
-    <ActionCard dismissible isVisible={isVisible} animationDelay={0.25}>
+    <ActionCard animationDelay={0.25}>
       <ActionCardHeader>
         <div className="flex items-start gap-4">
           <ActionCardIcon icon={Mail} />
@@ -56,14 +67,15 @@ export function EmailVerificationCard({
             <ActionCardTitle>Verify your email</ActionCardTitle>
             <ActionCardDescription>
               Please verify your email{' '}
-              <span className="font-mono text-foreground underline underline-offset-2">
-                ({email})
-              </span>{' '}
+              {email ? (
+                <span className="font-mono text-foreground underline underline-offset-2">
+                  ({email})
+                </span>
+              ) : null}{' '}
               to build trust.
             </ActionCardDescription>
           </div>
         </div>
-        <ActionCardDismiss onClick={handleDismiss} />
       </ActionCardHeader>
 
       <ActionCardFooter>
