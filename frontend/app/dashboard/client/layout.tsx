@@ -2,6 +2,7 @@ import { ROLE_ROUTES } from '@/constants';
 import { requireRole } from '@/lib/session';
 import { UserRole } from '@/types';
 import { redirect } from 'next/navigation';
+import { DashboardBreadcrumbs } from '@/components/client/dashboard';
 
 export default async function ClientDashboardLayout({
   children,
@@ -25,5 +26,10 @@ export default async function ClientDashboardLayout({
     }
   }
 
-  return <>{children}</>;
+  return (
+    <div className="w-full flex flex-col min-h-full">
+      <DashboardBreadcrumbs />
+      <main className="flex-1">{children}</main>
+    </div>
+  );
 }
