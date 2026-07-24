@@ -35,6 +35,11 @@ export const DASHBOARD_NAVIGATION = {
       icon: Briefcase,
     },
     {
+      href: '/dashboard/creative/cult',
+      label: 'Cult',
+      icon: Users,
+    },
+    {
       href: '/dashboard/creative/proposals',
       label: 'Proposals',
       icon: FileText,

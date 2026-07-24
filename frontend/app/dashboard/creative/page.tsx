@@ -23,7 +23,7 @@ export default function CreativeDashboard() {
   const isEmailVerified = Boolean(user.emailVerified);
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-background">
+    <div className="w-full bg-background">
       <div className="w-full space-y-8 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
         {/* Top Welcome Header & Action */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-border pb-6 sm:pb-8">

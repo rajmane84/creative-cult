@@ -5,8 +5,8 @@ export default async function AdminDashboard() {
   const user = session?.user;
 
   return (
-    <div className="min-h-[calc(100vh-64px)]">
-      This is admin dashboard page Welcome, {user?.name}
+    <div className="w-full bg-background p-6">
+      This is admin dashboard page. Welcome, {user?.name}
     </div>
   );
 }

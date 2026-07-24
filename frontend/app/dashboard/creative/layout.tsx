@@ -27,9 +27,9 @@ export default async function CreativeDashboardLayout({
   }
 
   return (
-    <div className="w-full flex flex-col min-h-full">
+    <div className="w-full flex-1 flex flex-col">
       <CreativeDashboardBreadcrumbs />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 w-full">{children}</main>
     </div>
   );
 }
