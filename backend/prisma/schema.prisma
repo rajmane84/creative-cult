@@ -13,6 +13,25 @@ datasource db {
 
 // ---------------------------- Enums -----------------------------------
 
+enum CultMemberRole {
+  LEADER
+  MEMBER
+}
+
+enum CultMembershipStatus {
+  ACTIVE
+  LEFT
+  REMOVED // kicked by a leader — kept distinct from LEFT for history/disputes
+}
+
+enum CultInviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  REVOKED  // leader cancelled it before response
+  EXPIRED
+}
+
 enum Role {
   ADMIN
   CLIENT
@@ -87,6 +106,9 @@ model User {
   sessions        Session[]
   accounts        Account[]
 
+  cultsCreated Cult[]
+  cultInvitesSent CultInvite[] @relation("CultInvitesSent")
+
   @@unique([email])
   @@map("user")
 }
@@ -110,6 +132,9 @@ model CreativeProfile {
 
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  cultMemberships CultMembership[]
+  cultInvites     CultInvite[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -135,6 +160,67 @@ model Skill {
 
   creativeSkills CreativeSkill[]
   createdAt      DateTime @default(now())
+}
+
+model Cult {
+  id       String  @id @default(cuid())
+  name     String
+  slug     String  @unique // for public cult profile URL, e.g. /cults/pixel-punks
+  tagline  String?
+  bio      String?
+  avatarUrl String?
+
+  createdByUserId String
+  createdBy       User   @relation(fields: [createdByUserId], references: [id])
+
+  memberships CultMembership[]
+  invites     CultInvite[]
+  // applications Application[]  // add once client-contacts-cult flow is built
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CultMembership {
+  id     String                @id @default(cuid())
+  role   CultMemberRole        @default(MEMBER)
+  status CultMembershipStatus  @default(ACTIVE)
+
+  cultId String
+  cult   Cult   @relation(fields: [cultId], references: [id], onDelete: Cascade)
+
+  creativeProfileId String
+  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+
+  @@unique([cultId, creativeProfileId]) // can't join the same cult twice while active
+  @@index([creativeProfileId])
+}
+
+model CultInvite {
+  id     String            @id @default(cuid())
+  status CultInviteStatus  @default(PENDING)
+
+  cultId String
+  cult   Cult   @relation(fields: [cultId], references: [id], onDelete: Cascade)
+
+  invitedByUserId String
+  invitedByUser   User   @relation("CultInvitesSent", fields: [invitedByUserId], references: [id])
+
+  invitedProfileId String
+  invitedProfile   CreativeProfile @relation(fields: [invitedProfileId], references: [id], onDelete: Cascade)
+
+  message String? // optional personal note from the leader
+
+  respondedAt DateTime?
+  expiresAt   DateTime? // optional — e.g. auto-expire after 7 days
+
+  createdAt DateTime @default(now())
+
+  @@index([invitedProfileId])
+  @@index([cultId])
 }
 
 model Experience {

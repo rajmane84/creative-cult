@@ -8,6 +8,7 @@ import creativeRouter from './creative.route';
 import waitlistRouter from './waitlist.route';
 import resumeRouter from './resume.route';
 import profileRouter from './profile.route';
+import cultRouter from './cult.route';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.use('/creative', creativeRouter);
 router.use('/waitlist', waitlistRouter);
 router.use('/resume', resumeRouter);
 router.use('/profile', profileRouter);
+router.use('/cult', cultRouter);
 
 router.get('/health', (_, res) => {
   const healthCheck = {
