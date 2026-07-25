@@ -1,19 +1,28 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
 import { useProfile } from '@/hooks/creative/profile/use-profile';
 import {
   ProfileHeader,
   ProfileAbout,
   ProfileSkills,
 } from '@/components/creative/profile';
-import Loader from '@/components/loader';
 import { EmailVerificationCard } from '@/components/auth/email-verification-card';
 
 export default function CreativeProfilePage() {
   const { data: profileData, isLoading, error } = useProfile();
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <div className="w-full bg-background min-h-[70vh] p-6 sm:p-10 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-muted-foreground">
+          <Loader2 className="size-8 animate-spin text-primary selection:text-background selection:bg-primary" />
+          <span className="font-mono text-xs uppercase tracking-widest">
+            Loading profile details...
+          </span>
+        </div>
+      </div>
+    );
   }
 
   if (error || !profileData) {
