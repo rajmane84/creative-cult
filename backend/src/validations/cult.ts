@@ -52,3 +52,49 @@ export const cultQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1).optional(),
   limit: z.coerce.number().min(1).max(100).default(10).optional(),
 });
+
+export const respondInviteSchema = z.object({
+  action: z.enum(['ACCEPT', 'DECLINE'], {
+    error: (issue) =>
+      issue.input === undefined
+        ? 'Action is required'
+        : 'Invalid action. Must be ACCEPT or DECLINE',
+  }),
+});
+
+export const createCultInviteSchema = z
+  .object({
+    targetUsername: z
+      .string('Target username is required')
+      .min(1, 'Target username is required')
+      .optional(),
+    targetEmailId: z
+      .string('Target email ID is required')
+      .email('Invalid email address')
+      .optional(),
+    message: z
+      .string()
+      .max(500, 'Message must be at most 500 characters')
+      .optional(),
+  })
+  .superRefine((data, ctx) => {
+    const hasUsername = !!data.targetUsername;
+    const hasEmailId = !!data.targetEmailId;
+
+    if (!hasUsername && !hasEmailId) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Either targetUsername or targetEmailId is required',
+        path: ['targetEmailId'],
+      });
+    }
+
+    if (hasUsername && hasEmailId) {
+      ctx.addIssue({
+        code: 'custom',
+        message:
+          'Provide only one of targetUsername or targetEmailId, not both',
+        path: ['targetEmailId'],
+      });
+    }
+  });

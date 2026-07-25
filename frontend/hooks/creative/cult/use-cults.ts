@@ -4,14 +4,14 @@ import { cultService } from '@/services/creative/cult.service';
 export function useCults() {
   const cultsQuery = useQuery({
     queryKey: ['creative-cults'],
-    queryFn: () => cultService.getCults(),
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryFn: () => cultService.getMyCults(),
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
   const invitesQuery = useQuery({
     queryKey: ['creative-cult-invites'],
-    queryFn: () => cultService.getInvites(),
-    staleTime: 1000 * 60 * 5,
+    queryFn: () => cultService.getMyInvites(),
+    staleTime: 1000 * 60 * 2,
   });
 
   return {

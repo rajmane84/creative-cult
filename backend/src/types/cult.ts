@@ -124,7 +124,8 @@ export interface UpdateMemberRoleInput {
 
 export interface CreateCultInviteInput {
   cultId: string;
-  invitedProfileId: string;
+  targetEmailId?: string;
+  targetUsername?: string;
   message?: string;
   expiresAt?: string;
 }

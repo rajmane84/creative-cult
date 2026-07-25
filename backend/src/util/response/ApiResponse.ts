@@ -81,13 +81,14 @@ export class ApiResponse {
     res: Response,
     data: T[],
     pagination: PaginationMeta,
-    message?: string
+    message?: string,
+    includeMeta: boolean = false
   ): Response {
     const response: SuccessResponse<T[]> = {
       success: true,
       data,
       ...(message && { message }),
-      meta: this.getMeta(res, 200),
+      ...(includeMeta && { meta: this.getMeta(res, 200) }),
       pagination,
     };
 

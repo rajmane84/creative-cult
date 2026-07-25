@@ -1,5 +1,9 @@
 import type { Request, Response } from 'express';
-import { CultMemberRole, CultMembershipStatus } from '@prisma/client';
+import {
+  CultMemberRole,
+  CultMembershipStatus,
+  CultInviteStatus,
+} from '@prisma/client';
 import { prisma } from '../util/prisma';
 import { asyncHandler } from '../middlewares/asyncHandler';
 import { ApiResponse } from '../util/response';
@@ -154,6 +158,14 @@ export const getCultBySlugHandler = asyncHandler(
     const cult = await prisma.cult.findUnique({
       where: { slug },
       include: {
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+          },
+        },
         memberships: {
           where: { status: CultMembershipStatus.ACTIVE },
           include: {
@@ -162,10 +174,18 @@ export const getCultBySlugHandler = asyncHandler(
                 id: true,
                 headline: true,
                 availability: true,
-                user: { select: { name: true, username: true, image: true } },
+                user: {
+                  select: { id: true, name: true, username: true, image: true },
+                },
+                skills: {
+                  include: {
+                    skill: { select: { id: true, name: true } },
+                  },
+                },
               },
             },
           },
+          orderBy: { joinedAt: 'asc' },
         },
       },
     });
@@ -174,7 +194,32 @@ export const getCultBySlugHandler = asyncHandler(
       throw new NotFoundError('Cult not found');
     }
 
-    return ApiResponse.success(res, cult);
+    let userRole: CultMemberRole | null = null;
+    let userMembershipId: string | null = null;
+
+    if (req.user) {
+      const profile = await prisma.creativeProfile.findUnique({
+        where: { userId: String(req.user.id) },
+      });
+      if (profile) {
+        const membership = cult.memberships.find(
+          (m) => m.creativeProfileId === profile.id
+        );
+        if (membership) {
+          userRole = membership.role;
+          userMembershipId = membership.id;
+        }
+      }
+    }
+
+    const memberCount = cult.memberships.length;
+
+    return ApiResponse.success(res, {
+      ...cult,
+      userRole,
+      userMembershipId,
+      memberCount,
+    });
   }
 );
 
@@ -389,5 +434,242 @@ export const updateMemberRoleHandler = asyncHandler(
     });
 
     return ApiResponse.success(res, updated, 'Member role updated');
+  }
+);
+
+/**
+ * GET /cults/my
+ * Get all active cults for the logged in creative user.
+ */
+export const getMyCultsHandler = asyncHandler(
+  async (req: Request, res: Response) => {
+    const profile = await getOwnCreativeProfile(String(req.user!.id));
+
+    const memberships = await prisma.cultMembership.findMany({
+      where: {
+        creativeProfileId: profile.id,
+        status: CultMembershipStatus.ACTIVE,
+      },
+      include: {
+        cult: {
+          include: {
+            memberships: {
+              where: { status: CultMembershipStatus.ACTIVE },
+              select: { id: true },
+            },
+          },
+        },
+      },
+      orderBy: { joinedAt: 'desc' },
+    });
+
+    const cults = memberships.map((m) => ({
+      id: m.cult.id,
+      name: m.cult.name,
+      slug: m.cult.slug,
+      tagline: m.cult.tagline,
+      bio: m.cult.bio,
+      avatarUrl: m.cult.avatarUrl,
+      userRole: m.role,
+      memberCount: m.cult.memberships.length,
+      joinedAt: m.joinedAt.toISOString(),
+      createdAt: m.cult.createdAt.toISOString(),
+    }));
+
+    return ApiResponse.success(res, cults);
+  }
+);
+
+/**
+ * GET /cults/invites/my
+ * Get all pending invites received by the logged in creative.
+ */
+export const getMyInvitesHandler = asyncHandler(
+  async (req: Request, res: Response) => {
+    const profile = await getOwnCreativeProfile(String(req.user!.id));
+
+    const invites = await prisma.cultInvite.findMany({
+      where: {
+        invitedProfileId: profile.id,
+        status: CultInviteStatus.PENDING,
+      },
+      include: {
+        cult: { select: { id: true, name: true, slug: true, avatarUrl: true } },
+        invitedByUser: {
+          select: { id: true, name: true, username: true, image: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const formattedInvites = invites.map((inv) => ({
+      id: inv.id,
+      cultId: inv.cult.id,
+      cultName: inv.cult.name,
+      cultSlug: inv.cult.slug,
+      cultAvatarUrl: inv.cult.avatarUrl,
+      inviterName: inv.invitedByUser.name,
+      inviterAvatarUrl: inv.invitedByUser.image,
+      status: inv.status,
+      message: inv.message,
+      createdAt: inv.createdAt.toISOString(),
+    }));
+
+    return ApiResponse.success(res, formattedInvites);
+  }
+);
+
+/**
+ * POST /cults/invites/:inviteId/respond
+ * Respond to a cult invite (ACCEPT or DECLINE).
+ */
+export const respondInviteHandler = asyncHandler(
+  async (req: Request, res: Response) => {
+    const inviteId = String(req.params.inviteId);
+    const { action } = req.body;
+    const profile = await getOwnCreativeProfile(String(req.user!.id));
+
+    const invite = await prisma.cultInvite.findUnique({
+      where: { id: inviteId },
+    });
+
+    if (!invite || invite.invitedProfileId !== profile.id) {
+      throw new NotFoundError('Invite not found');
+    }
+
+    if (invite.status !== CultInviteStatus.PENDING) {
+      throw new ConflictError('Invite has already been processed');
+    }
+
+    if (action === 'ACCEPT') {
+      await prisma.$transaction(async (tx) => {
+        await tx.cultInvite.update({
+          where: { id: inviteId },
+          data: {
+            status: CultInviteStatus.ACCEPTED,
+            respondedAt: new Date(),
+          },
+        });
+
+        await tx.cultMembership.upsert({
+          where: {
+            cultId_creativeProfileId: {
+              cultId: invite.cultId,
+              creativeProfileId: profile.id,
+            },
+          },
+          create: {
+            cultId: invite.cultId,
+            creativeProfileId: profile.id,
+            role: CultMemberRole.MEMBER,
+            status: CultMembershipStatus.ACTIVE,
+          },
+          update: {
+            status: CultMembershipStatus.ACTIVE,
+            role: CultMemberRole.MEMBER,
+            joinedAt: new Date(),
+            leftAt: null,
+          },
+        });
+      });
+
+      return ApiResponse.success(
+        res,
+        { inviteId, action },
+        'Joined cult successfully'
+      );
+    } else {
+      await prisma.cultInvite.update({
+        where: { id: inviteId },
+        data: {
+          status: CultInviteStatus.DECLINED,
+          respondedAt: new Date(),
+        },
+      });
+
+      return ApiResponse.success(
+        res,
+        { inviteId, action },
+        'Invitation declined'
+      );
+    }
+  }
+);
+
+/**
+ * POST /cults/:cultId/invites
+ * Leader invites a creative to join the cult.
+ */
+export const createCultInviteHandler = asyncHandler(
+  async (req: Request, res: Response) => {
+    const cultId = String(req.params.cultId);
+    const actingProfile = await getOwnCreativeProfile(String(req.user!.id));
+    const { targetUsername, targetEmailId, message } = req.body;
+
+    await getCultOrThrow(cultId);
+    await assertIsLeader(cultId, actingProfile.id);
+
+    let targetProfile;
+    if (targetEmailId) {
+      const user = await prisma.user.findFirst({
+        where: {
+          email: { equals: String(targetEmailId), mode: 'insensitive' },
+        },
+        include: { creativeProfile: true },
+      });
+      targetProfile = user?.creativeProfile;
+    } else if (targetUsername) {
+      const user = await prisma.user.findFirst({
+        where: {
+          username: { equals: String(targetUsername), mode: 'insensitive' },
+        },
+        include: { creativeProfile: true },
+      });
+      targetProfile = user?.creativeProfile;
+    }
+
+    if (!targetProfile) {
+      throw new NotFoundError('Creative user not found');
+    }
+
+    const existingMember = await prisma.cultMembership.findUnique({
+      where: {
+        cultId_creativeProfileId: {
+          cultId,
+          creativeProfileId: targetProfile.id,
+        },
+      },
+    });
+
+    if (
+      existingMember &&
+      existingMember.status === CultMembershipStatus.ACTIVE
+    ) {
+      throw new ConflictError('User is already an active member of this cult');
+    }
+
+    const existingInvite = await prisma.cultInvite.findFirst({
+      where: {
+        cultId,
+        invitedProfileId: targetProfile.id,
+        status: CultInviteStatus.PENDING,
+      },
+    });
+
+    if (existingInvite) {
+      throw new ConflictError('A pending invite already exists for this user');
+    }
+
+    const newInvite = await prisma.cultInvite.create({
+      data: {
+        cultId,
+        invitedByUserId: String(req.user!.id),
+        invitedProfileId: targetProfile.id,
+        message: message ? String(message) : undefined,
+        status: CultInviteStatus.PENDING,
+      },
+    });
+
+    return ApiResponse.created(res, newInvite, 'Invite sent successfully');
   }
 );

@@ -13,11 +13,7 @@ export function useCreateCult(options?: {
   const createCultMutation = useMutation({
     mutationFn: (data: CreateCultData) => cultService.createCult(data),
     onSuccess: (newCult) => {
-      // Optimistically update or invalidate cults list in cache
-      queryClient.setQueryData<Cult[]>(['creative-cults'], (old) => {
-        return old ? [newCult, ...old] : [newCult];
-      });
-
+      queryClient.invalidateQueries({ queryKey: ['creative-cults'] });
       toast.success(`Cult "${newCult.name}" created successfully!`);
       options?.onSuccess?.(newCult);
     },

@@ -29,3 +29,27 @@ export const authenticate = async (
     next(error);
   }
 };
+
+/**
+ * Optional authentication middleware.
+ * Attaches user session if present, but does not block unauthenticated requests.
+ */
+export const optionalAuthenticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const sessionData = await auth.api.getSession({
+      headers: req.headers,
+    });
+
+    if (sessionData) {
+      req.session = sessionData;
+      req.user = sessionData.user;
+    }
+  } catch {
+    // Ignore error for optional authentication
+  }
+  next();
+};
