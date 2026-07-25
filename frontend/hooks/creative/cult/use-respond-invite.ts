@@ -39,5 +39,7 @@ export function useRespondInvite(options?: {
   return {
     respondToInvite: respondInviteMutation.mutate,
     isResponding: respondInviteMutation.isPending,
+    activeInviteId: respondInviteMutation.variables?.inviteId,
+    activeAction: respondInviteMutation.variables?.action,
   };
 }

@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { MapPin, Mail, Edit2, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { toast } from 'sonner';
 import AvailabilityToggle from './availability-toggle';
 import { AvailabilityStatus } from '@/types';
 
@@ -66,7 +67,9 @@ export default function ProfileHeader({
                 variant="secondary"
                 size="sm"
                 className="gap-2 font-mono text-xs uppercase tracking-wider"
-                onClick={() => alert('Edit profile functionality')}
+                onClick={() =>
+                  toast.info('Edit profile functionality coming soon')
+                }
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 Edit

@@ -273,3 +273,8 @@ html.lenis body {
   background: var(--muted);
   border-color: var(--border);
 }
+
+/* Ensure Sonner toasts render above all modal overlays and alert dialogs and have sharp contrast */
+[data-sonner-toaster] {
+  z-index: 999999 !important;
+}

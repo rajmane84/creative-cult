@@ -22,7 +22,7 @@ app.use(
       console.warn('Blocked by CORS:', origin);
       return callback(new Error('Not allowed by CORS'));
     },
-    methods: ['GET', 'POST', 'PATCH', 'PUT'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
   })
 );

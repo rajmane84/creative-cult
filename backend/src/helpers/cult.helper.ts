@@ -30,10 +30,32 @@ export async function getCultOrThrow(cultId: string) {
 }
 
 /**
- * Ensure the given creativeProfileId is an ACTIVE LEADER of the given cult.
+ * Ensure the given creativeProfileId is an ACTIVE OWNER of the given cult.
  * Returns the membership row if so, otherwise throws ForbiddenError.
  */
-export async function assertIsLeader(
+export async function assertIsOwner(cultId: string, creativeProfileId: string) {
+  const membership = await prisma.cultMembership.findUnique({
+    where: {
+      cultId_creativeProfileId: { cultId, creativeProfileId },
+    },
+  });
+
+  if (
+    !membership ||
+    membership.status !== CultMembershipStatus.ACTIVE ||
+    membership.role !== CultMemberRole.OWNER
+  ) {
+    throw new ForbiddenError('Only the cult owner can perform this action');
+  }
+
+  return membership;
+}
+
+/**
+ * Ensure the given creativeProfileId is an ACTIVE ADMIN or OWNER of the given cult.
+ * Returns the membership row if so, otherwise throws ForbiddenError.
+ */
+export async function assertIsAdminOrOwner(
   cultId: string,
   creativeProfileId: string
 ) {
@@ -46,9 +68,12 @@ export async function assertIsLeader(
   if (
     !membership ||
     membership.status !== CultMembershipStatus.ACTIVE ||
-    membership.role !== CultMemberRole.LEADER
+    (membership.role !== CultMemberRole.OWNER &&
+      membership.role !== CultMemberRole.ADMIN)
   ) {
-    throw new ForbiddenError('Only a cult leader can perform this action');
+    throw new ForbiddenError(
+      'Only a cult owner or admin can perform this action'
+    );
   }
 
   return membership;

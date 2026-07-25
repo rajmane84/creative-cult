@@ -11,7 +11,8 @@ import {
 
 export default function CultsPage() {
   const { cults, invites, isLoadingCults } = useCults();
-  const { respondToInvite, isResponding } = useRespondInvite();
+  const { respondToInvite, isResponding, activeInviteId, activeAction } =
+    useRespondInvite();
 
   const handleRespond = (inviteId: string, action: 'ACCEPT' | 'DECLINE') => {
     respondToInvite({ inviteId, action });
@@ -24,13 +25,18 @@ export default function CultsPage() {
         <CultHeader />
 
         {/* Pending Invites Section */}
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout">
           {invites.length > 0 && (
             <motion.div
+              key="pending-invites-container"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-3"
+              exit={{
+                opacity: 0,
+                height: 0,
+                transition: { duration: 0.35, ease: [0.76, 0, 0.24, 1] },
+              }}
+              className="space-y-3 overflow-hidden"
             >
               <div className="flex items-center justify-between">
                 <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -40,14 +46,21 @@ export default function CultsPage() {
               </div>
 
               <div className="space-y-3">
-                {invites.map((invite) => (
-                  <CultInviteCard
-                    key={invite.id}
-                    invite={invite}
-                    onRespond={handleRespond}
-                    isResponding={isResponding}
-                  />
-                ))}
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {invites.map((invite) => (
+                    <CultInviteCard
+                      key={invite.id}
+                      invite={invite}
+                      onRespond={handleRespond}
+                      isResponding={
+                        isResponding && activeInviteId === invite.id
+                      }
+                      activeAction={
+                        activeInviteId === invite.id ? activeAction : undefined
+                      }
+                    />
+                  ))}
+                </AnimatePresence>
               </div>
             </motion.div>
           )}
@@ -68,11 +81,24 @@ export default function CultsPage() {
               <div className="h-44 border border-border bg-card/50 animate-pulse" />
             </div>
           ) : cults.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-              {cults.map((cult) => (
-                <CultCard key={cult.id} cult={cult} />
-              ))}
-            </div>
+            <motion.div
+              layout
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6"
+            >
+              <AnimatePresence mode="popLayout">
+                {cults.map((cult) => (
+                  <motion.div
+                    key={cult.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                  >
+                    <CultCard cult={cult} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           ) : (
             <div className="flex flex-col items-center justify-center border border-dashed border-border bg-card p-12 text-center space-y-4">
               <div className="flex size-12 items-center justify-center border border-border bg-background text-muted-foreground">

@@ -1,4 +1,4 @@
-export type CultRole = 'LEADER' | 'MEMBER';
+export type CultRole = 'OWNER' | 'ADMIN' | 'MEMBER';
 
 export type CultInviteStatus =
   'PENDING' | 'ACCEPTED' | 'DECLINED' | 'REVOKED' | 'EXPIRED';

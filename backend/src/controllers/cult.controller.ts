@@ -17,7 +17,8 @@ import { MAX_CULTS_LED } from '../constants';
 import {
   getOwnCreativeProfile,
   getCultOrThrow,
-  assertIsLeader,
+  assertIsOwner,
+  assertIsAdminOrOwner,
   generateUniqueSlug,
 } from '../helpers/cult.helper';
 
@@ -39,14 +40,14 @@ export const createCultHandler = asyncHandler(
     const activeLeaderships = await prisma.cultMembership.count({
       where: {
         creativeProfileId: profile.id,
-        role: CultMemberRole.LEADER,
+        role: CultMemberRole.OWNER,
         status: CultMembershipStatus.ACTIVE,
       },
     });
 
     if (activeLeaderships >= MAX_CULTS_LED) {
       throw new ForbiddenError(
-        `You can only lead up to ${MAX_CULTS_LED} cults at a time`
+        `You can only own up to ${MAX_CULTS_LED} cults at a time`
       );
     }
 
@@ -80,7 +81,7 @@ export const createCultHandler = asyncHandler(
         data: {
           cultId: newCult.id,
           creativeProfileId: profile.id,
-          role: CultMemberRole.LEADER,
+          role: CultMemberRole.OWNER,
           status: CultMembershipStatus.ACTIVE,
         },
       });
@@ -206,8 +207,13 @@ export const getCultBySlugHandler = asyncHandler(
           (m) => m.creativeProfileId === profile.id
         );
         if (membership) {
-          userRole = membership.role;
+          userRole =
+            (membership.role as string) === 'LEADER'
+              ? CultMemberRole.OWNER
+              : membership.role;
           userMembershipId = membership.id;
+        } else if (cult.createdByUserId === String(req.user.id)) {
+          userRole = CultMemberRole.OWNER;
         }
       }
     }
@@ -233,7 +239,7 @@ export const updateCultHandler = asyncHandler(
     const profile = await getOwnCreativeProfile(String(req.user!.id));
 
     await getCultOrThrow(cultId);
-    await assertIsLeader(cultId, profile.id);
+    await assertIsAdminOrOwner(cultId, profile.id);
 
     const updated = await prisma.cult.update({
       where: { id: cultId },
@@ -246,18 +252,37 @@ export const updateCultHandler = asyncHandler(
 
 /**
  * DELETE /cults/:cultId
- * Leader-only disband. Hard delete — cascades to memberships/invites.
- * Swap for a soft-delete (isActive: false) once that field exists on Cult.
+ * Owner-only disband. Hard delete — cascades to memberships/invites.
  */
 export const disbandCultHandler = asyncHandler(
   async (req: Request, res: Response) => {
     const cultId = String(req.params.cultId);
     const profile = await getOwnCreativeProfile(String(req.user!.id));
 
-    await getCultOrThrow(cultId);
-    await assertIsLeader(cultId, profile.id);
+    const cult = await getCultOrThrow(cultId);
 
-    await prisma.cult.delete({ where: { id: cultId } });
+    const membership = await prisma.cultMembership.findUnique({
+      where: {
+        cultId_creativeProfileId: { cultId, creativeProfileId: profile.id },
+      },
+    });
+
+    const isOwner =
+      cult.createdByUserId === String(req.user!.id) ||
+      (membership &&
+        membership.status === CultMembershipStatus.ACTIVE &&
+        (membership.role === CultMemberRole.OWNER ||
+          (membership.role as string) === 'LEADER'));
+
+    if (!isOwner) {
+      throw new ForbiddenError('Only the cult owner can disband this cult');
+    }
+
+    await prisma.$transaction([
+      prisma.cultInvite.deleteMany({ where: { cultId } }),
+      prisma.cultMembership.deleteMany({ where: { cultId } }),
+      prisma.cult.delete({ where: { id: cultId } }),
+    ]);
 
     return ApiResponse.noContent(res);
   }
@@ -293,8 +318,7 @@ export const getCultMembersHandler = asyncHandler(
 
 /**
  * DELETE /cults/:cultId/members/:membershipId
- * Leader removes another member. Leaders cannot remove themselves this way —
- * they must use the /leave route instead.
+ * Owner or Admin removes a member. Cannot remove oneself or the owner.
  */
 export const removeCultMemberHandler = asyncHandler(
   async (req: Request, res: Response) => {
@@ -303,7 +327,10 @@ export const removeCultMemberHandler = asyncHandler(
     const actingProfile = await getOwnCreativeProfile(String(req.user!.id));
 
     await getCultOrThrow(cultId);
-    await assertIsLeader(cultId, actingProfile.id);
+    const actingMembership = await assertIsAdminOrOwner(
+      cultId,
+      actingProfile.id
+    );
 
     const targetMembership = await prisma.cultMembership.findUnique({
       where: { id: membershipId },
@@ -321,6 +348,21 @@ export const removeCultMemberHandler = asyncHandler(
       throw new ConflictError('Member is not currently active in this cult');
     }
 
+    if (targetMembership.role === CultMemberRole.OWNER) {
+      throw new ForbiddenError(
+        'The cult owner cannot be removed. Transfer ownership first.'
+      );
+    }
+
+    if (
+      actingMembership.role === CultMemberRole.ADMIN &&
+      targetMembership.role === CultMemberRole.ADMIN
+    ) {
+      throw new ForbiddenError(
+        'Admins cannot remove other admins. Only the owner can manage admins.'
+      );
+    }
+
     const updated = await prisma.cultMembership.update({
       where: { id: membershipId },
       data: { status: CultMembershipStatus.REMOVED, leftAt: new Date() },
@@ -332,7 +374,7 @@ export const removeCultMemberHandler = asyncHandler(
 
 /**
  * POST /cults/:cultId/members/:membershipId/leave
- * Self-leave. Blocks if the requester is the sole ACTIVE leader.
+ * Self-leave. Blocks if the requester is the sole OWNER.
  */
 export const leaveCultHandler = asyncHandler(
   async (req: Request, res: Response) => {
@@ -358,21 +400,10 @@ export const leaveCultHandler = asyncHandler(
       );
     }
 
-    if (membership.role === CultMemberRole.LEADER) {
-      const otherActiveLeaders = await prisma.cultMembership.count({
-        where: {
-          cultId,
-          role: CultMemberRole.LEADER,
-          status: CultMembershipStatus.ACTIVE,
-          id: { not: membership.id },
-        },
-      });
-
-      if (otherActiveLeaders === 0) {
-        throw new ConflictError(
-          'Promote another member to leader before leaving, or disband the cult'
-        );
-      }
+    if (membership.role === CultMemberRole.OWNER) {
+      throw new ConflictError(
+        'Transfer ownership to another member before leaving, or disband the cult'
+      );
     }
 
     const updated = await prisma.cultMembership.update({
@@ -386,7 +417,7 @@ export const leaveCultHandler = asyncHandler(
 
 /**
  * PATCH /cults/:cultId/members/:membershipId/role
- * Leader promotes/demotes a member. Blocks demoting the sole active leader.
+ * Owner manages member roles or transfers ownership.
  */
 export const updateMemberRoleHandler = asyncHandler(
   async (req: Request, res: Response) => {
@@ -396,7 +427,7 @@ export const updateMemberRoleHandler = asyncHandler(
     const actingProfile = await getOwnCreativeProfile(String(req.user!.id));
 
     await getCultOrThrow(cultId);
-    await assertIsLeader(cultId, actingProfile.id);
+    const actingOwnerMembership = await assertIsOwner(cultId, actingProfile.id);
 
     const targetMembership = await prisma.cultMembership.findUnique({
       where: { id: membershipId },
@@ -410,22 +441,33 @@ export const updateMemberRoleHandler = asyncHandler(
       throw new ConflictError('Member is not currently active in this cult');
     }
 
-    if (
-      targetMembership.role === CultMemberRole.LEADER &&
-      role === CultMemberRole.MEMBER
-    ) {
-      const otherActiveLeaders = await prisma.cultMembership.count({
-        where: {
-          cultId,
-          role: CultMemberRole.LEADER,
-          status: CultMembershipStatus.ACTIVE,
-          id: { not: targetMembership.id },
-        },
+    if (targetMembership.id === actingOwnerMembership.id) {
+      throw new BadRequestError(
+        'You cannot change your own role directly. Transfer ownership to another member.'
+      );
+    }
+
+    if (role === CultMemberRole.OWNER) {
+      // Single owner model: transfer ownership from current owner to target member
+      const updated = await prisma.$transaction(async (tx) => {
+        // Demote current owner to ADMIN
+        await tx.cultMembership.update({
+          where: { id: actingOwnerMembership.id },
+          data: { role: CultMemberRole.ADMIN },
+        });
+
+        // Promote target member to OWNER
+        return tx.cultMembership.update({
+          where: { id: membershipId },
+          data: { role: CultMemberRole.OWNER },
+        });
       });
 
-      if (otherActiveLeaders === 0) {
-        throw new ConflictError('Cult must have at least one active leader');
-      }
+      return ApiResponse.success(
+        res,
+        updated,
+        'Ownership transferred successfully'
+      );
     }
 
     const updated = await prisma.cultMembership.update({
@@ -607,7 +649,7 @@ export const createCultInviteHandler = asyncHandler(
     const { targetUsername, targetEmailId, message } = req.body;
 
     await getCultOrThrow(cultId);
-    await assertIsLeader(cultId, actingProfile.id);
+    await assertIsAdminOrOwner(cultId, actingProfile.id);
 
     let targetProfile;
     if (targetEmailId) {

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Users, Crown, ArrowUpRight, User } from 'lucide-react';
+import { Users, Crown, ArrowUpRight, User, Shield } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Badge } from '@/components/ui/badge';
 import type { Cult } from '@/types/creative/cult';
@@ -16,7 +16,8 @@ interface CultCardProps {
 const MotionLink = motion.create(Link);
 
 export function CultCard({ cult, href }: CultCardProps) {
-  const isLeader = cult.userRole === 'LEADER';
+  const isOwner = cult.userRole === 'OWNER';
+  const isAdmin = cult.userRole === 'ADMIN';
   const targetHref = href || `/dashboard/creative/cult/${cult.slug}`;
 
   return (
@@ -34,17 +35,21 @@ export function CultCard({ cult, href }: CultCardProps) {
           <Badge
             className={cn(
               'px-3 py-1 font-mono text-[10px] uppercase tracking-wider rounded-full border',
-              isLeader
+              isOwner
                 ? 'border-primary/40 bg-primary/10 text-primary selection:text-background selection:bg-primary font-semibold'
-                : 'border-border bg-muted text-muted-foreground'
+                : isAdmin
+                  ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-600 font-semibold'
+                  : 'border-border bg-muted text-muted-foreground'
             )}
           >
-            {isLeader ? (
+            {isOwner ? (
               <Crown className="size-3 mr-1" />
+            ) : isAdmin ? (
+              <Shield className="size-3 mr-1" />
             ) : (
               <User className="size-3 mr-1" />
             )}
-            {isLeader ? 'Leader' : 'Member'}
+            {isOwner ? 'Owner' : isAdmin ? 'Admin' : 'Member'}
           </Badge>
 
           <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">

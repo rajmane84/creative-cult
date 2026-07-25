@@ -18,10 +18,21 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useCultDetail, useCultActions } from '@/hooks/creative/cult';
+import { cn } from '@/lib/cn';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { InviteMemberModal } from '@/components/creative/cult';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function CultDetailPage({
   params,
@@ -33,6 +44,16 @@ export default function CultDetailPage({
   const router = useRouter();
 
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isDisbandDialogOpen, setIsDisbandDialogOpen] = useState(false);
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+  const [memberToTransferOwnership, setMemberToTransferOwnership] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const { cult, isLoading, isError } = useCultDetail(slug);
   const {
@@ -72,7 +93,10 @@ export default function CultDetailPage({
           The requested collective does not exist or may have been disbanded.
         </p>
         <Button variant="outline" className="cursor-pointer gap-2">
-          <Link href="/dashboard/creative/cult">
+          <Link
+            href="/dashboard/creative/cult"
+            className="flex items-center gap-2"
+          >
             <ArrowLeft className="size-4" />
             <span>Back to Cults</span>
           </Link>
@@ -81,32 +105,19 @@ export default function CultDetailPage({
     );
   }
 
-  const isLeader = cult.userRole === 'LEADER';
-  const isMember = cult.userRole === 'MEMBER' || isLeader;
+  const isOwner =
+    cult.userRole === 'OWNER' || (cult.userRole as string) === 'LEADER';
+  const isAdmin = cult.userRole === 'ADMIN';
+  const canManageInvites = isOwner || isAdmin;
+  const canDisband = isOwner;
 
   const handleDisband = () => {
-    if (
-      confirm(
-        `Are you sure you want to disband "${cult.name}"? This action cannot be undone.`
-      )
-    ) {
-      disbandCult(undefined, {
-        onSuccess: () => {
-          router.push('/dashboard/creative/cult');
-        },
-      });
-    }
+    setIsDisbandDialogOpen(true);
   };
 
   const handleLeave = () => {
     if (!cult.userMembershipId) return;
-    if (confirm(`Are you sure you want to leave "${cult.name}"?`)) {
-      leaveCult(cult.userMembershipId, {
-        onSuccess: () => {
-          router.push('/dashboard/creative/cult');
-        },
-      });
-    }
+    setIsLeaveDialogOpen(true);
   };
 
   return (
@@ -138,18 +149,23 @@ export default function CultDetailPage({
 
                   {cult.userRole && (
                     <Badge
-                      className={`px-3 py-1 font-mono text-[10px] uppercase tracking-wider rounded-full border ${
-                        isLeader
+                      className={cn(
+                        'px-3 py-1 font-mono text-[10px] uppercase tracking-wider rounded-full border',
+                        isOwner
                           ? 'border-primary/40 bg-primary/10 text-primary selection:text-background selection:bg-primary font-semibold'
-                          : 'border-border bg-muted text-muted-foreground'
-                      }`}
+                          : isAdmin
+                            ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-600 font-semibold'
+                            : 'border-border bg-muted text-muted-foreground'
+                      )}
                     >
-                      {isLeader ? (
+                      {isOwner ? (
                         <Crown className="size-3 mr-1" />
+                      ) : isAdmin ? (
+                        <Shield className="size-3 mr-1" />
                       ) : (
                         <User className="size-3 mr-1" />
                       )}
-                      {isLeader ? 'Leader' : 'Member'}
+                      {isOwner ? 'Owner' : isAdmin ? 'Admin' : 'Member'}
                     </Badge>
                   )}
                 </div>
@@ -185,35 +201,34 @@ export default function CultDetailPage({
               </div>
             </div>
 
-            {/* Leader / Member Action Buttons */}
+            {/* Owner / Admin / Member Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 shrink-0 self-start md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-border/40 w-full md:w-auto">
-              {isLeader && (
-                <>
-                  <Button
-                    onClick={() => setIsInviteModalOpen(true)}
-                    className="cursor-pointer gap-2 flex-1 md:flex-none"
-                  >
-                    <UserPlus className="size-4" />
-                    <span>Invite Creative</span>
-                  </Button>
-
-                  <Button
-                    onClick={handleDisband}
-                    disabled={isDisbanding}
-                    variant="destructive"
-                    // className="cursor-pointer gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30 flex-1 md:flex-none"
-                  >
-                    {isDisbanding ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <Trash2 className="size-4" />
-                    )}
-                    <span>Disband Cult</span>
-                  </Button>
-                </>
+              {canManageInvites && (
+                <Button
+                  onClick={() => setIsInviteModalOpen(true)}
+                  className="cursor-pointer gap-2 flex-1 md:flex-none"
+                >
+                  <UserPlus className="size-4" />
+                  <span>Invite Creative</span>
+                </Button>
               )}
 
-              {!isLeader && isMember && cult.userMembershipId && (
+              {canDisband && (
+                <Button
+                  onClick={handleDisband}
+                  disabled={isDisbanding}
+                  variant="destructive"
+                >
+                  {isDisbanding ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-4" />
+                  )}
+                  <span>Disband Cult</span>
+                </Button>
+              )}
+
+              {cult.userMembershipId && (
                 <Button
                   onClick={handleLeave}
                   disabled={isLeaving}
@@ -257,7 +272,9 @@ export default function CultDetailPage({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
             {cult.memberships?.map((member) => {
               const memberUser = member.creativeProfile.user;
-              const isTargetLeader = member.role === 'LEADER';
+              const isTargetOwner = member.role === 'OWNER';
+              const isTargetAdmin = member.role === 'ADMIN';
+              const isSelf = member.id === cult.userMembershipId;
 
               return (
                 <div
@@ -282,14 +299,23 @@ export default function CultDetailPage({
                         <h4 className="font-editorial text-lg font-bold text-foreground truncate">
                           {memberUser.name}
                         </h4>
-                        {isTargetLeader && (
-                          <Badge
-                            variant="outline"
-                            className="px-2 py-0 font-mono text-[9px] uppercase border-primary/40 text-primary selection:text-background selection:bg-primary shrink-0"
-                          >
-                            Leader
-                          </Badge>
-                        )}
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'px-2 py-0 font-mono text-[9px] uppercase shrink-0',
+                            isTargetOwner
+                              ? 'border-primary/40 text-primary selection:text-background selection:bg-primary font-semibold'
+                              : isTargetAdmin
+                                ? 'border-cyan-500/40 text-cyan-600 font-semibold'
+                                : 'border-border text-muted-foreground'
+                          )}
+                        >
+                          {isTargetOwner
+                            ? 'Owner'
+                            : isTargetAdmin
+                              ? 'Admin'
+                              : 'Member'}
+                        </Badge>
                       </div>
 
                       {member.creativeProfile.headline && (
@@ -299,68 +325,112 @@ export default function CultDetailPage({
                       )}
 
                       <p className="font-mono text-[10px] text-muted-foreground">
-                        Joined {new Date(member.joinedAt).toLocaleDateString()}
+                        Joined{' '}
+                        {new Date(member.joinedAt).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })}
                       </p>
                     </div>
                   </div>
 
-                  {/* Leader Controls over members */}
-                  {isLeader &&
-                    member.creativeProfileId !== cult.createdBy?.id && (
-                      <div className="flex items-center gap-2 shrink-0">
-                        {isTargetLeader ? (
+                  {/* Roster Controls */}
+                  {!isSelf && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Owner Controls */}
+                      {isOwner && !isTargetOwner && (
+                        <>
                           <Button
                             size="sm"
-                            variant="ghost"
+                            variant="outline"
                             disabled={isUpdatingRole}
                             onClick={() =>
-                              updateMemberRole({
-                                membershipId: member.id,
-                                role: 'MEMBER',
+                              setMemberToTransferOwnership({
+                                id: member.id,
+                                name: memberUser.name,
                               })
                             }
-                            className="font-mono text-[10px] uppercase h-8 px-2 cursor-pointer"
-                            title="Demote to Member"
+                            className="font-mono text-[10px] uppercase h-8 px-2 cursor-pointer text-primary border-primary/30 hover:bg-primary/10 selection:text-background selection:bg-primary"
+                            title="Transfer Ownership"
                           >
-                            Demote
+                            <Crown className="size-3 mr-1" />
+                            Make Owner
                           </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            disabled={isUpdatingRole}
-                            onClick={() =>
-                              updateMemberRole({
-                                membershipId: member.id,
-                                role: 'LEADER',
-                              })
-                            }
-                            className="font-mono text-[10px] uppercase h-8 px-2 cursor-pointer text-primary selection:text-background selection:bg-primary"
-                            title="Promote to Leader"
-                          >
-                            <Shield className="size-3 mr-1" />
-                            Promote
-                          </Button>
-                        )}
 
+                          {isTargetAdmin ? (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              disabled={isUpdatingRole}
+                              onClick={() =>
+                                updateMemberRole({
+                                  membershipId: member.id,
+                                  role: 'MEMBER',
+                                })
+                              }
+                              className="font-mono text-[10px] uppercase h-8 px-2 cursor-pointer"
+                              title="Demote to Member"
+                            >
+                              Make Member
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              disabled={isUpdatingRole}
+                              onClick={() =>
+                                updateMemberRole({
+                                  membershipId: member.id,
+                                  role: 'ADMIN',
+                                })
+                              }
+                              className="font-mono text-[10px] uppercase h-8 px-2 cursor-pointer text-cyan-600 hover:bg-cyan-500/10"
+                              title="Promote to Admin"
+                            >
+                              <Shield className="size-3 mr-1" />
+                              Make Admin
+                            </Button>
+                          )}
+
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={isRemoving}
+                            onClick={() =>
+                              setMemberToRemove({
+                                id: member.id,
+                                name: memberUser.name,
+                              })
+                            }
+                            className="h-8 px-2 cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10"
+                            title="Remove Member"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </>
+                      )}
+
+                      {/* Admin Controls over Members */}
+                      {isAdmin && !isTargetOwner && !isTargetAdmin && (
                         <Button
                           size="sm"
                           variant="ghost"
                           disabled={isRemoving}
-                          onClick={() => {
-                            if (
-                              confirm(`Remove ${memberUser.name} from cult?`)
-                            ) {
-                              removeMember(member.id);
-                            }
-                          }}
+                          onClick={() =>
+                            setMemberToRemove({
+                              id: member.id,
+                              name: memberUser.name,
+                            })
+                          }
                           className="h-8 px-2 cursor-pointer text-destructive hover:text-destructive hover:bg-destructive/10"
                           title="Remove Member"
                         >
                           <Trash2 className="size-3.5" />
                         </Button>
-                      </div>
-                    )}
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -369,7 +439,7 @@ export default function CultDetailPage({
       </div>
 
       {/* Invite Member Modal */}
-      {isLeader && (
+      {canManageInvites && (
         <InviteMemberModal
           cultId={cult.id}
           cultSlug={cult.slug}
@@ -378,6 +448,177 @@ export default function CultDetailPage({
           onOpenChange={setIsInviteModalOpen}
         />
       )}
+
+      {/* Disband Cult Alert Dialog */}
+      <AlertDialog
+        open={isDisbandDialogOpen}
+        onOpenChange={setIsDisbandDialogOpen}
+      >
+        <AlertDialogContent className="bg-card border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-editorial text-xl font-bold text-foreground">
+              Disband Cult
+            </AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              Are you sure you want to disband &quot;{cult.name}&quot;? This
+              action cannot be undone and all cult membership data will be
+              removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={isDisbanding}
+              className="cursor-pointer"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isDisbanding}
+              onClick={() => {
+                disbandCult(undefined, {
+                  onSuccess: () => {
+                    setIsDisbandDialogOpen(false);
+                    router.push('/dashboard/creative/cult');
+                  },
+                });
+              }}
+              className="cursor-pointer gap-2"
+            >
+              {isDisbanding && <Loader2 className="size-4 animate-spin" />}
+              <span>Disband Cult</span>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Leave Cult Alert Dialog */}
+      <AlertDialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+        <AlertDialogContent className="bg-card border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-editorial text-xl font-bold text-foreground">
+              Leave Cult
+            </AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              Are you sure you want to leave &quot;{cult.name}&quot;? You will
+              lose access to team briefs and cult activities.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLeaving} className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isLeaving}
+              onClick={() => {
+                if (!cult.userMembershipId) return;
+                leaveCult(cult.userMembershipId, {
+                  onSuccess: () => {
+                    setIsLeaveDialogOpen(false);
+                    router.push('/dashboard/creative/cult');
+                  },
+                });
+              }}
+              className="cursor-pointer gap-2"
+            >
+              {isLeaving && <Loader2 className="size-4 animate-spin" />}
+              <span>Leave Cult</span>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Remove Member Alert Dialog */}
+      <AlertDialog
+        open={!!memberToRemove}
+        onOpenChange={(open) => {
+          if (!open) setMemberToRemove(null);
+        }}
+      >
+        <AlertDialogContent className="bg-card border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-editorial text-xl font-bold text-foreground">
+              Remove Member
+            </AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              Are you sure you want to remove {memberToRemove?.name} from &quot;
+              {cult.name}&quot;?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isRemoving} className="cursor-pointer">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={isRemoving}
+              onClick={() => {
+                if (!memberToRemove) return;
+                removeMember(memberToRemove.id, {
+                  onSuccess: () => {
+                    setMemberToRemove(null);
+                  },
+                });
+              }}
+              className="cursor-pointer gap-2"
+            >
+              {isRemoving && <Loader2 className="size-4 animate-spin" />}
+              <span>Remove Member</span>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Transfer Ownership Alert Dialog */}
+      <AlertDialog
+        open={!!memberToTransferOwnership}
+        onOpenChange={(open) => {
+          if (!open) setMemberToTransferOwnership(null);
+        }}
+      >
+        <AlertDialogContent className="bg-card border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-editorial text-xl font-bold text-foreground">
+              Transfer Cult Ownership
+            </AlertDialogTitle>
+            <AlertDialogDescription className="font-body text-sm text-muted-foreground">
+              Are you sure you want to transfer ownership of &quot;{cult.name}
+              &quot; to {memberToTransferOwnership?.name}? You will become an
+              Admin of the cult.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={isUpdatingRole}
+              className="cursor-pointer"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={isUpdatingRole}
+              onClick={() => {
+                if (!memberToTransferOwnership) return;
+                updateMemberRole(
+                  {
+                    membershipId: memberToTransferOwnership.id,
+                    role: 'OWNER',
+                  },
+                  {
+                    onSuccess: () => {
+                      setMemberToTransferOwnership(null);
+                    },
+                  }
+                );
+              }}
+              className="cursor-pointer gap-2"
+            >
+              {isUpdatingRole && <Loader2 className="size-4 animate-spin" />}
+              <span>Transfer Ownership</span>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
