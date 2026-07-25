@@ -25,6 +25,11 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
+    // 204 No Content and 205 Reset Content responses have no body
+    if (response.status === 204 || response.status === 205) {
+      return response;
+    }
+
     // If response indicates failure, throw an error
     if (!isSuccessResponse(response.data)) {
       const errorResponse = response.data as ErrorResponse;
