@@ -90,6 +90,17 @@ enum JoinAs {
   CLIENT
 }
 
+enum PortfolioOwnerType {
+  FREELANCER
+  CULT
+}
+
+enum PortfolioCreditStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
 
 // ---------------------- Schemas -----------------------------
 
@@ -137,6 +148,9 @@ model CreativeProfile {
   cultMemberships CultMembership[]
   cultInvites     CultInvite[]
 
+  ownedPortfolioItems PortfolioItem[]
+  portfolioCredits    PortfolioItemCredit[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -177,6 +191,8 @@ model Cult {
   memberships CultMembership[]
   invites     CultInvite[]
   // applications Application[]  // add once client-contacts-cult flow is built
+
+  portfolioItems PortfolioItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -222,6 +238,56 @@ model CultInvite {
 
   @@index([invitedProfileId])
   @@index([cultId])
+}
+
+model PortfolioItem {
+  id            String             @id @default(cuid())
+  title         String
+  description   String?
+  coverImageUrl String?
+  mediaUrls     String[]
+  tags          String[]
+  projectDate   DateTime?
+  ownerType     PortfolioOwnerType
+
+  // Ownership is exclusive: exactly one of these two is set, enforced by a
+  // DB-level CHECK constraint (see migration) so a project can never be
+  // orphaned or double-owned.
+  ownerCreativeProfileId String?
+  ownerCreativeProfile   CreativeProfile? @relation(fields: [ownerCreativeProfileId], references: [id], onDelete: Cascade)
+
+  ownerCultId String?
+  ownerCult   Cult?   @relation(fields: [ownerCultId], references: [id], onDelete: Cascade)
+
+  credits PortfolioItemCredit[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerCreativeProfileId])
+  @@index([ownerCultId])
+}
+
+// Contributor tagging. Separate from ownership: credits decide *visibility*
+// (can show on many profiles at once), ownership decides *edit/delete rights*
+// (always exactly one owner). A credit only appears on the credited
+// creative's profile once they accept it — see PortfolioCreditStatus.
+model PortfolioItemCredit {
+  id     String                @id @default(cuid())
+  role   String?
+  status PortfolioCreditStatus @default(PENDING)
+
+  portfolioItemId String
+  portfolioItem   PortfolioItem @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
+
+  creativeProfileId String
+  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
+
+  respondedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@unique([portfolioItemId, creativeProfileId])
+  @@index([creativeProfileId])
 }
 
 model Experience {
