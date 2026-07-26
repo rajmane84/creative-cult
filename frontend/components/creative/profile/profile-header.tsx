@@ -1,11 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { MapPin, Mail, Edit2, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { MapPin, Mail, CheckCircle2, ShieldAlert } from 'lucide-react';
 import AvailabilityToggle from './availability-toggle';
-import { EditAboutDialog } from './edit-about-dialog';
 import { AvailabilityStatus } from '@/types';
 import { cn } from '@/lib/cn';
 
@@ -31,10 +28,8 @@ export default function ProfileHeader({
   profile,
   onAvailabilityChange,
 }: ProfileHeaderProps) {
-  const [isEditOpen, setIsEditOpen] = useState(false);
-
   return (
-    <div className="border-b border-border pb-10 md:pb-14">
+    <div className="pb-10 md:pb-14">
       <div className="grid grid-cols-12 gap-6 md:gap-8 items-start">
         {/* Avatar - Left column */}
         <div className="col-span-12 md:col-span-3">
@@ -68,15 +63,6 @@ export default function ProfileHeader({
             </div>
 
             <div className="flex flex-col items-end gap-3 shrink-0">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="gap-2 font-mono text-xs uppercase tracking-wider"
-                onClick={() => setIsEditOpen(true)}
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                Edit
-              </Button>
               <AvailabilityToggle
                 currentStatus={profile.availability}
                 onStatusChange={onAvailabilityChange}
@@ -127,13 +113,6 @@ export default function ProfileHeader({
           </div>
         </div>
       </div>
-
-      <EditAboutDialog
-        open={isEditOpen}
-        onOpenChange={setIsEditOpen}
-        headline={profile.headline}
-        bio={profile.bio}
-      />
     </div>
   );
 }

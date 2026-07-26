@@ -1,6 +1,7 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/creative/profile/use-profile';
 import {
   ProfileHeader,
@@ -13,7 +14,7 @@ import {
 import { EmailVerificationCard } from '@/components/auth/email-verification-card';
 
 export default function CreativeProfilePage() {
-  const { data: profileData, isLoading, error } = useProfile();
+  const { data: profileData, isLoading, error, refetch } = useProfile();
 
   if (isLoading) {
     return (
@@ -30,14 +31,26 @@ export default function CreativeProfilePage() {
 
   if (error || !profileData) {
     return (
-      <div className="w-full py-12 px-4 sm:px-6 lg:px-8">
-        <div className="border-b border-border pb-8">
-          <h2 className="font-display text-4xl font-bold tracking-tight mb-4">
-            Error loading profile
-          </h2>
-          <p className="font-editorial text-xl opacity-70">
-            Failed to load your profile data. Please try again later.
-          </p>
+      <div className="w-full bg-background min-h-[70vh] p-6 sm:p-10 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-center max-w-sm">
+          <AlertCircle className="size-8 text-muted-foreground" />
+          <div className="space-y-1.5">
+            <h2 className="font-editorial text-2xl font-bold text-foreground">
+              Couldn&apos;t load your profile
+            </h2>
+            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              Something went wrong. Please try again.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="mt-2 gap-1.5 font-mono text-xs uppercase tracking-wider"
+          >
+            <RefreshCw className="size-3.5" />
+            Try Again
+          </Button>
         </div>
       </div>
     );
@@ -76,7 +89,7 @@ export default function CreativeProfilePage() {
         isVerified={user.emailVerified ?? false}
       />
 
-      <div className="space-y-0">
+      <div className="space-y-12 md:space-y-16">
         <ProfileAbout
           headline={creativeProfile.headline || ''}
           bio={creativeProfile.bio || ''}
