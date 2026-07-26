@@ -217,7 +217,8 @@ html.lenis body {
 /* Custom underline animation */
 .link-line {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
 .link-line::after {
   content: '';
