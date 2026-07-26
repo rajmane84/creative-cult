@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
+@import 'lenis/dist/lenis.css';
 
 @theme inline {
   --color-background: var(--background);
@@ -143,12 +144,13 @@
   }
   html {
     font-family: var(--font-body);
-    overflow-x: hidden;
+    overflow-x: clip;
     scrollbar-gutter: stable;
   }
   body {
     @apply bg-background text-foreground;
-    overflow-x: hidden;
+    overflow-x: clip;
+    min-height: 100vh;
   }
 }
 

@@ -38,14 +38,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased`}>
+    <html lang="en" className="antialiased">
       <body
         className={cn(
           anton.variable,
           manrope.variable,
           syne.variable,
           jetbrainsMono.variable,
-          'min-h-full flex flex-col font-sans'
+          'min-h-screen flex flex-col font-sans'
         )}
       >
         <Providers>
