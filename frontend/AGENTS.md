@@ -265,6 +265,10 @@ class ApiError extends Error {
 7. **Authentication ready** - `withCredentials: true` ensures cookies are sent for better-auth sessions
 8. **Use ApiError class** - Catch `ApiError` instances for backend-specific error handling
 
+## Complete Feature Deletion
+
+- When instructed to remove a feature, view mode, or component, proactively and completely remove all associated code across the entire codebase—including state variables, handlers, props, services, hooks, Zod schemas, TypeScript types, and dedicated components or sub-components. Never keep them as a fallback for the user to manually delete.
+
 ## When in Doubt
 
 1. Check existing files for current patterns

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, LayoutGroup } from 'motion/react';
 import { MOCK_CULTS, MOCK_FREELANCERS, DiscoverItem } from './mock-data';
 import { DiscoverHeader } from './discover-header';
@@ -186,11 +186,11 @@ export function DiscoverView() {
             <SearchX className="w-12 h-12 text-muted-foreground mx-auto" />
             <div className="space-y-1">
               <h3 className="font-editorial text-2xl font-bold text-foreground">
-                No matching visionaries found
+                No matching results found
               </h3>
               <p className="font-mono text-xs text-muted-foreground">
-                We couldn&apos;t find any cults or freelancers matching your
-                current search criteria.
+                We couldn&apos;t find any collectives or freelancers matching
+                your current filters.
               </p>
             </div>
             <Button

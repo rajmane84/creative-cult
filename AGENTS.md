@@ -94,3 +94,4 @@ When building new features, always adhere to the following strictly separated fl
 ## Code Quality & Cleanup
 
 - **Remove Unused Code**: If you find any unused variables, imports, components, or functions while working in a file, proactively remove them to keep the codebase clean. Never leave dead code behind.
+- **Complete Feature Deletion**: When instructed to remove a feature, view mode, or component, proactively and completely remove all associated code across the entire codebase—including state variables, handlers, props, services, hooks, Zod schemas, TypeScript types, and dedicated components or sub-components. Never keep them as a fallback for the user to manually delete.

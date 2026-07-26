@@ -19,12 +19,32 @@ const springTransition = {
   damping: 30,
 } as const;
 
+function AvailabilityBadge({ isAvailable }: { isAvailable: boolean }) {
+  return (
+    <span
+      className={cn(
+        'font-mono text-[9px] uppercase font-semibold tracking-[0.08em] px-2.5 py-0.5 flex items-center gap-1.5 whitespace-nowrap border bg-background/95',
+        isAvailable ? 'text-[var(--success)]' : 'text-muted-foreground'
+      )}
+    >
+      <span
+        className={cn(
+          'w-1.5 h-1.5 rounded-full shrink-0',
+          isAvailable ? 'bg-[var(--success)]' : 'bg-muted-foreground/60'
+        )}
+      />
+      {isAvailable ? 'AVAILABLE' : 'BOOKING AHEAD'}
+    </span>
+  );
+}
+
 export function FreelancerDiscoverCard({
   freelancer,
   href,
 }: FreelancerDiscoverCardProps) {
   const isAvailable = freelancer.availability === 'AVAILABLE';
   const targetHref = href || `/discover/freelancer/${freelancer.username}`;
+  const heroImage = freelancer.portfolio[0]?.image ?? null;
 
   return (
     <motion.div
@@ -34,130 +54,112 @@ export function FreelancerDiscoverCard({
     >
       <Link
         href={targetHref}
-        className="group relative border border-border bg-card overflow-hidden hover:border-foreground transition-colors cursor-pointer w-full flex flex-col h-full justify-between min-w-0"
+        className="group relative border border-border bg-card overflow-hidden hover:border-foreground transition-colors cursor-pointer w-full flex flex-col h-full min-w-0"
       >
-        {/* Main Details Body */}
-        <motion.div
-          layout
-          transition={springTransition}
-          className="flex flex-col w-full min-w-0"
-        >
-          {/* Header Profile Section */}
-          <motion.div
-            layout
-            transition={springTransition}
-            className="space-y-3 min-w-0 p-5 border-b border-border bg-background/50"
-          >
-            <div className="flex items-start justify-between min-w-0">
-              <div className="flex items-center gap-3 min-w-0">
-                <Avatar className="border-2 border-border shrink-0 w-14 h-14">
-                  <AvatarImage
-                    src={freelancer.avatarUrl}
-                    alt={freelancer.name}
-                  />
-                  <AvatarFallback className="font-mono text-sm font-bold">
-                    {freelancer.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+        {/* Hero image — first portfolio piece, same dimensions as cult card */}
+        <div className="relative h-48 sm:h-52 w-full overflow-hidden border-b border-border shrink-0">
+          {heroImage ? (
+            <img
+              src={heroImage}
+              alt={`${freelancer.name}'s work`}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+              <Avatar className="w-20 h-20 border-2 border-border">
+                <AvatarImage src={freelancer.avatarUrl} alt={freelancer.name} />
+                <AvatarFallback className="font-mono font-bold">
+                  {freelancer.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <h3 className="font-editorial text-xl sm:text-2xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors truncate">
-                      {freelancer.name}
-                    </h3>
-                  </div>
+          {/* Availability badge — same solid-bg treatment as cult card */}
+          <div className="absolute top-3 right-3">
+            <AvailabilityBadge isAvailable={isAvailable} />
+          </div>
 
-                  <p className="font-mono text-xs text-muted-foreground truncate">
-                    @{freelancer.username}
-                  </p>
+          {/* Avatar + location — mirrors cult card's location overlay */}
+          <div className="absolute bottom-3 left-3 flex items-center gap-2">
+            <Avatar className="w-8 h-8 border border-white/40 shrink-0">
+              <AvatarImage src={freelancer.avatarUrl} alt={freelancer.name} />
+              <AvatarFallback className="font-mono text-[9px] bg-background">
+                {freelancer.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="font-mono text-[10px] uppercase text-white/90">
+              📍 {freelancer.location}
+            </span>
+          </div>
+        </div>
 
-                  <div className="flex items-center gap-1 font-mono text-[10px] text-muted-foreground mt-0.5 min-w-0">
-                    <span className="truncate">📍 {freelancer.location}</span>
-                  </div>
-                </div>
-              </div>
-
-              <span
-                className={cn(
-                  'status-tag text-[9px] shrink-0 ml-2',
-                  isAvailable ? 'status-tag--positive' : 'status-tag--neutral'
-                )}
-              >
-                {isAvailable ? 'AVAILABLE' : 'BUSY'}
-              </span>
+        {/* Content — same zone layout as cult card */}
+        <div className="flex flex-col flex-1 min-w-0">
+          <div className="p-5 space-y-2 flex-1 min-w-0">
+            {/* Name + handle */}
+            <div>
+              <h3 className="font-editorial text-xl sm:text-2xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors truncate">
+                {freelancer.name}
+              </h3>
+              <p className="font-mono text-[10px] text-muted-foreground">
+                @{freelancer.username}
+              </p>
             </div>
 
+            {/* Headline — parallel to cult tagline */}
             <p className="font-body text-xs font-medium text-foreground leading-snug line-clamp-2">
               {freelancer.headline}
             </p>
-          </motion.div>
 
-          {/* Portfolio Thumbnail Preview Grid */}
-          <motion.div
-            layout
-            transition={springTransition}
-            className="p-4 space-y-3 min-w-0 overflow-hidden"
-          >
-            <div className="font-mono text-[10px] uppercase text-muted-foreground flex items-center justify-between">
-              <span>PORTFOLIO SNAPSHOT</span>
-              <span>{freelancer.portfolio.length} WORKS</span>
+            {/* Portfolio thumbnails — parallel to member roster */}
+            <div className="pt-2 space-y-1.5 min-w-0">
+              <div className="grid grid-cols-3 gap-1.5">
+                {freelancer.portfolio.slice(0, 3).map((item) => (
+                  <div
+                    key={item.id}
+                    className="relative h-14 overflow-hidden border border-border group-hover:border-foreground/40 transition-colors"
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-1.5 min-w-0">
-              {freelancer.portfolio.slice(0, 3).map((item) => (
-                <div
-                  key={item.id}
-                  className="relative h-16 overflow-hidden border border-border group-hover:border-foreground/40 transition-all"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              ))}
-            </div>
-
+            {/* Skill tags — same position as discipline tags on cult card */}
             <div className="flex flex-wrap gap-1 pt-1 min-w-0 overflow-hidden">
-              {freelancer.skills.slice(0, 3).map((skill) => (
+              {freelancer.skills.slice(0, 2).map((skill) => (
                 <span
                   key={skill}
-                  className="font-mono text-[9px] uppercase border border-border/80 bg-background px-2 py-0.5 text-muted-foreground truncate max-w-full"
+                  className="font-mono text-[9px] uppercase tracking-wider border border-border/80 bg-background px-2 py-0.5 text-foreground font-medium"
                 >
                   {skill}
                 </span>
               ))}
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
 
-        {/* Footer Info Bar */}
-        <motion.div
-          layout
-          transition={springTransition}
-          className="px-5 py-3 border-t border-border bg-background flex items-center justify-between font-mono text-xs min-w-0 overflow-hidden"
-        >
-          <div>
-            <div className="flex items-baseline gap-1">
-              <span className="font-bold text-foreground text-sm sm:text-base font-mono">
-                {freelancer.dailyRate}
+          {/* Footer — identical structure to cult card footer */}
+          <div className="px-5 py-3 border-t border-border bg-background flex items-center justify-between font-mono text-xs">
+            <span className="font-bold text-primary text-sm font-mono">
+              {freelancer.dailyRate}
+            </span>
+            <div className="flex items-center gap-1">
+              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+              <span className="font-bold text-foreground">
+                {freelancer.rating}
               </span>
-              <span className="font-mono text-[9px] text-muted-foreground">
-                /day
+              <span className="text-muted-foreground text-[10px]">
+                ({freelancer.reviewCount})
               </span>
             </div>
           </div>
-
-          <div className="flex items-center gap-1 font-mono text-xs">
-            <Star className="w-3.5 h-3.5 fill-primary text-primary selection:text-background selection:bg-primary" />
-            <span className="font-bold text-foreground">
-              {freelancer.rating}
-            </span>
-            <span className="text-muted-foreground text-[10px]">
-              ({freelancer.reviewCount})
-            </span>
-          </div>
-        </motion.div>
+        </div>
       </Link>
     </motion.div>
   );
