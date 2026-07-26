@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Sparkles, ArrowUpRight, Star, ShieldCheck } from 'lucide-react';
+import { Sparkles, ArrowUpRight, Star } from 'lucide-react';
 import { MOCK_CULTS, MOCK_FREELANCERS } from './mock-data';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -49,23 +48,18 @@ export function DiscoverSpotlight() {
                   alt={featuredCult.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
-                {/* Badges on image */}
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                {/* Badge on image */}
+                <div className="absolute top-4 left-4">
                   <Badge className="bg-primary text-primary-foreground border-none font-mono text-[10px] uppercase tracking-widest px-3 py-1 selection:text-background selection:bg-primary">
-                    FEATURED CULT
+                    FEATURED COLLECTIVE
                   </Badge>
-
-                  <div className="flex items-center gap-1 bg-background/90 backdrop-blur-sm border border-border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-foreground">
-                    <ShieldCheck className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
-                    <span>VERIFIED COLLECTIVE</span>
-                  </div>
                 </div>
 
-                {/* Title & Tagline overlay */}
-                <div className="absolute bottom-4 left-4 right-4 text-white space-y-1">
-                  <div className="flex items-center gap-2">
+                {/* Title & Location overlay */}
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-editorial text-2xl sm:text-4xl font-bold tracking-tight text-white">
                       {featuredCult.name}
                     </h3>
@@ -73,19 +67,16 @@ export function DiscoverSpotlight() {
                       {featuredCult.location}
                     </span>
                   </div>
-                  <p className="font-editorial text-sm sm:text-base text-white/90 line-clamp-1 max-w-xl">
-                    {featuredCult.tagline}
-                  </p>
                 </div>
               </div>
 
               {/* Bottom info section */}
-              <div className="p-5 sm:p-6 space-y-4">
-                {/* Quote Banner */}
+              <div className="p-5 sm:p-6 space-y-5">
+                {/* Editorial pull quote */}
                 {featuredCult.featuredQuote && (
-                  <p className="font-editorial text-sm sm:text-base italic text-foreground border-l-2 border-primary pl-3 py-0.5">
+                  <blockquote className="font-editorial text-xl sm:text-2xl italic text-foreground leading-snug text-wrap-pretty">
                     &ldquo;{featuredCult.featuredQuote}&rdquo;
-                  </p>
+                  </blockquote>
                 )}
 
                 {/* Roster & Stats Row */}
@@ -106,7 +97,7 @@ export function DiscoverSpotlight() {
                       ))}
                     </div>
                     <span className="font-mono text-xs font-semibold text-foreground">
-                      {featuredCult.members.length} Visionaries
+                      {featuredCult.members.length} Members
                     </span>
                   </div>
 
@@ -136,7 +127,7 @@ export function DiscoverSpotlight() {
                       size="sm"
                       className="font-mono text-[10px] uppercase tracking-wider group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors"
                     >
-                      <span>Inspect Cult</span>
+                      <span>View Work</span>
                       <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
                     </Button>
                   </div>

@@ -1,14 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Search,
-  X,
-  Grid,
-  List,
-  SlidersHorizontal,
-  ArrowUpDown,
-} from 'lucide-react';
+import { Search, X, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { CATEGORIES } from './mock-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,7 +16,6 @@ import {
 } from '@/components/ui/select';
 
 export type TabType = 'ALL' | 'CULTS' | 'FREELANCERS';
-export type ViewMode = 'GRID' | 'LIST';
 export type SortOption =
   'FEATURED' | 'RATING' | 'PRICE_LOW' | 'PRICE_HIGH' | 'PROJECTS';
 
@@ -36,8 +28,6 @@ interface DiscoverFiltersProps {
   setSelectedCategory: (category: string) => void;
   availabilityFilter: string;
   setAvailabilityFilter: (status: string) => void;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
   sortBy: SortOption;
   setSortBy: (sort: SortOption) => void;
   totalCultsCount: number;
@@ -54,8 +44,6 @@ export function DiscoverFilters({
   setSelectedCategory,
   availabilityFilter,
   setAvailabilityFilter,
-  viewMode,
-  setViewMode,
   sortBy,
   setSortBy,
   totalCultsCount,
@@ -68,9 +56,12 @@ export function DiscoverFilters({
     availabilityFilter !== 'ALL';
 
   return (
-    <div className="space-y-6 border-b border-border bg-background px-4 sm:px-6 md:px-10 lg:px-12 py-6 w-full">
+    <div
+      className="space-y-6 border-b border-border bg-card px-4 sm:px-6 md:px-10 lg:px-12 py-6 w-full"
+      style={{ borderTop: '2px solid var(--primary)' }}
+    >
       <div className="w-full space-y-5">
-        {/* Main Bar: Tabs, Search & View Controls */}
+        {/* Main Bar: Tabs, Search & Sort Controls */}
         <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* Tab Switcher */}
           <div className="flex items-center border border-border bg-card p-1">
@@ -98,7 +89,7 @@ export function DiscoverFilters({
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              <span>Cults</span>
+              <span>Collectives</span>
               <span className="font-mono text-[10px] px-1.5 py-0.2 bg-background text-foreground border border-border">
                 {totalCultsCount}
               </span>
@@ -141,21 +132,21 @@ export function DiscoverFilters({
             )}
           </div>
 
-          {/* Sort & View Mode Switcher */}
+          {/* Sort Controls */}
           <div className="flex items-center gap-3">
             {/* Sort Dropdown */}
-            <div className="w-52">
+            <div className="w-56">
               <Select
                 value={sortBy}
                 onValueChange={(val) => setSortBy(val as SortOption)}
               >
-                <SelectTrigger className="h-11 border border-border bg-card font-mono text-xs uppercase tracking-wider rounded-none">
+                <SelectTrigger className="h-11 w-full border border-border bg-card font-mono text-xs uppercase tracking-wider rounded-none">
                   <div className="flex items-center gap-1.5 truncate">
                     <ArrowUpDown className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary shrink-0" />
                     <SelectValue placeholder="Sort By" />
                   </div>
                 </SelectTrigger>
-                <SelectContent className="border border-border bg-card font-mono text-xs uppercase rounded-none z-50">
+                <SelectContent className="border border-border bg-card font-mono text-xs uppercase rounded-none z-50 shadow-lg min-w-56">
                   <SelectItem value="FEATURED">Featured First</SelectItem>
                   <SelectItem value="RATING">Highest Rating</SelectItem>
                   <SelectItem value="PROJECTS">Most Projects</SelectItem>
@@ -167,34 +158,6 @@ export function DiscoverFilters({
                   </SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center border border-border bg-card p-1">
-              <button
-                onClick={() => setViewMode('GRID')}
-                title="Grid View"
-                className={cn(
-                  'p-2 transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center',
-                  viewMode === 'GRID'
-                    ? 'bg-foreground text-background'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <Grid className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('LIST')}
-                title="List View"
-                className={cn(
-                  'p-2 transition-colors min-h-[38px] min-w-[38px] flex items-center justify-center',
-                  viewMode === 'LIST'
-                    ? 'bg-foreground text-background'
-                    : 'text-muted-foreground hover:text-foreground'
-                )}
-              >
-                <List className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>

@@ -5,24 +5,17 @@ import { motion, LayoutGroup } from 'motion/react';
 import { MOCK_CULTS, MOCK_FREELANCERS, DiscoverItem } from './mock-data';
 import { DiscoverHeader } from './discover-header';
 import { DiscoverSpotlight } from './discover-spotlight';
-import {
-  DiscoverFilters,
-  TabType,
-  ViewMode,
-  SortOption,
-} from './discover-filters';
+import { DiscoverFilters, TabType, SortOption } from './discover-filters';
 import { CultDiscoverCard } from './cult-discover-card';
 import { FreelancerDiscoverCard } from './freelancer-discover-card';
 import { SearchX, RefreshCw, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/cn';
 
 export function DiscoverView() {
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Disciplines');
   const [availabilityFilter, setAvailabilityFilter] = useState('ALL');
-  const [viewMode, setViewMode] = useState<ViewMode>('GRID');
   const [sortBy, setSortBy] = useState<SortOption>('FEATURED');
 
   const handleClearFilters = () => {
@@ -141,8 +134,6 @@ export function DiscoverView() {
         setSelectedCategory={setSelectedCategory}
         availabilityFilter={availabilityFilter}
         setAvailabilityFilter={setAvailabilityFilter}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
         sortBy={sortBy}
         setSortBy={setSortBy}
         totalCultsCount={filteredCults.length}
@@ -151,7 +142,7 @@ export function DiscoverView() {
       />
 
       {/* Full-width Main Content Results Section */}
-      <section className="px-4 sm:px-6 md:px-10 lg:px-12 py-10 w-full space-y-6">
+      <section className="px-4 sm:px-6 md:px-10 lg:px-12 py-10 w-full min-w-0 overflow-hidden space-y-6">
         {/* Results Info Bar */}
         <div className="flex items-center justify-between font-mono text-xs text-muted-foreground uppercase border-b border-border/60 pb-3">
           <div className="flex items-center gap-2">
@@ -163,39 +154,24 @@ export function DiscoverView() {
           </div>
 
           <span className="hidden sm:inline-block">
-            CLICK ANY CARD TO VIEW FULL PROFILE & ESCROW DETAILS
+            ALL TRANSACTIONS ESCROW PROTECTED
           </span>
         </div>
 
-        {/* Results Grid / List with Motion LayoutGroup */}
+        {/* Results Grid with Motion LayoutGroup */}
         {displayItems.length > 0 ? (
           <LayoutGroup id="discover-grid-list">
             <motion.div
               layout
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className={cn(
-                'w-full',
-                viewMode === 'GRID'
-                  ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                  : 'flex flex-col gap-4'
-              )}
+              className="w-full min-w-0 overflow-hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             >
               {displayItems.map((item) => {
                 if (item.type === 'cult') {
-                  return (
-                    <CultDiscoverCard
-                      key={item.id}
-                      cult={item}
-                      viewMode={viewMode}
-                    />
-                  );
+                  return <CultDiscoverCard key={item.id} cult={item} />;
                 }
                 return (
-                  <FreelancerDiscoverCard
-                    key={item.id}
-                    freelancer={item}
-                    viewMode={viewMode}
-                  />
+                  <FreelancerDiscoverCard key={item.id} freelancer={item} />
                 );
               })}
             </motion.div>
