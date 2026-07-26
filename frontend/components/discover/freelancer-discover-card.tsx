@@ -6,7 +6,7 @@ import { motion } from 'motion/react';
 import { FreelancerDiscoverItem } from './mock-data';
 import { Star } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { cn } from '@/lib/cn';
+import { AvailabilityBadge } from './availability-badge';
 
 interface FreelancerDiscoverCardProps {
   freelancer: FreelancerDiscoverItem;
@@ -18,25 +18,6 @@ const springTransition = {
   stiffness: 300,
   damping: 30,
 } as const;
-
-function AvailabilityBadge({ isAvailable }: { isAvailable: boolean }) {
-  return (
-    <span
-      className={cn(
-        'font-mono text-[9px] uppercase font-semibold tracking-[0.08em] px-2.5 py-0.5 flex items-center gap-1.5 whitespace-nowrap border bg-background/95',
-        isAvailable ? 'text-[var(--success)]' : 'text-muted-foreground'
-      )}
-    >
-      <span
-        className={cn(
-          'w-1.5 h-1.5 rounded-full shrink-0',
-          isAvailable ? 'bg-[var(--success)]' : 'bg-muted-foreground/60'
-        )}
-      />
-      {isAvailable ? 'AVAILABLE' : 'BOOKING AHEAD'}
-    </span>
-  );
-}
 
 export function FreelancerDiscoverCard({
   freelancer,
