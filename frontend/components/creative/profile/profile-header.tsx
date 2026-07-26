@@ -1,11 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { MapPin, Mail, Edit2, CheckCircle2, ShieldAlert } from 'lucide-react';
-import { toast } from 'sonner';
 import AvailabilityToggle from './availability-toggle';
+import { EditAboutDialog } from './edit-about-dialog';
 import { AvailabilityStatus } from '@/types';
+import { cn } from '@/lib/cn';
 
 interface ProfileHeaderProps {
   user: {
@@ -17,6 +19,7 @@ interface ProfileHeaderProps {
   };
   profile: {
     headline: string;
+    bio: string;
     location: string;
     availability: AvailabilityStatus | string;
   };
@@ -28,6 +31,8 @@ export default function ProfileHeader({
   profile,
   onAvailabilityChange,
 }: ProfileHeaderProps) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
     <div className="border-b border-border pb-10 md:pb-14">
       <div className="grid grid-cols-12 gap-6 md:gap-8 items-start">
@@ -67,9 +72,7 @@ export default function ProfileHeader({
                 variant="secondary"
                 size="sm"
                 className="gap-2 font-mono text-xs uppercase tracking-wider"
-                onClick={() =>
-                  toast.info('Edit profile functionality coming soon')
-                }
+                onClick={() => setIsEditOpen(true)}
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 Edit
@@ -82,8 +85,13 @@ export default function ProfileHeader({
           </div>
 
           {/* Headline - Editorial */}
-          <p className="font-editorial text-xl sm:text-2xl md:text-3xl leading-relaxed max-w-3xl opacity-90">
-            {profile.headline}
+          <p
+            className={cn(
+              'font-editorial text-xl sm:text-2xl md:text-3xl leading-relaxed max-w-3xl',
+              profile.headline ? 'opacity-90' : 'opacity-40 italic'
+            )}
+          >
+            {profile.headline || 'Add a headline to introduce yourself'}
           </p>
 
           {/* Metadata row */}
@@ -119,6 +127,13 @@ export default function ProfileHeader({
           </div>
         </div>
       </div>
+
+      <EditAboutDialog
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        headline={profile.headline}
+        bio={profile.bio}
+      />
     </div>
   );
 }

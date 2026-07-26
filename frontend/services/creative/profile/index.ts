@@ -6,6 +6,7 @@ import type {
   UpdateSkillsData,
   UpdateAvailabilityData,
   UpdateEducationData,
+  UpdateExperienceData,
 } from '@/types/creative/profile';
 
 export const profileService = {
@@ -39,6 +40,13 @@ export const profileService = {
     data: UpdateEducationData
   ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
     const response = await axios.patch('/profile/education', data);
+    return response.data as SuccessResponse<ProfileData['creativeProfile']>;
+  },
+
+  updateExperience: async (
+    data: UpdateExperienceData
+  ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
+    const response = await axios.patch('/profile/experience', data);
     return response.data as SuccessResponse<ProfileData['creativeProfile']>;
   },
 };

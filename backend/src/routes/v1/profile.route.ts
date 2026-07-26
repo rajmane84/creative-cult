@@ -5,12 +5,16 @@ import {
   updateProfileSchema,
   updateSkillsSchema,
   updateAvailabilitySchema,
+  updateEducationSchema,
+  updateExperienceSchema,
 } from '../../validations/profile';
 import {
   handleGetProfile,
   handleUpdateProfile,
   handleUpdateSkills,
   handleUpdateAvailability,
+  handleUpdateEducation,
+  handleUpdateExperience,
 } from '../../controllers/profile.controller';
 
 const router = Router();
@@ -34,6 +38,18 @@ router.patch(
   authenticate,
   validate(updateAvailabilitySchema),
   handleUpdateAvailability
+);
+router.patch(
+  '/education',
+  authenticate,
+  validate(updateEducationSchema),
+  handleUpdateEducation
+);
+router.patch(
+  '/experience',
+  authenticate,
+  validate(updateExperienceSchema),
+  handleUpdateExperience
 );
 
 export default router;

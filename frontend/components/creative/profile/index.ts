@@ -13,6 +13,9 @@ export * from './profile-experience';
 export { default as ProfileHeader } from './profile-header';
 export * from './profile-header';
 
+export { default as ProfilePortfolio } from './profile-portfolio';
+export * from './profile-portfolio';
+
 export { default as ProfileSkills } from './profile-skills';
 export * from './profile-skills';
 

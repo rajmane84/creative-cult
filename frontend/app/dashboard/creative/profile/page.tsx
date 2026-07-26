@@ -6,6 +6,9 @@ import {
   ProfileHeader,
   ProfileAbout,
   ProfileSkills,
+  ProfileExperience,
+  ProfileEducation,
+  ProfilePortfolio,
 } from '@/components/creative/profile';
 import { EmailVerificationCard } from '@/components/auth/email-verification-card';
 
@@ -27,7 +30,7 @@ export default function CreativeProfilePage() {
 
   if (error || !profileData) {
     return (
-      <div className="container max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full py-12 px-4 sm:px-6 lg:px-8">
         <div className="border-b border-border pb-8">
           <h2 className="font-display text-4xl font-bold tracking-tight mb-4">
             Error loading profile
@@ -50,7 +53,7 @@ export default function CreativeProfilePage() {
   }));
 
   return (
-    <div className="container max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-10">
+    <div className="w-full py-12 px-4 sm:px-6 lg:px-8 space-y-10">
       <ProfileHeader
         user={{
           name: user.name,
@@ -61,6 +64,7 @@ export default function CreativeProfilePage() {
         }}
         profile={{
           headline: creativeProfile.headline || '',
+          bio: creativeProfile.bio || '',
           location: creativeProfile.location || 'Not specified',
           availability: creativeProfile.availability,
         }}
@@ -72,18 +76,15 @@ export default function CreativeProfilePage() {
         isVerified={user.emailVerified ?? false}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 mt-8">
-        {/* Main content column */}
-        <div className="lg:col-span-8 space-y-0">
-          <ProfileAbout bio={creativeProfile.bio || ''} />
-        </div>
-
-        {/* Sidebar */}
-        <div className="lg:col-span-4">
-          <div className="lg:sticky lg:top-12 space-y-12">
-            <ProfileSkills skills={skills} />
-          </div>
-        </div>
+      <div className="space-y-0">
+        <ProfileAbout
+          headline={creativeProfile.headline || ''}
+          bio={creativeProfile.bio || ''}
+        />
+        <ProfileSkills skills={skills} />
+        <ProfileExperience experiences={creativeProfile.experiences} />
+        <ProfileEducation education={creativeProfile.education} />
+        <ProfilePortfolio />
       </div>
     </div>
   );

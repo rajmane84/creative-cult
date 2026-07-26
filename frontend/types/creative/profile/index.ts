@@ -102,3 +102,18 @@ export interface UpdateEducationData {
     yearOfGraduation: string;
   }>;
 }
+
+export interface UpdateExperienceData {
+  experiences: Array<{
+    id?: string;
+    title: string;
+    employmentType: EmploymentType;
+    companyName?: string;
+    industry?: string;
+    startDate: string;
+    endDate?: string;
+    currentlyWorking: boolean;
+    description?: string;
+    skills: string[];
+  }>;
+}

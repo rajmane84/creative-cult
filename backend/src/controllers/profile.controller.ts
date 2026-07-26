@@ -202,3 +202,99 @@ export const handleUpdateAvailability = asyncHandler(
     );
   }
 );
+
+export const handleUpdateEducation = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { education } = req.body;
+
+    const creativeProfile = await prisma.creativeProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!creativeProfile) {
+      throw new NotFoundError('Creative profile not found');
+    }
+
+    await prisma.$transaction([
+      prisma.education.deleteMany({
+        where: { creativeProfileId: creativeProfile.id },
+      }),
+      prisma.education.createMany({
+        data: education.map(
+          (edu: {
+            school: string;
+            degree: string;
+            fieldOfStudy: string;
+            country: string;
+            yearOfGraduation: string;
+          }) => ({
+            ...edu,
+            creativeProfileId: creativeProfile.id,
+          })
+        ),
+      }),
+    ]);
+
+    const updatedProfile = await prisma.creativeProfile.findUnique({
+      where: { id: creativeProfile.id },
+      include: { education: true },
+    });
+
+    return ApiResponse.success(
+      res,
+      updatedProfile,
+      'Education updated successfully'
+    );
+  }
+);
+
+export const handleUpdateExperience = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { experiences } = req.body;
+
+    const creativeProfile = await prisma.creativeProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!creativeProfile) {
+      throw new NotFoundError('Creative profile not found');
+    }
+
+    await prisma.$transaction([
+      prisma.experience.deleteMany({
+        where: { creativeProfileId: creativeProfile.id },
+      }),
+      prisma.experience.createMany({
+        data: experiences.map(
+          (exp: {
+            title: string;
+            employmentType: string;
+            companyName?: string;
+            industry?: string;
+            startDate: Date;
+            endDate?: Date;
+            currentlyWorking: boolean;
+            description?: string;
+            skills: string[];
+          }) => ({
+            ...exp,
+            creativeProfileId: creativeProfile.id,
+          })
+        ),
+      }),
+    ]);
+
+    const updatedProfile = await prisma.creativeProfile.findUnique({
+      where: { id: creativeProfile.id },
+      include: { experiences: true },
+    });
+
+    return ApiResponse.success(
+      res,
+      updatedProfile,
+      'Experience updated successfully'
+    );
+  }
+);
