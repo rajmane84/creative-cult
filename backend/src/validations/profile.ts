@@ -9,6 +9,10 @@ import {
 export const updateProfileSchema = z.object({
   headline: z.string('Headline is required').optional(),
   bio: z.string('Bio is required').optional(),
+  location: z
+    .string('Location is required')
+    .max(100, 'Location must be at most 100 characters')
+    .optional(),
   availability: z
     .enum(AvailabilityStatus, {
       error: (issue) =>

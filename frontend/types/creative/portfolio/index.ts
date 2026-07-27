@@ -51,7 +51,7 @@ export interface PortfolioItemCredit {
 export interface CreatePortfolioItemData {
   title: string;
   description?: string;
-  coverImageUrl?: string;
+  coverImageFile?: File;
   mediaUrls?: string[];
   tags?: string[];
   projectDate?: string;

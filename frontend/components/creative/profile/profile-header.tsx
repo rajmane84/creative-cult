@@ -1,10 +1,24 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MapPin, Mail, CheckCircle2, ShieldAlert } from 'lucide-react';
+import {
+  MapPin,
+  Mail,
+  CheckCircle2,
+  ShieldAlert,
+  Camera,
+  Loader2,
+  Plus,
+} from 'lucide-react';
 import AvailabilityToggle from './availability-toggle';
+import { EditLocationDialog } from './edit-location-dialog';
 import { AvailabilityStatus } from '@/types';
 import { cn } from '@/lib/cn';
+import { toast } from 'sonner';
+
+const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2MB
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 interface ProfileHeaderProps {
   user: {
@@ -21,30 +35,107 @@ interface ProfileHeaderProps {
     availability: AvailabilityStatus | string;
   };
   onAvailabilityChange?: (status: AvailabilityStatus) => void;
+  onAvatarChange?: (file: File) => void;
+  isAvatarUploading?: boolean;
 }
 
 export default function ProfileHeader({
   user,
   profile,
   onAvailabilityChange,
+  onAvatarChange,
+  isAvatarUploading,
 }: ProfileHeaderProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLocationEditOpen, setIsLocationEditOpen] = useState(false);
+
+  const handleAvatarButtonClick = () => {
+    if (isAvatarUploading) return;
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) return;
+
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      toast.error('Please upload a JPEG, PNG, or WebP image');
+      return;
+    }
+
+    if (file.size > MAX_AVATAR_SIZE) {
+      toast.error('Image must be smaller than 2MB');
+      return;
+    }
+
+    onAvatarChange?.(file);
+  };
+
   return (
     <div className="pb-10 md:pb-14">
       <div className="grid grid-cols-12 gap-6 md:gap-8 items-start">
         {/* Avatar - Left column */}
         <div className="col-span-12 md:col-span-3">
-          <Avatar className="h-32 w-32 md:h-40 md:w-40 border-2 border-border shadow-sm">
-            <AvatarImage
-              src={
-                user.image ||
-                `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
-              }
-              alt={user.name}
+          <button
+            type="button"
+            onClick={handleAvatarButtonClick}
+            disabled={isAvatarUploading || !onAvatarChange}
+            aria-busy={isAvatarUploading}
+            className={cn(
+              'group relative block h-32 w-32 md:h-40 md:w-40 rounded-full',
+              onAvatarChange &&
+                'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-full'
+            )}
+            aria-label="Change profile picture"
+          >
+            <Avatar
+              className={cn(
+                'h-32 w-32 md:h-40 md:w-40 border-2 border-border shadow-sm transition-opacity',
+                onAvatarChange &&
+                  'group-hover:opacity-90 group-focus-visible:opacity-90'
+              )}
+            >
+              <AvatarImage
+                src={
+                  user.image ||
+                  `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`
+                }
+                alt={user.name}
+              />
+              <AvatarFallback className="text-4xl font-display">
+                {user.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+
+            {onAvatarChange && (
+              <span
+                className={cn(
+                  'absolute bottom-0.5 right-0.5 md:bottom-1 md:right-1 z-10 flex h-9 w-9 md:h-10 md:w-10 items-center justify-center rounded-full bg-primary text-primary-foreground ring-4 ring-background shadow-md transition-[transform,background-color] duration-200 ease-out motion-safe:group-hover:scale-110 motion-safe:group-focus-visible:scale-110 group-hover:bg-primary/90 group-active:scale-95',
+                  isAvatarUploading && 'motion-safe:group-hover:scale-100'
+                )}
+              >
+                {isAvatarUploading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
+              </span>
+            )}
+          </button>
+
+          {onAvatarChange && (
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleAvatarFileChange}
+              className="hidden"
             />
-            <AvatarFallback className="text-4xl font-display">
-              {user.name.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          )}
         </div>
 
         {/* Main content - Right column */}
@@ -82,10 +173,25 @@ export default function ProfileHeader({
 
           {/* Metadata row */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-4 border-t border-border/60">
-            <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider opacity-70">
-              <MapPin className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
-              {profile.location}
-            </div>
+            {profile.location ? (
+              <button
+                type="button"
+                onClick={() => setIsLocationEditOpen(true)}
+                className="group flex items-center gap-2 font-mono text-xs uppercase tracking-wider opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                <MapPin className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                {profile.location}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsLocationEditOpen(true)}
+                className="flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add location
+              </button>
+            )}
 
             <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-wider opacity-80">
               <Mail className="w-4 h-4 text-muted-foreground" />
@@ -113,6 +219,12 @@ export default function ProfileHeader({
           </div>
         </div>
       </div>
+
+      <EditLocationDialog
+        open={isLocationEditOpen}
+        onOpenChange={setIsLocationEditOpen}
+        location={profile.location}
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { authenticate } from '../../middlewares/authMiddleware';
 import { requireCreative } from '../../middlewares/roleMiddleware';
 import { validate } from '../../middlewares/validate';
 import { emailVerificationMiddleware } from '../../middlewares/emailVerificationMiddleware';
+import { uploadPortfolioCover } from '../../util/multer';
 import {
   createPortfolioItemSchema,
   updatePortfolioItemSchema,
@@ -56,6 +57,7 @@ router.post(
   authenticate,
   emailVerificationMiddleware,
   requireCreative,
+  uploadPortfolioCover,
   validate(createPortfolioItemSchema),
   createPortfolioItemHandler
 );

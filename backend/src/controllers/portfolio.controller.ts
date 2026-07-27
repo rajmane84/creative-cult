@@ -4,6 +4,7 @@ import { prisma } from '../util/prisma';
 import { asyncHandler } from '../middlewares/asyncHandler';
 import { ApiResponse } from '../util/response/ApiResponse';
 import { ConflictError, NotFoundError } from '../util/errors/AppError';
+import { uploadToCloudinary } from '../util/cloudinary';
 import {
   getOwnCreativeProfile,
   getCultOrThrow,
@@ -70,11 +71,23 @@ export const createPortfolioItemHandler = asyncHandler(
       await assertIsAdminOrOwner(String(cultId), profile.id);
     }
 
+    let resolvedCoverImageUrl = coverImageUrl
+      ? String(coverImageUrl)
+      : undefined;
+    if (req.file) {
+      const uploadResult = await uploadToCloudinary(
+        req.file.buffer,
+        'portfolio',
+        'image'
+      );
+      resolvedCoverImageUrl = uploadResult.url;
+    }
+
     const item = await prisma.portfolioItem.create({
       data: {
         title: String(title),
         description: description ? String(description) : undefined,
-        coverImageUrl: coverImageUrl ? String(coverImageUrl) : undefined,
+        coverImageUrl: resolvedCoverImageUrl,
         mediaUrls: mediaUrls ?? [],
         tags: tags ?? [],
         projectDate: projectDate ?? undefined,

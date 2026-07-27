@@ -13,7 +13,17 @@ export const createPortfolioItemSchema = z
       .optional(),
     coverImageUrl: z.string().optional(),
     mediaUrls: z.array(z.string()).max(30, 'Too many media items').optional(),
-    tags: z.array(z.string()).max(20, 'Too many tags').optional(),
+    tags: z
+      .preprocess(
+        (value) =>
+          value === undefined
+            ? undefined
+            : Array.isArray(value)
+              ? value
+              : [value],
+        z.array(z.string()).max(20, 'Too many tags')
+      )
+      .optional(),
     projectDate: z.coerce.date().optional(),
     ownerType: z.enum(PortfolioOwnerType, {
       error: (issue) =>

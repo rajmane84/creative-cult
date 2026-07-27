@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2, Plus, X } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { ImagePlus, Loader2, Plus, X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -14,17 +15,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/cn';
 import { useCreatePortfolioItem } from '@/hooks/creative/portfolio';
+import Image from 'next/image';
 
 interface AddPortfolioItemDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+const MAX_COVER_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_COVER_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
 const EMPTY_FORM = {
   title: '',
   description: '',
-  coverImageUrl: '',
   projectDate: '',
 };
 
@@ -35,40 +40,100 @@ export function AddPortfolioItemDialog({
   const [form, setForm] = useState(EMPTY_FORM);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [isDraggingCover, setIsDraggingCover] = useState(false);
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const resetForm = () => {
+    setForm(EMPTY_FORM);
+    setTags([]);
+    setTagInput('');
+    setCoverFile(null);
+    setCoverPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setAttemptedSubmit(false);
+  };
 
   const { createPortfolioItem, isCreating } = useCreatePortfolioItem({
     onSuccess: () => {
       onOpenChange(false);
-      setForm(EMPTY_FORM);
-      setTags([]);
-      setTagInput('');
+      resetForm();
     },
   });
 
   const handleOpenChange = (next: boolean) => {
-    if (!next) {
-      setForm(EMPTY_FORM);
-      setTags([]);
-      setTagInput('');
-    }
+    if (!next) resetForm();
     onOpenChange(next);
+  };
+
+  const applyCoverFile = (file: File) => {
+    if (!ALLOWED_COVER_TYPES.includes(file.type)) {
+      toast.error('Please upload a JPEG, PNG, or WebP image');
+      return;
+    }
+    if (file.size > MAX_COVER_SIZE) {
+      toast.error('Image must be smaller than 5MB');
+      return;
+    }
+    setCoverFile(file);
+    setCoverPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+  };
+
+  const handleCoverInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (file) applyCoverFile(file);
+  };
+
+  const handleCoverDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingCover(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) applyCoverFile(file);
+  };
+
+  const handleRemoveCover = () => {
+    setCoverFile(null);
+    setCoverPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
   };
 
   const handleAddTag = () => {
     const value = tagInput.trim();
-    if (value.length < 2 || tags.includes(value)) return;
+    if (value.length < 2) return;
+    const isDuplicate = tags.some(
+      (tag) => tag.toLowerCase() === value.toLowerCase()
+    );
+    if (isDuplicate) {
+      setTagInput('');
+      return;
+    }
     setTags([...tags, value]);
     setTagInput('');
   };
 
+  const isTitleValid = form.title.trim().length > 0;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) return;
+    if (!isTitleValid) {
+      setAttemptedSubmit(true);
+      return;
+    }
 
     createPortfolioItem({
       title: form.title.trim(),
       description: form.description.trim() || undefined,
-      coverImageUrl: form.coverImageUrl.trim() || undefined,
+      coverImageFile: coverFile || undefined,
       projectDate: form.projectDate || undefined,
       tags,
       ownerType: 'FREELANCER',
@@ -99,27 +164,84 @@ export function AddPortfolioItemDialog({
               placeholder="e.g., Sangeet Night — The Mehta Wedding"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors"
+              className={cn(
+                'rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors',
+                attemptedSubmit && !isTitleValid && 'border-destructive'
+              )}
               autoFocus
             />
+            {attemptedSubmit && !isTitleValid && (
+              <p className="text-xs text-destructive">
+                Add a title so clients know what this project is.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label
-              htmlFor="pf-cover"
-              className="font-mono text-[11px] uppercase tracking-widest text-foreground block"
-            >
-              Cover Image URL
+            <Label className="font-mono text-[11px] uppercase tracking-widest text-foreground block">
+              Cover Image
             </Label>
-            <Input
-              id="pf-cover"
-              type="url"
-              placeholder="https://..."
-              value={form.coverImageUrl}
-              onChange={(e) =>
-                setForm({ ...form, coverImageUrl: e.target.value })
-              }
-              className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors"
+
+            {coverPreview ? (
+              <div className="relative aspect-[16/9] border border-border overflow-hidden group">
+                <Image
+                  src={coverPreview}
+                  alt="Cover preview"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  height={100}
+                  width={100}
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon-sm"
+                  onClick={handleRemoveCover}
+                  aria-label="Remove cover image"
+                  className="absolute top-2 right-2 bg-background/90"
+                >
+                  <X className="size-3.5" />
+                </Button>
+              </div>
+            ) : (
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => fileInputRef.current?.click()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDraggingCover(true);
+                }}
+                onDragLeave={() => setIsDraggingCover(false)}
+                onDrop={handleCoverDrop}
+                className={cn(
+                  'flex flex-col items-center justify-center gap-2 aspect-[16/9] border border-dashed cursor-pointer transition-colors',
+                  isDraggingCover
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border hover:border-primary/50 hover:bg-muted/40'
+                )}
+              >
+                <ImagePlus className="size-6 opacity-40" />
+                <p className="font-mono text-[11px] uppercase tracking-wider opacity-60 text-center px-4">
+                  Drag & drop, or click to upload
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  JPEG, PNG, or WebP · up to 5MB
+                </p>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleCoverInputChange}
+              className="hidden"
             />
           </div>
 
@@ -195,13 +317,19 @@ export function AddPortfolioItemDialog({
               <div className="flex flex-wrap gap-2 pt-2">
                 {tags.map((tag) => (
                   <span
-                    key={tag}
+                    key={tag.toLowerCase()}
                     className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-mono uppercase tracking-widest border border-border bg-muted"
                   >
                     {tag}
                     <button
                       type="button"
-                      onClick={() => setTags(tags.filter((t) => t !== tag))}
+                      onClick={() =>
+                        setTags(
+                          tags.filter(
+                            (t) => t.toLowerCase() !== tag.toLowerCase()
+                          )
+                        )
+                      }
                       className="opacity-50 hover:opacity-100 cursor-pointer"
                     >
                       <X className="size-3" />
@@ -212,23 +340,26 @@ export function AddPortfolioItemDialog({
             )}
           </div>
 
-          <DialogFooter className="pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleOpenChange(false)}
-              disabled={isCreating}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isCreating || !form.title.trim()}
-              className="gap-2"
-            >
-              {isCreating && <Loader2 className="size-4 animate-spin" />}
-              Add to Portfolio
-            </Button>
+          <DialogFooter className="pt-2 flex-col items-end gap-2 sm:flex-col">
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+                disabled={isCreating}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isCreating} className="gap-2">
+                {isCreating && <Loader2 className="size-4 animate-spin" />}
+                Add to Portfolio
+              </Button>
+            </div>
+            {attemptedSubmit && !isTitleValid && (
+              <p className="text-xs text-destructive">
+                Title is required before this can be added.
+              </p>
+            )}
           </DialogFooter>
         </form>
       </DialogContent>

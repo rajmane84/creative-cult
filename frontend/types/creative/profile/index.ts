@@ -78,6 +78,7 @@ export interface ProfileData {
 export interface UpdateProfileData {
   headline?: string;
   bio?: string;
+  location?: string;
   availability?: AvailabilityStatus;
 }
 

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authenticate } from '../../middlewares/authMiddleware';
 import { validate } from '../../middlewares/validate';
+import { uploadAvatar } from '../../util/multer';
 import {
   updateProfileSchema,
   updateSkillsSchema,
@@ -11,6 +12,7 @@ import {
 import {
   handleGetProfile,
   handleUpdateProfile,
+  handleUpdateAvatar,
   handleUpdateSkills,
   handleUpdateAvailability,
   handleUpdateEducation,
@@ -27,6 +29,7 @@ router.patch(
   validate(updateProfileSchema),
   handleUpdateProfile
 );
+router.patch('/avatar', authenticate, uploadAvatar, handleUpdateAvatar);
 router.patch(
   '/skills',
   authenticate,

@@ -18,9 +18,19 @@ export const portfolioService = {
   async createPortfolioItem(
     data: CreatePortfolioItemData
   ): Promise<PortfolioItem> {
+    const { coverImageFile, tags, ...rest } = data;
+
+    const formData = new FormData();
+    Object.entries(rest).forEach(([key, value]) => {
+      if (value !== undefined) formData.append(key, String(value));
+    });
+    tags?.forEach((tag) => formData.append('tags', tag));
+    if (coverImageFile) formData.append('coverImage', coverImageFile);
+
     const response = await axiosInstance.post<SuccessResponse<PortfolioItem>>(
       '/portfolio',
-      data
+      formData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
     );
     return response.data.data;
   },

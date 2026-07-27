@@ -19,6 +19,8 @@ interface ProfileEducationProps {
   education: Education[];
 }
 
+const formatDegree = (degree: string) => degree.replace(/_/g, ' ');
+
 export default function ProfileEducation({ education }: ProfileEducationProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
@@ -67,10 +69,10 @@ export default function ProfileEducation({ education }: ProfileEducationProps) {
                   <div className="md:col-span-9 space-y-3">
                     <div>
                       <h4 className="font-display text-2xl md:text-3xl font-bold tracking-tight leading-none">
-                        {edu.school}
+                        {formatDegree(edu.degree)} in {edu.fieldOfStudy}
                       </h4>
                       <div className="font-mono text-sm uppercase tracking-wider opacity-70 mt-2">
-                        {edu.degree} in {edu.fieldOfStudy}
+                        {edu.school}
                         <span className="mx-2 opacity-40">·</span>
                         {edu.country}
                       </div>

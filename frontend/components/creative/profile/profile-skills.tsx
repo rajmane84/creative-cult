@@ -17,10 +17,13 @@ interface ProfileSkillsProps {
   skills: Skill[];
 }
 
-const EXPERTISE_COLORS: Record<string, string> = {
-  BEGINNER: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-  INTERMEDIATE: 'bg-blue-100 text-blue-700 border-blue-200',
-  EXPERT: 'bg-amber-100 text-amber-700 border-amber-200',
+// Visual weight scales with proficiency: Beginner is the lightest touch,
+// Expert is the most saturated. A single hue (the brand accent) carries the
+// signal so it never reads as a traffic-light status.
+const EXPERTISE_STYLES: Record<string, string> = {
+  BEGINNER: 'bg-transparent text-muted-foreground border-border',
+  INTERMEDIATE: 'bg-primary/10 text-foreground border-primary/30',
+  EXPERT: 'bg-primary text-primary-foreground border-primary',
 };
 
 export default function ProfileSkills({ skills }: ProfileSkillsProps) {
@@ -64,8 +67,8 @@ export default function ProfileSkills({ skills }: ProfileSkillsProps) {
                   key={skill.id}
                   className={cn(
                     'group inline-flex items-center gap-2 px-4 py-2 rounded-none font-mono text-[10px] uppercase tracking-widest border transition-all duration-300',
-                    EXPERTISE_COLORS[skill.level || 'INTERMEDIATE'] ||
-                      EXPERTISE_COLORS['INTERMEDIATE']
+                    EXPERTISE_STYLES[skill.level || 'INTERMEDIATE'] ||
+                      EXPERTISE_STYLES['INTERMEDIATE']
                   )}
                   style={{
                     animationDelay: `${index * 30}ms`,

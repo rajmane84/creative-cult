@@ -1,8 +1,13 @@
 import type { Request, Response } from 'express';
 import { prisma } from '../util/prisma';
 import { asyncHandler } from '../middlewares/asyncHandler';
-import { NotFoundError } from '../util/errors/AppError';
+import { BadRequestError, NotFoundError } from '../util/errors/AppError';
 import { ApiResponse } from '../util/response/ApiResponse';
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+  getPublicIdFromUrl,
+} from '../util/cloudinary';
 
 export const handleGetProfile = asyncHandler(
   async (req: Request, res: Response) => {
@@ -58,7 +63,7 @@ export const handleGetProfile = asyncHandler(
 export const handleUpdateProfile = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const { headline, bio, availability } = req.body;
+    const { headline, bio, location, availability } = req.body;
 
     const creativeProfile = await prisma.creativeProfile.findUnique({
       where: { userId },
@@ -73,6 +78,7 @@ export const handleUpdateProfile = asyncHandler(
       data: {
         headline: headline !== undefined ? headline : creativeProfile.headline,
         bio: bio !== undefined ? bio : creativeProfile.bio,
+        location: location !== undefined ? location : creativeProfile.location,
         availability:
           availability !== undefined
             ? availability
@@ -85,6 +91,53 @@ export const handleUpdateProfile = asyncHandler(
       updatedProfile,
       'Profile updated successfully'
     );
+  }
+);
+
+export const handleUpdateAvatar = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+
+    if (!req.file) {
+      throw new BadRequestError('No file uploaded');
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    const uploadResult = await uploadToCloudinary(
+      req.file.buffer,
+      'avatars',
+      'image'
+    );
+
+    if (user.image && user.image.includes('cloudinary')) {
+      try {
+        const oldPublicId = getPublicIdFromUrl(user.image);
+        await deleteFromCloudinary(oldPublicId, 'image');
+      } catch (error) {
+        console.error('Failed to delete previous avatar:', error);
+      }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { image: uploadResult.url },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        emailVerified: true,
+        image: true,
+        role: true,
+        username: true,
+      },
+    });
+
+    return ApiResponse.success(res, updatedUser, 'Avatar updated successfully');
   }
 );
 

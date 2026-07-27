@@ -3,6 +3,7 @@
 import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/creative/profile/use-profile';
+import { useUpdateAvatar } from '@/hooks/creative/profile/use-update-avatar';
 import {
   ProfileHeader,
   ProfileAbout,
@@ -15,6 +16,7 @@ import { EmailVerificationCard } from '@/components/auth/email-verification-card
 
 export default function CreativeProfilePage() {
   const { data: profileData, isLoading, error, refetch } = useProfile();
+  const { updateAvatarMutation } = useUpdateAvatar();
 
   if (isLoading) {
     return (
@@ -78,9 +80,11 @@ export default function CreativeProfilePage() {
         profile={{
           headline: creativeProfile.headline || '',
           bio: creativeProfile.bio || '',
-          location: creativeProfile.location || 'Not specified',
+          location: creativeProfile.location || '',
           availability: creativeProfile.availability,
         }}
+        onAvatarChange={(file) => updateAvatarMutation.mutate(file)}
+        isAvatarUploading={updateAvatarMutation.isPending}
       />
 
       {/* Email Verification Section */}

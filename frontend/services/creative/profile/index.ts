@@ -36,6 +36,20 @@ export const profileService = {
     return response.data as SuccessResponse<ProfileData['creativeProfile']>;
   },
 
+  updateAvatar: async (
+    file: File
+  ): Promise<SuccessResponse<ProfileData['user']>> => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    const response = await axios.patch('/profile/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data as SuccessResponse<ProfileData['user']>;
+  },
+
   updateEducation: async (
     data: UpdateEducationData
   ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
