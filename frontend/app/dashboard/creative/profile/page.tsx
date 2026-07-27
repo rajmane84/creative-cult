@@ -1,7 +1,7 @@
 'use client';
 
-import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ErrorState } from '@/components/error-state';
+import { LoadingState } from '@/components/loading-state';
 import { useProfile } from '@/hooks/creative/profile/use-profile';
 import { useUpdateAvatar } from '@/hooks/creative/profile/use-update-avatar';
 import {
@@ -19,42 +19,15 @@ export default function CreativeProfilePage() {
   const { updateAvatarMutation } = useUpdateAvatar();
 
   if (isLoading) {
-    return (
-      <div className="w-full bg-background min-h-[70vh] p-6 sm:p-10 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 text-muted-foreground">
-          <Loader2 className="size-8 animate-spin text-primary selection:text-background selection:bg-primary" />
-          <span className="font-mono text-xs uppercase tracking-widest">
-            Loading profile details...
-          </span>
-        </div>
-      </div>
-    );
+    return <LoadingState message="Loading profile details..." />;
   }
 
   if (error || !profileData) {
     return (
-      <div className="w-full bg-background min-h-[70vh] p-6 sm:p-10 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4 text-center max-w-sm">
-          <AlertCircle className="size-8 text-muted-foreground" />
-          <div className="space-y-1.5">
-            <h2 className="font-editorial text-2xl font-bold text-foreground">
-              Couldn&apos;t load your profile
-            </h2>
-            <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
-              Something went wrong. Please try again.
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            className="mt-2 gap-1.5 font-mono text-xs uppercase tracking-wider"
-          >
-            <RefreshCw className="size-3.5" />
-            Try Again
-          </Button>
-        </div>
-      </div>
+      <ErrorState
+        title="Couldn't load your profile"
+        onRetry={() => refetch()}
+      />
     );
   }
 

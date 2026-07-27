@@ -87,6 +87,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - ❌ Create project-specific ESLint config files - use root config
 - ❌ Use native `fetch` for backend API requests - use the configured axios instance instead
 - ❌ Create new axios instances - use the configured instance from `@/lib/axios`
+- ❌ Write inline loading spinner or error-state JSX in a page/component - use `LoadingState` / `ErrorState`
 
 ## DO DO
 
@@ -99,6 +100,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - ✅ Run `bun run lint` from root to check code quality
 - ✅ Run `bun run lint:fix` from root to auto-fix ESLint issues
 - ✅ Use the configured axios instance from `@/lib/axios` for all backend API requests
+- ✅ Use `LoadingState` (`@/components/loading-state`) and `ErrorState` (`@/components/error-state`) for any page/section-level loading or error UI
 
 ## Font Configuration
 
@@ -264,6 +266,49 @@ class ApiError extends Error {
 6. **Automatic error handling** - Response interceptor handles common HTTP errors automatically
 7. **Authentication ready** - `withCredentials: true` ensures cookies are sent for better-auth sessions
 8. **Use ApiError class** - Catch `ApiError` instances for backend-specific error handling
+
+## Loading & Error States
+
+**IMPORTANT**: Always use the shared `LoadingState` and `ErrorState` components for data-fetching loading/error UI instead of writing bespoke JSX per page. This keeps loading and error states visually consistent across the app.
+
+### Component Locations
+
+- **LoadingState**: `@/components/loading-state` (frontend/components/loading-state.tsx)
+- **ErrorState**: `@/components/error-state` (frontend/components/error-state.tsx)
+
+### Usage Pattern
+
+```tsx
+import { LoadingState } from '@/components/loading-state';
+import { ErrorState } from '@/components/error-state';
+
+export default function SomePage() {
+  const { data, isLoading, error, refetch } = useSomeQuery();
+
+  if (isLoading) {
+    return <LoadingState message="Loading..." />;
+  }
+
+  if (error || !data) {
+    return (
+      <ErrorState title="Couldn't load this page" onRetry={() => refetch()} />
+    );
+  }
+
+  // render page with `data`
+}
+```
+
+### Props
+
+- `LoadingState`: `message?: string` (defaults to `'Loading...'`)
+- `ErrorState`: `title?`, `message?`, `retryLabel?` (all have sensible defaults), `onRetry?: () => void` — omit `onRetry` to hide the retry button (e.g. non-retryable errors)
+
+### Key Principles
+
+1. **Do not inline** loading spinners or error blocks in pages/components - always compose `LoadingState` / `ErrorState`
+2. If neither component fits a specific need, extend them with new props rather than duplicating the markup elsewhere
+3. Reference `app/dashboard/creative/profile/page.tsx` for a canonical usage example
 
 ## Complete Feature Deletion
 
