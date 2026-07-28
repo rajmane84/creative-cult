@@ -25,7 +25,11 @@ export async function uploadToCloudinary(
   fileName?: string;
 }> {
   try {
-    const result = await cloudinary.uploader.upload(file as string, {
+    const uploadSource = Buffer.isBuffer(file)
+      ? `data:application/octet-stream;base64,${file.toString('base64')}`
+      : file;
+
+    const result = await cloudinary.uploader.upload(uploadSource, {
       folder,
       resource_type: resourceType,
       use_filename: true,

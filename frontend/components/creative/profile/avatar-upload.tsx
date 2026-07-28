@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Camera, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -22,6 +22,20 @@ export default function AvatarUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { updateAvatarMutation } = useUpdateAvatar();
   const isUploading = updateAvatarMutation.isPending;
+  const [displayImage, setDisplayImage] = useState<string | undefined>('');
+
+  // Preload new image to prevent fallback flash
+  useEffect(() => {
+    if (image !== displayImage) {
+      if (image) {
+        const img = new Image();
+        img.onload = () => setDisplayImage(image);
+        img.src = image;
+      } else {
+        setDisplayImage(undefined);
+      }
+    }
+  }, [image, displayImage]);
 
   const handleButtonClick = () => {
     if (isUploading) return;
@@ -57,10 +71,10 @@ export default function AvatarUpload({
         className="group relative block cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         aria-label="Change profile picture"
       >
-        <Avatar className="size-24 rounded-2xl border-4 border-background shadow-sm transition-opacity group-focus-visible:opacity-90">
+        <Avatar className="size-44 rounded-2xl border-4 border-background shadow-sm transition-opacity group-focus-visible:opacity-90">
           <AvatarImage
             src={
-              image ||
+              displayImage ||
               `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`
             }
             alt={name}

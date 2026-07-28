@@ -11,6 +11,7 @@ import { AvailabilityStatus } from '@/types';
 import { cn } from '@/lib/cn';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { COVER_IMAGE_ASPECT_RATIO } from '@/constants';
 
 interface ProfileHeaderProps {
   user: {
@@ -48,7 +49,10 @@ export default function ProfileHeader({
   return (
     <div>
       {/* Banner */}
-      <div className="group relative w-full h-70 bg-muted">
+      <div
+        className="group relative w-full bg-muted"
+        style={{ aspectRatio: COVER_IMAGE_ASPECT_RATIO }}
+      >
         <CoverImageUpload coverImage={profile.coverImage} />
 
         {/* Availability toggle */}

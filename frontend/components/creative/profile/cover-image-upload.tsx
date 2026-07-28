@@ -1,13 +1,20 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { MAX_COVER_IMAGE_SIZE, ALLOWED_AVATAR_TYPES } from '@/constants';
 import { useUpdateCoverImage } from '@/hooks/creative/profile';
+import { CoverImageCropDialog } from './dialog';
 
 interface CoverImageUploadProps {
   coverImage?: string | null;
+}
+
+interface PendingImage {
+  src: string;
+  fileName: string;
+  mimeType: string;
 }
 
 export default function CoverImageUpload({
@@ -16,6 +23,7 @@ export default function CoverImageUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { updateCoverImageMutation } = useUpdateCoverImage();
   const isUploading = updateCoverImageMutation.isPending;
+  const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
 
   const handleButtonClick = () => {
     if (isUploading) return;
@@ -38,7 +46,24 @@ export default function CoverImageUpload({
       return;
     }
 
-    updateCoverImageMutation.mutate(file);
+    setPendingImage({
+      src: URL.createObjectURL(file),
+      fileName: file.name,
+      mimeType: file.type,
+    });
+  };
+
+  const closeCropDialog = () => {
+    if (pendingImage) {
+      URL.revokeObjectURL(pendingImage.src);
+    }
+    setPendingImage(null);
+  };
+
+  const handleCropSave = (file: File) => {
+    updateCoverImageMutation.mutate(file, {
+      onSuccess: closeCropDialog,
+    });
   };
 
   return (
@@ -77,6 +102,20 @@ export default function CoverImageUpload({
         onChange={handleFileChange}
         className="hidden"
       />
+
+      {pendingImage && (
+        <CoverImageCropDialog
+          open={!!pendingImage}
+          imageSrc={pendingImage.src}
+          fileName={pendingImage.fileName}
+          mimeType={pendingImage.mimeType}
+          isSaving={isUploading}
+          onOpenChange={(open) => {
+            if (!open) closeCropDialog();
+          }}
+          onSave={handleCropSave}
+        />
+      )}
     </>
   );
 }
