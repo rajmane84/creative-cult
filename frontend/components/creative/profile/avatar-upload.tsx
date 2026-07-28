@@ -10,15 +10,10 @@ import { useUpdateAvatar } from '@/hooks/creative/profile';
 
 interface AvatarUploadProps {
   name: string;
-  username: string;
   image?: string | null;
 }
 
-export default function AvatarUpload({
-  name,
-  username,
-  image,
-}: AvatarUploadProps) {
+export default function AvatarUpload({ name, image }: AvatarUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { updateAvatarMutation } = useUpdateAvatar();
   const isUploading = updateAvatarMutation.isPending;
@@ -73,10 +68,7 @@ export default function AvatarUpload({
       >
         <Avatar className="size-22 sm:size-44 md:size-48 rounded-2xl border-4 border-background shadow-sm transition-opacity group-focus-visible:opacity-90">
           <AvatarImage
-            src={
-              displayImage ||
-              `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`
-            }
+            src={displayImage || '/fallback-avatar.webp'}
             alt={name}
           />
           <AvatarFallback className="rounded-2xl text-2xl sm:text-4xl md:text-5xl font-display">

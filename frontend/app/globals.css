@@ -280,7 +280,66 @@ html.lenis body {
   border-color: var(--border);
 }
 
-/* Ensure Sonner toasts render above all modal overlays and alert dialogs and have sharp contrast */
+/* Sonner toasts: render above modals/alert dialogs, and match the bordered,
+   mono-labeled, hard-shadow system used elsewhere (see not-found.tsx). */
 [data-sonner-toaster] {
   z-index: 999999 !important;
+}
+
+[data-sonner-toast] {
+  box-shadow: 4px 4px 0 0 var(--border) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+}
+
+[data-sonner-toast] [data-description] {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+[data-sonner-toast] [data-icon] {
+  color: var(--foreground);
+}
+
+[data-sonner-toast] [data-close-button] {
+  background: var(--popover);
+  border-color: var(--border);
+  color: var(--foreground);
+  border-radius: 0;
+}
+
+[data-sonner-toast][data-type='success'] {
+  border-color: var(--success) !important;
+  background: color-mix(in oklab, var(--success) 6%, var(--popover)) !important;
+}
+[data-sonner-toast][data-type='success'] [data-icon] {
+  color: var(--success);
+}
+
+[data-sonner-toast][data-type='error'] {
+  border-color: var(--destructive) !important;
+  background: color-mix(
+    in oklab,
+    var(--destructive) 6%,
+    var(--popover)
+  ) !important;
+}
+[data-sonner-toast][data-type='error'] [data-icon] {
+  color: var(--destructive);
+}
+
+[data-sonner-toast][data-type='warning'] {
+  border-color: var(--primary) !important;
+  background: color-mix(in oklab, var(--primary) 6%, var(--popover)) !important;
+}
+[data-sonner-toast][data-type='warning'] [data-icon] {
+  color: var(--primary);
 }

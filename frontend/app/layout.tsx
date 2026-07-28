@@ -51,21 +51,7 @@ export default function RootLayout({
         <Providers>
           <SmoothScroll>{children}</SmoothScroll>
         </Providers>
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            style: {
-              background: 'hsl(var(--popover))',
-              color: 'hsl(var(--popover-foreground))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: 'var(--radius)',
-              fontFamily: 'var(--font-mono)',
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              fontSize: '12px',
-            },
-          }}
-        />
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );

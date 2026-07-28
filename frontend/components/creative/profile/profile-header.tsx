@@ -133,11 +133,7 @@ export default function ProfileHeader({
           />
         </div>
 
-        <AvatarUpload
-          name={user.name}
-          username={user.username}
-          image={user.image}
-        />
+        <AvatarUpload name={user.name} image={user.image} />
       </div>
 
       {/* Content below banner - centered */}
