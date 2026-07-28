@@ -53,7 +53,7 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
 
           <div className="relative z-10 flex items-start justify-between transition-colors duration-500 group-hover:text-background">
             <div className="flex gap-4">
-              <Briefcase className="w-5 h-5 mt-1 opacity-70" />
+              <Briefcase className="size-5 mt-1 opacity-70" />
               <div>
                 <div className="font-display text-2xl mb-1">Client</div>
                 <div className="font-editorial text-lg opacity-70">
@@ -80,7 +80,7 @@ export function RoleSelection({ open = true, onClose }: RoleSelectionProps) {
 
           <div className="relative z-10 flex items-start justify-between transition-colors duration-500 group-hover:text-primary-foreground">
             <div className="flex gap-4">
-              <Palette className="w-5 h-5 mt-1 opacity-70" />
+              <Palette className="size-5 mt-1 opacity-70" />
               <div>
                 <div className="font-display text-2xl mb-1">Creative</div>
                 <div className="font-editorial text-lg opacity-70">

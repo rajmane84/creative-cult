@@ -40,7 +40,7 @@ export default function MultiStepOnboarding({
                 )}
                 <div
                   className={cn(
-                    'relative z-10 w-10 h-10 rounded-none flex items-center justify-center font-mono text-sm transition-all duration-300 border',
+                    'relative z-10 size-10 rounded-none flex items-center justify-center font-mono text-sm transition-all duration-300 border',
                     'motion-reduce:transition-none',
                     index < currentStep
                       ? 'bg-foreground text-background border-foreground'
@@ -49,11 +49,7 @@ export default function MultiStepOnboarding({
                         : 'bg-background text-muted-foreground border-border'
                   )}
                 >
-                  {index < currentStep ? (
-                    <Check className="w-5 h-5" />
-                  ) : (
-                    step.id
-                  )}
+                  {index < currentStep ? <Check className="size-5" /> : step.id}
                 </div>
               </div>
               <div className="mt-4 text-center px-2">

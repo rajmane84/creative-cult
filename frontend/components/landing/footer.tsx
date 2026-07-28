@@ -89,7 +89,7 @@ export default function Footer() {
           </div>
 
           <div className="font-editorial mt-2 flex items-center gap-2 text-lg">
-            <span className="inline-block h-2 w-2 animate-pulse bg-primary" />
+            <span className="inline-block size-2 animate-pulse bg-primary" />
             Waitlist open — Ch. 01
           </div>
         </div>

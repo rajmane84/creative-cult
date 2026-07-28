@@ -113,7 +113,7 @@ export function DiscoverFilters({
 
           {/* Search Bar */}
           <div className="relative flex-1 max-w-2xl">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search by name, skill, discipline, location..."
@@ -127,7 +127,7 @@ export function DiscoverFilters({
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 aria-label="Clear search"
               >
-                <X className="w-4 h-4" />
+                <X className="size-4" />
               </button>
             )}
           </div>
@@ -142,7 +142,7 @@ export function DiscoverFilters({
               >
                 <SelectTrigger className="h-11 w-full border border-border bg-card font-mono text-xs uppercase tracking-wider rounded-none">
                   <div className="flex items-center gap-1.5 truncate">
-                    <ArrowUpDown className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary shrink-0" />
+                    <ArrowUpDown className="size-3.5 text-primary selection:text-background selection:bg-primary shrink-0" />
                     <SelectValue placeholder="Sort By" />
                   </div>
                 </SelectTrigger>
@@ -167,7 +167,7 @@ export function DiscoverFilters({
           {/* Category Horizontal Scroll */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
             <span className="font-mono text-[10px] uppercase text-muted-foreground shrink-0 mr-1 flex items-center gap-1">
-              <SlidersHorizontal className="w-3 h-3 text-primary selection:text-background selection:bg-primary" />
+              <SlidersHorizontal className="size-3 text-primary selection:text-background selection:bg-primary" />
               Category:
             </span>
 
@@ -233,7 +233,7 @@ export function DiscoverFilters({
                 >
                   <span>Search: &ldquo;{searchQuery}&rdquo;</span>
                   <X
-                    className="w-3 h-3 cursor-pointer"
+                    className="size-3 cursor-pointer"
                     onClick={() => setSearchQuery('')}
                   />
                 </Badge>
@@ -246,7 +246,7 @@ export function DiscoverFilters({
                 >
                   <span>Category: {selectedCategory}</span>
                   <X
-                    className="w-3 h-3 cursor-pointer"
+                    className="size-3 cursor-pointer"
                     onClick={() => setSelectedCategory('All Disciplines')}
                   />
                 </Badge>
@@ -259,7 +259,7 @@ export function DiscoverFilters({
                 >
                   <span>Status: {availabilityFilter}</span>
                   <X
-                    className="w-3 h-3 cursor-pointer"
+                    className="size-3 cursor-pointer"
                     onClick={() => setAvailabilityFilter('ALL')}
                   />
                 </Badge>

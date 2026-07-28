@@ -97,7 +97,7 @@ export function EmailVerificationCard({
 
       <ActionCardFooter>
         <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-          <CheckCircle2 className="w-3.5 h-3.5 text-muted-foreground" />
+          <CheckCircle2 className="size-3.5 text-muted-foreground" />
           <span>Unverified Account</span>
         </div>
         <Button

@@ -88,7 +88,7 @@ export default function ProfileHeader({
         <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           {profile.location ? (
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="w-3.5 h-3.5 text-primary" />
+              <MapPin className="size-3.5 text-primary" />
               <span>{profile.location}</span>
             </div>
           ) : (
@@ -97,13 +97,13 @@ export default function ProfileHeader({
               onClick={() => setIsSetLocationOpen(true)}
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
-              <MapPin className="w-3.5 h-3.5 text-primary" />
+              <MapPin className="size-3.5 text-primary" />
               Add location
             </button>
           )}
 
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Mail className="w-3.5 h-3.5 text-primary" />
+            <Mail className="size-3.5 text-primary" />
             <span>{user.email}</span>
           </div>
 

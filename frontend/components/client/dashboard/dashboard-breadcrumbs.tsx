@@ -46,7 +46,7 @@ export function DashboardBreadcrumbs() {
                 render={<Link href="/dashboard/client" />}
                 className="flex items-center gap-1.5"
               >
-                <LayoutDashboard className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
+                <LayoutDashboard className="size-3.5 text-primary selection:text-background selection:bg-primary" />
                 <span>Client</span>
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -57,7 +57,7 @@ export function DashboardBreadcrumbs() {
                 <BreadcrumbItem>
                   <BreadcrumbPage>
                     <span>Overview</span>
-                    <span className="w-1.5 h-1.5 bg-primary selection:text-background selection:bg-primary inline-block ml-1" />
+                    <span className="size-1.5 bg-primary selection:text-background selection:bg-primary inline-block ml-1" />
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </>
@@ -78,7 +78,7 @@ export function DashboardBreadcrumbs() {
                       {isLast ? (
                         <BreadcrumbPage>
                           <span className="capitalize">{label}</span>
-                          <span className="w-1.5 h-1.5 bg-primary selection:text-background selection:bg-primary inline-block ml-1" />
+                          <span className="size-1.5 bg-primary selection:text-background selection:bg-primary inline-block ml-1" />
                         </BreadcrumbPage>
                       ) : (
                         <BreadcrumbLink

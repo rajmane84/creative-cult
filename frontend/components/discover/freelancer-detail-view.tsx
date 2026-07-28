@@ -37,7 +37,7 @@ export function FreelancerDetailView({
           href="/discover"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4 text-primary selection:text-background selection:bg-primary group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="size-4 text-primary selection:text-background selection:bg-primary group-hover:-translate-x-1 transition-transform" />
           <span>Back to Discover</span>
         </Link>
 
@@ -56,7 +56,7 @@ export function FreelancerDetailView({
           <img
             src={freelancer.coverImage}
             alt={freelancer.name}
-            className="w-full h-full object-cover"
+            className="size-full object-cover"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
         </div>
@@ -65,7 +65,7 @@ export function FreelancerDetailView({
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             {/* Avatar & Headline Info */}
             <div className="flex items-end gap-5">
-              <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-background bg-card shrink-0">
+              <Avatar className="size-24 sm:size-32 border-4 border-background bg-card shrink-0">
                 <AvatarImage src={freelancer.avatarUrl} alt={freelancer.name} />
                 <AvatarFallback className="font-mono text-2xl font-bold">
                   {freelancer.name.slice(0, 2).toUpperCase()}
@@ -80,7 +80,7 @@ export function FreelancerDetailView({
 
                   {freelancer.isVerified && (
                     <span className="status-tag status-tag--positive text-[10px]">
-                      <ShieldCheck className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
+                      <ShieldCheck className="size-3.5 text-primary selection:text-background selection:bg-primary" />
                       VERIFIED CREATIVE
                     </span>
                   )}
@@ -110,7 +110,7 @@ export function FreelancerDetailView({
             {/* Quick Metrics */}
             <div className="flex items-center gap-4 font-mono text-xs text-muted-foreground shrink-0 pb-1">
               <div className="flex items-center gap-1 border border-border px-3 py-1.5 bg-card">
-                <Star className="w-4 h-4 fill-primary text-primary selection:text-background selection:bg-primary" />
+                <Star className="size-4 fill-primary text-primary selection:text-background selection:bg-primary" />
                 <strong className="text-foreground font-bold">
                   {freelancer.rating}
                 </strong>{' '}
@@ -136,7 +136,7 @@ export function FreelancerDetailView({
             {/* Bio Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Sparkles className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                <Sparkles className="size-4 text-primary selection:text-background selection:bg-primary" />
                 <span>BIO & SPECIALIZATION</span>
               </div>
               <p className="font-editorial text-lg sm:text-xl text-foreground leading-relaxed">
@@ -147,7 +147,7 @@ export function FreelancerDetailView({
             {/* Skills & Disciplines Tags */}
             <div className="space-y-3 pt-4 border-t border-border">
               <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Award className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                <Award className="size-4 text-primary selection:text-background selection:bg-primary" />
                 <span>CORE SKILLS & DISCIPLINES</span>
               </div>
 
@@ -167,7 +167,7 @@ export function FreelancerDetailView({
             <div className="space-y-4 pt-4 border-t border-border">
               <div className="flex items-center justify-between border-b border-border pb-2">
                 <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold">
-                  <Briefcase className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                  <Briefcase className="size-4 text-primary selection:text-background selection:bg-primary" />
                   <span>PORTFOLIO WORKS ({freelancer.portfolio.length})</span>
                 </div>
               </div>
@@ -182,7 +182,7 @@ export function FreelancerDetailView({
                       <img
                         src={p.image}
                         alt={p.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <span className="absolute bottom-2 left-2 font-mono text-[9px] uppercase tracking-wider bg-background/90 border border-border px-2 py-0.5 text-foreground">
                         {p.category}
@@ -201,7 +201,7 @@ export function FreelancerDetailView({
             {/* Production Tools & Hardware */}
             <div className="space-y-4 pt-4 border-t border-border">
               <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Wrench className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                <Wrench className="size-4 text-primary selection:text-background selection:bg-primary" />
                 <span>HARDWARE & SOFTWARE STACK</span>
               </div>
 
@@ -211,7 +211,7 @@ export function FreelancerDetailView({
                     key={tool}
                     className="font-mono text-xs uppercase border border-border bg-card px-3.5 py-2 text-foreground flex items-center gap-2"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                    <CheckCircle2 className="size-4 text-primary selection:text-background selection:bg-primary" />
                     {tool}
                   </span>
                 ))}
@@ -272,7 +272,7 @@ export function FreelancerDetailView({
                   size="lg"
                   className="w-full font-mono text-xs uppercase tracking-wider h-12"
                 >
-                  <MessageSquare className="w-4 h-4 mr-2" />
+                  <MessageSquare className="size-4 mr-2" />
                   <span>Hire / Send Brief</span>
                 </Button>
 
@@ -286,7 +286,7 @@ export function FreelancerDetailView({
                     }
                   }}
                 >
-                  <Share2 className="w-4 h-4 mr-2" />
+                  <Share2 className="size-4 mr-2" />
                   <span>Share Profile</span>
                 </Button>
               </div>
@@ -294,7 +294,7 @@ export function FreelancerDetailView({
 
             {/* Escrow Banner */}
             <div className="border border-primary/40 bg-primary/5 p-5 flex items-start gap-4">
-              <Lock className="w-6 h-6 text-primary selection:text-background selection:bg-primary shrink-0 mt-0.5" />
+              <Lock className="size-6 text-primary selection:text-background selection:bg-primary shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <h4 className="font-mono text-xs uppercase tracking-wider font-bold text-foreground">
                   ESCROW SAFEGUARD

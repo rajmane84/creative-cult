@@ -38,7 +38,7 @@ export function CultDiscoverCard({ cult, href }: CultDiscoverCardProps) {
           <img
             src={cult.coverImage}
             alt={cult.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent" />
 
@@ -66,7 +66,7 @@ export function CultDiscoverCard({ cult, href }: CultDiscoverCardProps) {
             <div className="pt-2 space-y-1.5 min-w-0">
               <div className="flex items-center justify-between font-mono text-[10px] uppercase text-muted-foreground">
                 <span className="flex items-center gap-1 truncate">
-                  <Users className="w-3 h-3 text-primary shrink-0" />
+                  <Users className="size-3 text-primary shrink-0" />
                   {cult.members.length} Members
                 </span>
                 <span className="shrink-0 ml-1 tabular-nums">
@@ -76,7 +76,7 @@ export function CultDiscoverCard({ cult, href }: CultDiscoverCardProps) {
               <div className="flex items-center gap-2 min-w-0">
                 <div className="flex -space-x-2 shrink-0">
                   {cult.members.slice(0, 4).map((m) => (
-                    <Avatar key={m.id} className="border border-border w-7 h-7">
+                    <Avatar key={m.id} className="border border-border size-7">
                       <AvatarImage src={m.avatar} alt={m.name} />
                       <AvatarFallback className="font-mono text-[8px]">
                         {m.name.slice(0, 2)}
@@ -115,7 +115,7 @@ export function CultDiscoverCard({ cult, href }: CultDiscoverCardProps) {
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+              <Star className="size-3.5 fill-primary text-primary" />
               <span className="font-bold text-foreground">{cult.rating}</span>
               <span className="text-muted-foreground text-[10px]">
                 ({cult.reviewCount})

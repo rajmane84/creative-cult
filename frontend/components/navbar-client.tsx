@@ -144,7 +144,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                 >
                   <Icon
                     className={cn(
-                      'w-3.5 h-3.5 shrink-0 transition-transform',
+                      'size-3.5 shrink-0 transition-transform',
                       active &&
                         'text-primary selection:text-background selection:bg-primary'
                     )}
@@ -174,7 +174,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
               title="Sign Out"
               className="hidden md:inline-flex items-center gap-1.5 font-mono text-[9px] lg:text-[11px] uppercase tracking-wider h-8 lg:h-9 px-3 shrink-0"
             >
-              <LogOut className="w-3.5 h-3.5 shrink-0" />
+              <LogOut className="size-3.5 shrink-0" />
               <span>Sign Out</span>
             </Button>
           ) : (
@@ -202,9 +202,9 @@ export function NavbarClient({ user }: NavbarClientProps) {
             className="md:hidden flex items-center justify-center p-2 text-foreground hover:bg-accent border border-border transition-colors min-h-[40px] min-w-[40px]"
           >
             {mobileMenuOpen ? (
-              <X className="w-5 h-5 text-primary selection:text-background selection:bg-primary" />
+              <X className="size-5 text-primary selection:text-background selection:bg-primary" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="size-5" />
             )}
           </button>
         </div>
@@ -254,10 +254,10 @@ export function NavbarClient({ user }: NavbarClientProps) {
                   className="flex items-center justify-between w-full px-3 py-2.5 bg-background border border-border hover:border-primary font-mono text-xs uppercase tracking-wider text-foreground transition-all min-h-[44px]"
                 >
                   <div className="flex items-center gap-2">
-                    <UserIcon className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                    <UserIcon className="size-4 text-primary selection:text-background selection:bg-primary" />
                     <span>View Full Profile</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  <ChevronRight className="size-4 text-muted-foreground" />
                 </Link>
               </div>
             ) : null}
@@ -288,7 +288,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                         <div className="flex items-center gap-3">
                           <Icon
                             className={cn(
-                              'w-4 h-4',
+                              'size-4',
                               active
                                 ? 'text-primary selection:text-background selection:bg-primary'
                                 : 'text-muted-foreground'
@@ -297,7 +297,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                           <span>{link.label}</span>
                         </div>
                         {active && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-primary selection:text-background selection:bg-primary" />
+                          <span className="size-1.5 rounded-full bg-primary selection:text-background selection:bg-primary" />
                         )}
                       </Link>
                     );
@@ -314,7 +314,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                         : 'text-muted-foreground hover:bg-accent/40'
                     )}
                   >
-                    <LayoutDashboard className="w-4 h-4" />
+                    <LayoutDashboard className="size-4" />
                     <span>Home</span>
                   </Link>
                 </div>
@@ -331,7 +331,7 @@ export function NavbarClient({ user }: NavbarClientProps) {
                 onClick={handleSignOut}
                 className="w-full flex items-center justify-center gap-2 font-mono text-xs uppercase tracking-wider min-h-12"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="size-4" />
                 <span>Sign Out</span>
               </Button>
             ) : (

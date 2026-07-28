@@ -36,7 +36,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
           href="/discover"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4 text-primary selection:text-background selection:bg-primary group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="size-4 text-primary selection:text-background selection:bg-primary group-hover:-translate-x-1 transition-transform" />
           <span>Back to Discover</span>
         </Link>
 
@@ -52,7 +52,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
         <img
           src={cult.coverImage}
           alt={cult.name}
-          className="w-full h-full object-cover"
+          className="size-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
 
@@ -66,7 +66,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
 
               {cult.isVerified && (
                 <span className="status-tag status-tag--positive text-[10px] bg-background/90 text-foreground">
-                  <ShieldCheck className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <ShieldCheck className="size-3.5 text-primary selection:text-background selection:bg-primary" />
                   VERIFIED ESCROW COLLECTIVE
                 </span>
               )}
@@ -96,7 +96,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             <span>📍 {cult.location}</span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <Star className="w-4 h-4 fill-primary text-primary selection:text-background selection:bg-primary" />
+              <Star className="size-4 fill-primary text-primary selection:text-background selection:bg-primary" />
               <strong className="text-white font-bold">{cult.rating}</strong> (
               {cult.reviewCount} reviews)
             </span>
@@ -112,7 +112,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             {/* Bio & Manifesto */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Sparkles className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                <Sparkles className="size-4 text-primary selection:text-background selection:bg-primary" />
                 <span>ABOUT & MANIFESTO</span>
               </div>
               <p className="font-editorial text-lg sm:text-xl text-foreground leading-relaxed">
@@ -124,7 +124,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             <div className="space-y-4 pt-4 border-t border-border">
               <div className="flex items-center justify-between border-b border-border pb-2">
                 <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold">
-                  <Users className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                  <Users className="size-4 text-primary selection:text-background selection:bg-primary" />
                   <span>
                     ACTIVE CULT ROSTER ({cult.members.length} CREATIVES)
                   </span>
@@ -140,7 +140,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
                     key={m.id}
                     className="border border-border bg-card p-4 flex items-center gap-3.5 hover:border-foreground transition-colors"
                   >
-                    <Avatar className="w-12 h-12 border-2 border-border shrink-0">
+                    <Avatar className="size-12 border-2 border-border shrink-0">
                       <AvatarImage src={m.avatar} alt={m.name} />
                       <AvatarFallback className="font-mono text-xs font-bold">
                         {m.name.slice(0, 2).toUpperCase()}
@@ -166,7 +166,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             <div className="space-y-4 pt-4 border-t border-border">
               <div className="flex items-center justify-between border-b border-border pb-2">
                 <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold">
-                  <Briefcase className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                  <Briefcase className="size-4 text-primary selection:text-background selection:bg-primary" />
                   <span>FEATURED CASE STUDIES ({cult.portfolio.length})</span>
                 </div>
               </div>
@@ -181,7 +181,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
                       <img
                         src={p.image}
                         alt={p.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <span className="absolute bottom-2 left-2 font-mono text-[9px] uppercase tracking-wider bg-background/90 border border-border px-2 py-0.5 text-foreground">
                         {p.category}
@@ -200,7 +200,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             {/* Gear & Production Tech */}
             <div className="space-y-4 pt-4 border-t border-border">
               <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Wrench className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                <Wrench className="size-4 text-primary selection:text-background selection:bg-primary" />
                 <span>GEAR & PRODUCTION TECH VAULT</span>
               </div>
 
@@ -210,7 +210,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
                     key={eq}
                     className="font-mono text-xs uppercase border border-border bg-card px-3.5 py-2 text-foreground flex items-center gap-2"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+                    <CheckCircle2 className="size-4 text-primary selection:text-background selection:bg-primary" />
                     {eq}
                   </span>
                 ))}
@@ -247,7 +247,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
               <div className="space-y-2.5 pt-4 border-t border-border font-mono text-xs">
                 <div className="flex justify-between items-center text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
+                    <Clock className="size-3.5 text-primary selection:text-background selection:bg-primary" />
                     Turnaround:
                   </span>
                   <span className="text-foreground font-bold">
@@ -257,7 +257,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
 
                 <div className="flex justify-between items-center text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <Briefcase className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
+                    <Briefcase className="size-3.5 text-primary selection:text-background selection:bg-primary" />
                     Completed Projects:
                   </span>
                   <span className="text-foreground font-bold">
@@ -267,7 +267,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
 
                 <div className="flex justify-between items-center text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <Star className="w-3.5 h-3.5 fill-primary text-primary selection:text-background selection:bg-primary" />
+                    <Star className="size-3.5 fill-primary text-primary selection:text-background selection:bg-primary" />
                     Client Rating:
                   </span>
                   <span className="text-foreground font-bold">
@@ -284,7 +284,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
                   className="w-full font-mono text-xs uppercase tracking-wider h-12"
                 >
                   <span>Request Cult Escrow Quote</span>
-                  <ArrowUpRight className="w-4 h-4 ml-1" />
+                  <ArrowUpRight className="size-4 ml-1" />
                 </Button>
 
                 <Button
@@ -297,7 +297,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
                     }
                   }}
                 >
-                  <Share2 className="w-4 h-4 mr-2" />
+                  <Share2 className="size-4 mr-2" />
                   <span>Share Cult Profile</span>
                 </Button>
               </div>
@@ -305,7 +305,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
 
             {/* Escrow Banner */}
             <div className="border border-primary/40 bg-primary/5 p-5 flex items-start gap-4">
-              <Lock className="w-6 h-6 text-primary selection:text-background selection:bg-primary shrink-0 mt-0.5" />
+              <Lock className="size-6 text-primary selection:text-background selection:bg-primary shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <h4 className="font-mono text-xs uppercase tracking-wider font-bold text-foreground">
                   CREATIVE-CULT ESCROW GUARANTEE

@@ -187,7 +187,7 @@ export function AddPortfolioItemDialog({
                 <Image
                   src={coverPreview}
                   alt="Cover preview"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 size-full object-cover"
                   height={100}
                   width={100}
                 />

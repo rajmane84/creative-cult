@@ -146,7 +146,7 @@ export function DiscoverView() {
         {/* Results Info Bar */}
         <div className="flex items-center justify-between font-mono text-xs text-muted-foreground uppercase border-b border-border/60 pb-3">
           <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-primary selection:text-background selection:bg-primary" />
+            <Layers className="size-4 text-primary selection:text-background selection:bg-primary" />
             <span>
               SHOWING {displayItems.length} RESULT
               {displayItems.length === 1 ? '' : 'S'}
@@ -183,7 +183,7 @@ export function DiscoverView() {
             animate={{ opacity: 1, scale: 1 }}
             className="border border-dashed border-border bg-card/60 p-12 text-center space-y-4 max-w-md mx-auto my-12"
           >
-            <SearchX className="w-12 h-12 text-muted-foreground mx-auto" />
+            <SearchX className="size-12 text-muted-foreground mx-auto" />
             <div className="space-y-1">
               <h3 className="font-editorial text-2xl font-bold text-foreground">
                 No matching results found
@@ -199,7 +199,7 @@ export function DiscoverView() {
               onClick={handleClearFilters}
               className="font-mono text-xs uppercase tracking-wider h-10 px-4"
             >
-              <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+              <RefreshCw className="size-3.5 mr-1.5" />
               Reset All Filters
             </Button>
           </motion.div>

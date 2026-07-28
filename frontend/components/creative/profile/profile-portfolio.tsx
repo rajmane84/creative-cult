@@ -66,7 +66,7 @@ export default function ProfilePortfolio() {
                       <img
                         src={item.coverImageUrl}
                         alt={item.title}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-105"
+                        className="absolute inset-0 size-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex items-center justify-center h-full">

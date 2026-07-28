@@ -19,7 +19,7 @@ export function DiscoverSpotlight() {
         {/* Section Title */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-foreground font-bold">
-            <Sparkles className="w-4 h-4 text-primary selection:text-background selection:bg-primary animate-pulse" />
+            <Sparkles className="size-4 text-primary selection:text-background selection:bg-primary animate-pulse" />
             <span>SPOTLIGHT // HIGHLIGHTS OF THE MONTH</span>
           </div>
 
@@ -49,7 +49,7 @@ export function DiscoverSpotlight() {
                   {featuredCult.members.map((m) => (
                     <Avatar
                       key={m.id}
-                      className="w-8 h-8 border border-border shrink-0"
+                      className="size-8 border border-border shrink-0"
                     >
                       <AvatarImage src={m.avatar} alt={m.name} />
                       <AvatarFallback className="font-mono text-[9px]">
@@ -84,7 +84,7 @@ export function DiscoverSpotlight() {
             quote={featuredFreelancer.headline}
             metaRow={
               <div className="flex items-center gap-2">
-                <Avatar className="w-8 h-8 border border-border shrink-0">
+                <Avatar className="size-8 border border-border shrink-0">
                   <AvatarImage
                     src={featuredFreelancer.avatarUrl}
                     alt={featuredFreelancer.name}

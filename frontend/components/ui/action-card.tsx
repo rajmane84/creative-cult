@@ -56,8 +56,8 @@ export function ActionCardHeader({ children }: { children: ReactNode }) {
 
 export function ActionCardIcon({ icon: Icon }: { icon: LucideIcon }) {
   return (
-    <div className="w-12 h-12 border border-border bg-background flex items-center justify-center shrink-0">
-      <Icon className="w-6 h-6 text-primary selection:text-background selection:bg-primary" />
+    <div className="size-12 border border-border bg-background flex items-center justify-center shrink-0">
+      <Icon className="size-6 text-primary selection:text-background selection:bg-primary" />
     </div>
   );
 }
@@ -116,7 +116,7 @@ export function ActionCardDismiss({ onClick }: { onClick: () => void }) {
       aria-label="Dismiss banner"
       className="p-1.5 text-muted-foreground hover:text-foreground border border-transparent hover:border-border transition-colors"
     >
-      <X className="w-4 h-4" />
+      <X className="size-4" />
     </button>
   );
 }

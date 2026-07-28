@@ -57,7 +57,7 @@ export default function CreativeDashboard() {
           >
             <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground flex items-center gap-2">
               <span>/ Creative Dashboard</span>
-              <span className="w-1.5 h-1.5 bg-primary selection:text-background selection:bg-primary inline-block" />
+              <span className="size-1.5 bg-primary selection:text-background selection:bg-primary inline-block" />
             </div>
 
             <h1 className="font-editorial text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">

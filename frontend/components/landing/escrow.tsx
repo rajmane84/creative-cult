@@ -69,9 +69,9 @@ export default function Escrow() {
         <div className="col-span-12 border border-background/30 md:col-span-7">
           <div className="flex items-center justify-between border-b border-background/25 px-4 py-3 font-mono text-[10px] uppercase">
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 bg-primary" />
-              <span className="h-2 w-2 bg-background/40" />
-              <span className="h-2 w-2 bg-background/40" />
+              <span className="size-2 bg-primary" />
+              <span className="size-2 bg-background/40" />
+              <span className="size-2 bg-background/40" />
             </div>
 
             <span className="opacity-60">/cult/vault/tx_00184</span>

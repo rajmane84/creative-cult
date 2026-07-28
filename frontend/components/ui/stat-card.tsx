@@ -61,11 +61,11 @@ export function StatCardIcon({
   return (
     <div
       className={cn(
-        'w-11 h-11 border border-border bg-background flex items-center justify-center shrink-0 transition-colors',
+        'size-11 border border-border bg-background flex items-center justify-center shrink-0 transition-colors',
         className
       )}
     >
-      <Icon className="w-5 h-5 text-primary selection:text-background selection:bg-primary" />
+      <Icon className="size-5 text-primary selection:text-background selection:bg-primary" />
     </div>
   );
 }

@@ -93,9 +93,7 @@ function BreadcrumbSeparator({
       )}
       {...props}
     >
-      {children ?? (
-        <ChevronRight className="w-3 h-3 text-muted-foreground/60" />
-      )}
+      {children ?? <ChevronRight className="size-3 text-muted-foreground/60" />}
     </li>
   );
 }

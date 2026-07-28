@@ -94,7 +94,7 @@ export function ResumeUpload({ onParseComplete, onError }: ResumeUploadProps) {
         {!selectedFile ? (
           <div className="space-y-4">
             <div className="flex justify-center">
-              <Upload className="h-12 w-12 text-gray-400" />
+              <Upload className="size-12 text-gray-400" />
             </div>
             <div>
               <p className="text-lg font-medium text-gray-900">
@@ -116,7 +116,7 @@ export function ResumeUpload({ onParseComplete, onError }: ResumeUploadProps) {
         ) : (
           <div className="space-y-4">
             <div className="flex items-center justify-center space-x-3">
-              <FileText className="h-8 w-8 text-primary" />
+              <FileText className="size-8 text-primary" />
               <div className="text-left">
                 <p className="text-sm font-medium text-gray-900">
                   {selectedFile.name}
@@ -131,7 +131,7 @@ export function ResumeUpload({ onParseComplete, onError }: ResumeUploadProps) {
                 disabled={isParsing}
                 className="p-1 hover:bg-gray-200 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <X className="h-4 w-4 text-gray-500" />
+                <X className="size-4 text-gray-500" />
               </button>
             </div>
             <button
@@ -142,7 +142,7 @@ export function ResumeUpload({ onParseComplete, onError }: ResumeUploadProps) {
             >
               {isParsing ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="size-4 mr-2 animate-spin" />
                   Parsing...
                 </>
               ) : (

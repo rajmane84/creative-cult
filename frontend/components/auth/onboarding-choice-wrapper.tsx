@@ -60,7 +60,7 @@ export function OnboardingChoiceWrapper() {
               <span className="absolute inset-0 translate-y-full bg-foreground transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
 
               <div className="relative z-10 flex flex-col h-full justify-between transition-colors duration-500 group-hover:text-background gap-8">
-                <User className="w-6 h-6 opacity-70" />
+                <User className="size-6 opacity-70" />
                 <div>
                   <CardTitle className="text-3xl mb-2">Manual Setup</CardTitle>
                   <CardDescription className="group-hover:text-background/70">
@@ -83,7 +83,7 @@ export function OnboardingChoiceWrapper() {
               <span className="absolute inset-0 translate-y-full bg-primary transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:translate-y-0" />
 
               <div className="relative z-10 flex flex-col h-full justify-between transition-colors duration-500 group-hover:text-primary-foreground gap-8">
-                <FileText className="w-6 h-6 opacity-70" />
+                <FileText className="size-6 opacity-70" />
                 <div>
                   <CardTitle className="text-3xl mb-2">Upload Resume</CardTitle>
                   <CardDescription className="group-hover:text-primary-foreground/70">
@@ -96,7 +96,7 @@ export function OnboardingChoiceWrapper() {
 
           {!resumeUploadEnabled && (
             <div className="mt-8 flex gap-4 border border-border bg-foreground/3 p-6">
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 opacity-70" />
+              <AlertCircle className="size-5 shrink-0 mt-0.5 opacity-70" />
               <div className="space-y-2">
                 <div className="font-mono text-[11px] uppercase tracking-widest opacity-60">
                   Temporarily unavailable

@@ -77,9 +77,9 @@ export default function AvatarUpload({
           )}
         >
           {isUploading ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <Loader2 className="size-3.5 animate-spin" />
           ) : (
-            <Camera className="h-3.5 w-3.5" />
+            <Camera className="size-3.5" />
           )}
         </span>
       </button>

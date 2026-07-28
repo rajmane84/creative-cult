@@ -69,7 +69,7 @@ export function SpotlightCard({
           <img
             src={image}
             alt={imageAlt}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="size-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
@@ -108,7 +108,7 @@ export function SpotlightCard({
             {metaRow}
 
             <div className="flex items-center gap-1 font-mono text-xs shrink-0">
-              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+              <Star className="size-3.5 fill-primary text-primary" />
               <span className="font-bold text-foreground">{rating}</span>
               <span className="text-muted-foreground">({reviewCount})</span>
             </div>
@@ -141,7 +141,7 @@ export function SpotlightCard({
               className="font-mono text-[10px] uppercase tracking-wider"
             >
               <span>{ctaLabel}</span>
-              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+              <ArrowUpRight className="size-3.5 ml-1" />
             </Button>
           </div>
         </div>

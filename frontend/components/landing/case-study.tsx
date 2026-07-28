@@ -78,7 +78,7 @@ export default function CaseStudy() {
             <img
               src={r.img}
               alt={r.role}
-              className="absolute inset-0 h-full w-full object-cover grayscale-15 transition-transform duration-1200 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-[1.06] group-hover:grayscale-0"
+              className="absolute inset-0 size-full object-cover grayscale-15 transition-transform duration-1200 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-[1.06] group-hover:grayscale-0"
             />
 
             {/* subtle spotlight overlay */}

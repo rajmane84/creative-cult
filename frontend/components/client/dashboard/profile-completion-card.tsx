@@ -27,7 +27,7 @@ function ProfileCompletePercentageSvg({
 }: ProfileCompletePercentageSvgProps) {
   return (
     <svg
-      className={cn('w-10 h-10 -rotate-90', className)}
+      className={cn('size-10 -rotate-90', className)}
       viewBox="0 0 36 36"
       {...props}
     >
@@ -80,7 +80,7 @@ export function ProfileCompletionCard({
         </div>
 
         <ActionCardMedia>
-          <div className="relative w-14 h-14 flex items-center justify-center border border-border bg-background">
+          <div className="relative size-14 flex items-center justify-center border border-border bg-background">
             <ProfileCompletePercentageSvg percentage={percentage} />
             <span className="absolute font-mono text-xs font-bold text-foreground">
               {completedSteps}/{totalSteps}

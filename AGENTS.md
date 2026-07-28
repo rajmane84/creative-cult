@@ -90,6 +90,7 @@ When building new features, always adhere to the following strictly separated fl
 - **Mobile-First & Responsive Design**: Always adopt a mobile-first mindset when creating components. Every component must be fully adaptable across all screen size ranges (mobile, tablets, laptops, and larger screens) by properly using responsive breakpoint classes (`sm:`, `md:`, `lg:`, `xl:`).
 - **No Dark Mode**: Do NOT use or support dark mode (`dark:` variants, dark mode toggles, or dark theme overrides). All components and styles must strictly target the standard light design system.
 - **Text Selection Highlight**: The global selection color is set to primary (orange). Therefore, whenever you apply `text-primary` to any text or icon, you MUST also add the classes `selection:text-background selection:bg-primary` so that if the user selects that text, the highlight color inverses correctly instead of disappearing (orange on orange).
+- **Square Sizing Shorthand**: Whenever an element or tag has identical height and width utility classes (e.g. `h-5 w-5`), use the Tailwind `size-*` shorthand instead (e.g. `size-5`).
 
 ## Code Quality & Cleanup
 

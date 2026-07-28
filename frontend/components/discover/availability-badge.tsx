@@ -10,7 +10,7 @@ export function AvailabilityBadge({ isAvailable }: { isAvailable: boolean }) {
     >
       <span
         className={cn(
-          'w-1.5 h-1.5 rounded-full shrink-0',
+          'size-1.5 rounded-full shrink-0',
           isAvailable ? 'bg-[var(--success)]' : 'bg-muted-foreground/60'
         )}
       />

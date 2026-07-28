@@ -121,18 +121,18 @@ export default function AvailabilityToggle({
           )}
         >
           {isUpdating ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+            <Loader2 className="size-3.5 animate-spin shrink-0" />
           ) : (
-            <span className="relative flex h-2 w-2 items-center justify-center shrink-0">
+            <span className="relative flex size-2 items-center justify-center shrink-0">
               <span
                 className={cn(
-                  'absolute inline-flex h-full w-full rounded-full opacity-75',
+                  'absolute inline-flex size-full rounded-full opacity-75',
                   activeConfig.dotClasses
                 )}
               />
               <span
                 className={cn(
-                  'relative inline-flex h-1.5 w-1.5 rounded-full',
+                  'relative inline-flex size-1.5 rounded-full',
                   activeConfig.dotClasses.split(' ')[0]
                 )}
               />
@@ -143,7 +143,7 @@ export default function AvailabilityToggle({
 
           <ChevronDown
             className={cn(
-              'w-3.5 h-3.5 opacity-60 transition-transform duration-200 group-hover:opacity-100 shrink-0 ml-0.5',
+              'size-3.5 opacity-60 transition-transform duration-200 group-hover:opacity-100 shrink-0 ml-0.5',
               isOpen && 'rotate-180'
             )}
           />
@@ -185,7 +185,7 @@ export default function AvailabilityToggle({
                           cfg.badgeClasses
                         )}
                       >
-                        <Icon className="w-3.5 h-3.5" />
+                        <Icon className="size-3.5" />
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -194,7 +194,7 @@ export default function AvailabilityToggle({
                             {cfg.label}
                           </span>
                           {isSelected && (
-                            <Check className="w-3.5 h-3.5 text-primary shrink-0 selection:text-background selection:bg-primary" />
+                            <Check className="size-3.5 text-primary shrink-0 selection:text-background selection:bg-primary" />
                           )}
                         </div>
                         <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug font-sans">

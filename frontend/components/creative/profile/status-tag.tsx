@@ -27,7 +27,7 @@ export function StatusTag({
       className={cn('status-tag', VARIANT_CLASS[variant], className)}
       title={label}
     >
-      <Icon className="w-3 h-3" />
+      <Icon className="size-3" />
       {label}
     </span>
   );

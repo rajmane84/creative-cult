@@ -45,7 +45,7 @@ export default function NotFound() {
           transition={{ duration: 0.5 }}
           className="mb-6 inline-flex items-center gap-2 border border-primary/30 bg-primary/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-primary"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+          <span className="size-1.5 rounded-full bg-primary animate-pulse" />
           <span>Error 404 — Page Not Found</span>
         </motion.div>
 

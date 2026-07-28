@@ -83,7 +83,7 @@ export default function BasicInfoStep({
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
             {isCheckingUsername && (
-              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              <Loader2 className="size-4 animate-spin text-muted-foreground" />
             )}
             {!isCheckingUsername &&
               !errors.username &&
@@ -91,9 +91,9 @@ export default function BasicInfoStep({
               isUsernameAvailable !== null && (
                 <>
                   {isUsernameAvailable ? (
-                    <Check className="w-4 h-4 text-emerald-600 selection:text-background selection:bg-primary" />
+                    <Check className="size-4 text-emerald-600 selection:text-background selection:bg-primary" />
                   ) : (
-                    <X className="w-4 h-4 text-red-600" />
+                    <X className="size-4 text-red-600" />
                   )}
                 </>
               )}

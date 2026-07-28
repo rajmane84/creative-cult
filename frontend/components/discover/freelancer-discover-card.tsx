@@ -43,11 +43,11 @@ export function FreelancerDiscoverCard({
             <img
               src={heroImage}
               alt={`${freelancer.name}'s work`}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full bg-muted flex items-center justify-center">
-              <Avatar className="w-20 h-20 border-2 border-border">
+            <div className="size-full bg-muted flex items-center justify-center">
+              <Avatar className="size-20 border-2 border-border">
                 <AvatarImage src={freelancer.avatarUrl} alt={freelancer.name} />
                 <AvatarFallback className="font-mono font-bold">
                   {freelancer.name.slice(0, 2).toUpperCase()}
@@ -64,7 +64,7 @@ export function FreelancerDiscoverCard({
 
           {/* Avatar + location — mirrors cult card's location overlay */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            <Avatar className="w-8 h-8 border border-white/40 shrink-0">
+            <Avatar className="size-8 border border-white/40 shrink-0">
               <AvatarImage src={freelancer.avatarUrl} alt={freelancer.name} />
               <AvatarFallback className="font-mono text-[9px] bg-background">
                 {freelancer.name.slice(0, 2).toUpperCase()}
@@ -105,7 +105,7 @@ export function FreelancerDiscoverCard({
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                 ))}
@@ -131,7 +131,7 @@ export function FreelancerDiscoverCard({
               {freelancer.dailyRate}
             </span>
             <div className="flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 fill-primary text-primary" />
+              <Star className="size-3.5 fill-primary text-primary" />
               <span className="font-bold text-foreground">
                 {freelancer.rating}
               </span>

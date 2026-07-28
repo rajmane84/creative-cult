@@ -22,7 +22,7 @@ export function DiscoverHeader() {
           <span>—</span>
           <span>INDEX OF COLLECTIVES & INDEPENDENTS</span>
           <span className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-primary/30 bg-primary/10 text-primary font-mono text-[10px] uppercase tracking-wider selection:text-background selection:bg-primary">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping" />
+            <span className="size-1.5 rounded-full bg-primary animate-ping" />
             LIVE DIRECTORY
           </span>
         </motion.div>
@@ -82,7 +82,7 @@ function QuickStats() {
       <div className="border border-border bg-card p-4 sm:p-5 space-y-3">
         <div className="flex items-center justify-between font-mono text-[10px] uppercase text-muted-foreground border-b border-border/60 pb-2">
           <span>DIRECTORY STATS</span>
-          <Sparkles className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
+          <Sparkles className="size-3.5 text-primary selection:text-background selection:bg-primary" />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -91,7 +91,7 @@ function QuickStats() {
               48+
             </div>
             <div className="font-mono text-[10px] uppercase text-muted-foreground flex items-center gap-1">
-              <Users className="w-3 h-3 text-primary selection:text-background selection:bg-primary" />
+              <Users className="size-3 text-primary selection:text-background selection:bg-primary" />
               Vetted Collectives
             </div>
           </div>
@@ -101,7 +101,7 @@ function QuickStats() {
               210+
             </div>
             <div className="font-mono text-[10px] uppercase text-muted-foreground flex items-center gap-1">
-              <Zap className="w-3 h-3 text-primary selection:text-background selection:bg-primary" />
+              <Zap className="size-3 text-primary selection:text-background selection:bg-primary" />
               Creatives
             </div>
           </div>
@@ -109,7 +109,7 @@ function QuickStats() {
 
         <div className="pt-2 border-t border-border/60 flex items-center justify-between font-mono text-[10px] text-muted-foreground uppercase">
           <span className="flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-primary selection:text-background selection:bg-primary" />
+            <ShieldCheck className="size-3.5 text-primary selection:text-background selection:bg-primary" />
             100% Escrow Protected
           </span>
           <span className="text-foreground font-bold">99.4% On-time</span>

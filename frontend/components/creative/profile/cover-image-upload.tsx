@@ -48,7 +48,7 @@ export default function CoverImageUpload({
           <img
             src={coverImage}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 size-full object-cover"
           />
         ) : (
           <div className="absolute inset-0 bg-linear-to-br from-foreground via-foreground/85 to-primary/70" />
@@ -64,9 +64,9 @@ export default function CoverImageUpload({
         className="absolute top-4 left-6 flex items-center gap-1.5 rounded-lg bg-background/95 backdrop-blur-sm border border-border px-3 py-1.5 text-xs font-body font-medium text-foreground cursor-pointer hover:bg-background transition-colors disabled:cursor-wait disabled:opacity-70"
       >
         {isUploading ? (
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="size-3.5 animate-spin" />
         ) : (
-          <Camera className="h-3.5 w-3.5" />
+          <Camera className="size-3.5" />
         )}
         Change cover
       </button>
