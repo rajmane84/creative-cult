@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { GraduationCap, Edit2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EditEducationDialog } from './edit-education-dialog';
+import { EditEducationDialog } from './dialog/edit-education-dialog';
 import { Degree } from '@/types';
 
 interface Education {

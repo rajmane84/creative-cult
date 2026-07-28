@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Briefcase, Edit2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EditExperienceDialog } from './edit-experience-dialog';
+import { EditExperienceDialog } from './dialog/edit-experience-dialog';
 import { EmploymentType } from '@/types';
 
 interface Experience {

@@ -7,7 +7,7 @@ import {
   useMyPortfolio,
   useDeletePortfolioItem,
 } from '@/hooks/creative/portfolio';
-import { AddPortfolioItemDialog } from './add-portfolio-item-dialog';
+import { AddPortfolioItemDialog } from './dialog/add-portfolio-item-dialog';
 
 export default function ProfilePortfolio() {
   const [isAddOpen, setIsAddOpen] = useState(false);

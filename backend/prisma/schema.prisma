@@ -132,6 +132,7 @@ model CreativeProfile {
   location            String? // We're not allowing the users to manually change the location
   availability        AvailabilityStatus @default(AVAILABLE)
   onboardingCompleted Boolean            @default(false)
+  coverImage String?
 
   resumeUrl        String?
   resumeFileName   String?

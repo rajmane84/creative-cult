@@ -66,3 +66,16 @@ const portfolioImageUpload = multer({
 
 // Export specific middleware for portfolio cover image upload
 export const uploadPortfolioCover = portfolioImageUpload.single('coverImage');
+
+// Configure multer instance for profile cover image uploads
+const profileCoverImageUpload = multer({
+  storage,
+  fileFilter: imageFileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+});
+
+// Export specific middleware for profile cover image upload
+export const uploadProfileCoverImage =
+  profileCoverImageUpload.single('coverImage');

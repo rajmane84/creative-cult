@@ -50,6 +50,20 @@ export const profileService = {
     return response.data as SuccessResponse<ProfileData['user']>;
   },
 
+  updateCoverImage: async (
+    file: File
+  ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
+    const formData = new FormData();
+    formData.append('coverImage', file);
+
+    const response = await axios.patch('/profile/cover-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data as SuccessResponse<ProfileData['creativeProfile']>;
+  },
+
   updateEducation: async (
     data: UpdateEducationData
   ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {

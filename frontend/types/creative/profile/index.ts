@@ -24,6 +24,7 @@ export interface CreativeProfile {
   location?: string | null;
   availability: AvailabilityStatus;
   onboardingCompleted: boolean;
+  coverImage?: string | null;
   resumeUrl?: string | null;
   resumeFileName?: string | null;
   resumeUploadedAt?: string | null;

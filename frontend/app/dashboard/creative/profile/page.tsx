@@ -2,8 +2,7 @@
 
 import { ErrorState } from '@/components/error-state';
 import { LoadingState } from '@/components/loading-state';
-import { useProfile } from '@/hooks/creative/profile/use-profile';
-import { useUpdateAvatar } from '@/hooks/creative/profile/use-update-avatar';
+import { useProfile } from '@/hooks/creative/profile';
 import {
   ProfileHeader,
   ProfileAbout,
@@ -16,7 +15,6 @@ import { EmailVerificationCard } from '@/components/auth/email-verification-card
 
 export default function CreativeProfilePage() {
   const { data: profileData, isLoading, error, refetch } = useProfile();
-  const { updateAvatarMutation } = useUpdateAvatar();
 
   if (isLoading) {
     return <LoadingState message="Loading profile details..." />;
@@ -41,7 +39,7 @@ export default function CreativeProfilePage() {
   }));
 
   return (
-    <div className="w-full py-12 px-4 sm:px-6 lg:px-8 space-y-10">
+    <div className="w-full">
       <ProfileHeader
         user={{
           name: user.name,
@@ -55,26 +53,27 @@ export default function CreativeProfilePage() {
           bio: creativeProfile.bio || '',
           location: creativeProfile.location || '',
           availability: creativeProfile.availability,
+          coverImage: creativeProfile.coverImage,
         }}
-        onAvatarChange={(file) => updateAvatarMutation.mutate(file)}
-        isAvatarUploading={updateAvatarMutation.isPending}
       />
 
-      {/* Email Verification Section */}
-      <EmailVerificationCard
-        email={user.email}
-        isVerified={user.emailVerified ?? false}
-      />
-
-      <div className="space-y-12 md:space-y-16">
-        <ProfileAbout
-          headline={creativeProfile.headline || ''}
-          bio={creativeProfile.bio || ''}
+      <div className="py-12 px-4 sm:px-6 lg:px-8 space-y-10">
+        {/* Email Verification Section */}
+        <EmailVerificationCard
+          email={user.email}
+          isVerified={user.emailVerified ?? false}
         />
-        <ProfileSkills skills={skills} />
-        <ProfileExperience experiences={creativeProfile.experiences} />
-        <ProfileEducation education={creativeProfile.education} />
-        <ProfilePortfolio />
+
+        <div className="space-y-12 md:space-y-16">
+          <ProfileAbout
+            headline={creativeProfile.headline || ''}
+            bio={creativeProfile.bio || ''}
+          />
+          <ProfileSkills skills={skills} />
+          <ProfileExperience experiences={creativeProfile.experiences} />
+          <ProfileEducation education={creativeProfile.education} />
+          <ProfilePortfolio />
+        </div>
       </div>
     </div>
   );

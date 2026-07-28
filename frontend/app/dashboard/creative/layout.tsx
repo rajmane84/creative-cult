@@ -1,8 +1,15 @@
+import type { Metadata } from 'next';
 import { ROLE_ROUTES } from '@/constants';
 import { requireRole } from '@/lib/session';
 import { UserRole } from '@/types';
 import { redirect } from 'next/navigation';
 import { CreativeDashboardBreadcrumbs } from '@/components/creative/dashboard';
+
+export const metadata: Metadata = {
+  title: 'Dashboard — cre8ive-cult',
+  description:
+    'Manage your creative profile, portfolio, and activity on cre8ive-cult.',
+};
 
 export default async function CreativeDashboardLayout({
   children,

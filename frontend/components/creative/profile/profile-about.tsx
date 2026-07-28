@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Edit2, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EditAboutDialog } from './edit-about-dialog';
+import { EditAboutDialog } from './dialog/edit-about-dialog';
 
 interface ProfileAboutProps {
   headline: string;

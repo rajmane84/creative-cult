@@ -161,6 +161,53 @@ export const handleUpdateAvatar = asyncHandler(
   }
 );
 
+export const handleUpdateCoverImage = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+
+    if (!req.file) {
+      throw new BadRequestError('No file uploaded');
+    }
+
+    const creativeProfile = await prisma.creativeProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!creativeProfile) {
+      throw new NotFoundError('Creative profile not found');
+    }
+
+    const uploadResult = await uploadToCloudinary(
+      req.file.buffer,
+      'cover-images',
+      'image'
+    );
+
+    if (
+      creativeProfile.coverImage &&
+      creativeProfile.coverImage.includes('cloudinary')
+    ) {
+      try {
+        const oldPublicId = getPublicIdFromUrl(creativeProfile.coverImage);
+        await deleteFromCloudinary(oldPublicId, 'image');
+      } catch (error) {
+        console.error('Failed to delete previous cover image:', error);
+      }
+    }
+
+    const updatedProfile = await prisma.creativeProfile.update({
+      where: { id: creativeProfile.id },
+      data: { coverImage: uploadResult.url },
+    });
+
+    return ApiResponse.success(
+      res,
+      updatedProfile,
+      'Cover image updated successfully'
+    );
+  }
+);
+
 export const handleUpdateSkills = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;

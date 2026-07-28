@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Sparkles, Edit2, Plus } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { Button } from '@/components/ui/button';
-import { EditSkillsDialog } from './edit-skills-dialog';
+import { EditSkillsDialog } from './dialog/edit-skills-dialog';
 import { SkillExpertiseLevel } from '@/types';
 
 interface Skill {
