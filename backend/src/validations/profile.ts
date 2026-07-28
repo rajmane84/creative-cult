@@ -9,10 +9,6 @@ import {
 export const updateProfileSchema = z.object({
   headline: z.string('Headline is required').optional(),
   bio: z.string('Bio is required').optional(),
-  location: z
-    .string('Location is required')
-    .max(100, 'Location must be at most 100 characters')
-    .optional(),
   availability: z
     .enum(AvailabilityStatus, {
       error: (issue) =>
@@ -21,6 +17,13 @@ export const updateProfileSchema = z.object({
           : 'Invalid availability status. Must be one of: AVAILABLE, BUSY, NOT_AVAILABLE',
     })
     .optional(),
+});
+
+export const setLocationSchema = z.object({
+  location: z
+    .string('Location is required')
+    .min(1, 'Location is required')
+    .max(100, 'Location must be at most 100 characters'),
 });
 
 export const updateSkillsSchema = z.object({

@@ -1,0 +1,25 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { profileService } from '@/services/creative/profile';
+import { handleApiError } from '@/lib/handle-error';
+import type { SetLocationData } from '@/types/creative/profile';
+
+export function useSetLocation(options?: {
+  onSuccess?: () => void;
+  onError?: () => void;
+}) {
+  const queryClient = useQueryClient();
+
+  const setLocationMutation = useMutation({
+    mutationFn: (data: SetLocationData) => profileService.setLocation(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      options?.onSuccess?.();
+    },
+    onError: (error) => {
+      handleApiError(error, 'Failed to set location');
+      options?.onError?.();
+    },
+  });
+
+  return { setLocationMutation };
+}

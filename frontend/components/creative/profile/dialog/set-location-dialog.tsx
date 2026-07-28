@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, TriangleAlert } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,46 +13,54 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useUpdateProfile } from '@/hooks/creative/profile/use-update-profile';
+import { useSetLocation } from '@/hooks/creative/profile/use-set-location';
 
-interface EditLocationDialogProps {
+interface SetLocationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  location: string;
 }
 
-export function EditLocationDialog({
+export function SetLocationDialog({
   open,
   onOpenChange,
-  location: initialLocation,
-}: EditLocationDialogProps) {
-  const [location, setLocation] = useState(initialLocation);
+}: SetLocationDialogProps) {
+  const [location, setLocation] = useState('');
 
-  const { updateProfileMutation } = useUpdateProfile({
+  const { setLocationMutation } = useSetLocation({
     onSuccess: () => onOpenChange(false),
   });
 
   const handleOpenChange = (next: boolean) => {
-    if (next) setLocation(initialLocation);
+    if (next) setLocation('');
     onOpenChange(next);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfileMutation.mutate({ location: location.trim() });
+    if (!location.trim()) return;
+    setLocationMutation.mutate({ location: location.trim() });
   };
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Edit Location</DialogTitle>
+          <DialogTitle>Set Your Location</DialogTitle>
           <DialogDescription>
-            Shown on your profile so clients know where you&apos;re based.
+            We couldn&apos;t detect your location automatically.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 py-2">
+          <div className="flex items-start gap-2.5 border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm text-destructive">
+            <TriangleAlert className="size-4 shrink-0 mt-0.5" />
+            <p>
+              This is <strong className="font-semibold">permanent</strong> —
+              once saved, you won&apos;t be able to change your location again.
+              Double-check it before continuing.
+            </p>
+          </div>
+
           <div className="space-y-2">
             <Label
               htmlFor="profile-location"
@@ -75,19 +83,19 @@ export function EditLocationDialog({
               type="button"
               variant="outline"
               onClick={() => handleOpenChange(false)}
-              disabled={updateProfileMutation.isPending}
+              disabled={setLocationMutation.isPending}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={updateProfileMutation.isPending}
+              disabled={setLocationMutation.isPending || !location.trim()}
               className="gap-2"
             >
-              {updateProfileMutation.isPending && (
+              {setLocationMutation.isPending && (
                 <Loader2 className="size-4 animate-spin" />
               )}
-              Save Changes
+              Save Permanently
             </Button>
           </DialogFooter>
         </form>

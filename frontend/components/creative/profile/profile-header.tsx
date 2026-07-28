@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { MapPin, Mail, CheckCircle2, ShieldAlert } from 'lucide-react';
 import AvailabilityToggle from './availability-toggle';
-import { EditLocationDialog } from './dialog/edit-location-dialog';
+import { SetLocationDialog } from './dialog/set-location-dialog';
 import { StatusTag } from './status-tag';
 import AvatarUpload from './avatar-upload';
 import CoverImageUpload from './cover-image-upload';
@@ -35,7 +35,7 @@ export default function ProfileHeader({
   profile,
   onAvailabilityChange,
 }: ProfileHeaderProps) {
-  const [isLocationEditOpen, setIsLocationEditOpen] = useState(false);
+  const [isSetLocationOpen, setIsSetLocationOpen] = useState(false);
 
   const handleEditProfile = () => {
     toast('Edit profile — coming soon');
@@ -86,17 +86,24 @@ export default function ProfileHeader({
         </p>
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          <button
-            type="button"
-            onClick={() => setIsLocationEditOpen(true)}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-          >
-            <MapPin className="w-3.5 h-3.5" />
-            {profile.location || 'Add location'}
-          </button>
+          {profile.location ? (
+            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <MapPin className="w-3.5 h-3.5 text-primary" />
+              <span>{profile.location}</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsSetLocationOpen(true)}
+              className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              <MapPin className="w-3.5 h-3.5 text-primary" />
+              Add location
+            </button>
+          )}
 
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Mail className="w-3.5 h-3.5" />
+            <Mail className="w-3.5 h-3.5 text-primary" />
             <span>{user.email}</span>
           </div>
 
@@ -135,10 +142,9 @@ export default function ProfileHeader({
         </div>
       </div>
 
-      <EditLocationDialog
-        open={isLocationEditOpen}
-        onOpenChange={setIsLocationEditOpen}
-        location={profile.location}
+      <SetLocationDialog
+        open={isSetLocationOpen}
+        onOpenChange={setIsSetLocationOpen}
       />
     </div>
   );

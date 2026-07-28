@@ -3,6 +3,7 @@ import type { SuccessResponse } from '@/types/api';
 import type {
   ProfileData,
   UpdateProfileData,
+  SetLocationData,
   UpdateSkillsData,
   UpdateAvailabilityData,
   UpdateEducationData,
@@ -19,6 +20,13 @@ export const profileService = {
     data: UpdateProfileData
   ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
     const response = await axios.patch('/profile', data);
+    return response.data as SuccessResponse<ProfileData['creativeProfile']>;
+  },
+
+  setLocation: async (
+    data: SetLocationData
+  ): Promise<SuccessResponse<ProfileData['creativeProfile']>> => {
+    const response = await axios.patch('/profile/location', data);
     return response.data as SuccessResponse<ProfileData['creativeProfile']>;
   },
 

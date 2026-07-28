@@ -1,4 +1,5 @@
 export * from './use-profile';
+export * from './use-set-location';
 export * from './use-update-availability';
 export * from './use-update-avatar';
 export * from './use-update-cover-image';

@@ -8,6 +8,7 @@ import {
   deleteFromCloudinary,
   getPublicIdFromUrl,
 } from '../util/cloudinary';
+import { getLocationFromRequest } from '../util/geolocation';
 
 export const handleGetProfile = asyncHandler(
   async (req: Request, res: Response) => {
@@ -32,7 +33,7 @@ export const handleGetProfile = asyncHandler(
       throw new NotFoundError('User not found');
     }
 
-    const creativeProfile = await prisma.creativeProfile.findUnique({
+    let creativeProfile = await prisma.creativeProfile.findUnique({
       where: { userId },
       include: {
         skills: {
@@ -50,6 +51,30 @@ export const handleGetProfile = asyncHandler(
 
     if (!creativeProfile) {
       throw new NotFoundError('Creative profile not found');
+    }
+
+    // Location detection can fail during onboarding (e.g. unresolvable IP) -
+    // retry here since it's a cheap lookup, so it self-heals on a later request.
+    if (!creativeProfile.location) {
+      const detectedLocation = getLocationFromRequest(req);
+      if (detectedLocation) {
+        creativeProfile = await prisma.creativeProfile.update({
+          where: { id: creativeProfile.id },
+          data: { location: detectedLocation },
+          include: {
+            skills: {
+              include: {
+                skill: true,
+              },
+            },
+            experiences: true,
+            education: true,
+            _count: {
+              select: { ownedPortfolioItems: true },
+            },
+          },
+        });
+      }
     }
 
     const completionSteps = {
@@ -83,7 +108,7 @@ export const handleGetProfile = asyncHandler(
 export const handleUpdateProfile = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const { headline, bio, location, availability } = req.body;
+    const { headline, bio, availability } = req.body;
 
     const creativeProfile = await prisma.creativeProfile.findUnique({
       where: { userId },
@@ -98,7 +123,6 @@ export const handleUpdateProfile = asyncHandler(
       data: {
         headline: headline !== undefined ? headline : creativeProfile.headline,
         bio: bio !== undefined ? bio : creativeProfile.bio,
-        location: location !== undefined ? location : creativeProfile.location,
         availability:
           availability !== undefined
             ? availability
@@ -110,6 +134,40 @@ export const handleUpdateProfile = asyncHandler(
       res,
       updatedProfile,
       'Profile updated successfully'
+    );
+  }
+);
+
+// One-time fallback for when IP-based detection never resolved a location.
+// Only usable while location is unset - once set, it can never be changed again.
+export const handleSetLocation = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { location } = req.body;
+
+    const creativeProfile = await prisma.creativeProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!creativeProfile) {
+      throw new NotFoundError('Creative profile not found');
+    }
+
+    if (creativeProfile.location) {
+      throw new BadRequestError(
+        'Location is already set and cannot be changed'
+      );
+    }
+
+    const updatedProfile = await prisma.creativeProfile.update({
+      where: { id: creativeProfile.id },
+      data: { location },
+    });
+
+    return ApiResponse.success(
+      res,
+      updatedProfile,
+      'Location set successfully'
     );
   }
 );

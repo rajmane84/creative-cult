@@ -4,6 +4,7 @@ import { asyncHandler } from '../middlewares/asyncHandler';
 import { BadRequestError } from '../util/errors/AppError';
 import { ApiResponse } from '../util/response/ApiResponse';
 import { deleteFromCloudinary } from '../util/cloudinary';
+import { getLocationFromRequest } from '../util/geolocation';
 import type { EducationItemInput } from '../types/profile';
 
 export const handleCreativeOnboarding = asyncHandler(
@@ -42,12 +43,19 @@ export const handleCreativeOnboarding = asyncHandler(
       where: { userId: req.user!.id },
     });
 
+    // Location is detected automatically from the request IP during onboarding
+    // and is never user-editable afterwards — only fill it in if not already set.
+    const detectedLocation = creativeProfile?.location
+      ? undefined
+      : getLocationFromRequest(req);
+
     if (!creativeProfile) {
       creativeProfile = await prisma.creativeProfile.create({
         data: {
           userId: req.user!.id,
           headline,
           bio,
+          location: detectedLocation,
           resumeUrl,
           resumeFileName: resumePublicId, // Storing publicId for now, can be updated later
           resumeUploadedAt: resumeUrl ? new Date() : null,
@@ -74,6 +82,7 @@ export const handleCreativeOnboarding = asyncHandler(
         data: {
           headline,
           bio,
+          location: detectedLocation ?? creativeProfile.location,
           resumeUrl: resumeUrl || creativeProfile.resumeUrl,
           resumeFileName: resumePublicId || creativeProfile.resumeFileName,
           resumeUploadedAt: resumeUrl

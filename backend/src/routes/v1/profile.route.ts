@@ -4,6 +4,7 @@ import { validate } from '../../middlewares/validate';
 import { uploadAvatar, uploadProfileCoverImage } from '../../util/multer';
 import {
   updateProfileSchema,
+  setLocationSchema,
   updateSkillsSchema,
   updateAvailabilitySchema,
   updateEducationSchema,
@@ -12,6 +13,7 @@ import {
 import {
   handleGetProfile,
   handleUpdateProfile,
+  handleSetLocation,
   handleUpdateAvatar,
   handleUpdateCoverImage,
   handleUpdateSkills,
@@ -29,6 +31,12 @@ router.patch(
   authenticate,
   validate(updateProfileSchema),
   handleUpdateProfile
+);
+router.patch(
+  '/location',
+  authenticate,
+  validate(setLocationSchema),
+  handleSetLocation
 );
 router.patch('/avatar', authenticate, uploadAvatar, handleUpdateAvatar);
 router.patch(
