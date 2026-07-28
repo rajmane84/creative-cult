@@ -55,8 +55,8 @@ export default function ProfileHeader({
       >
         <CoverImageUpload coverImage={profile.coverImage} />
 
-        {/* Availability toggle */}
-        <div className="absolute top-4 right-6">
+        {/* Availability toggle - hide on mobile, show on larger screens */}
+        <div className="absolute top-3 right-3 sm:top-4 sm:right-6 hidden sm:block">
           <AvailabilityToggle
             currentStatus={profile.availability}
             onStatusChange={onAvailabilityChange}
@@ -72,8 +72,17 @@ export default function ProfileHeader({
       </div>
 
       {/* Content below banner - centered */}
-      <div className="flex flex-col items-center bg-background pt-14 pb-8 px-4 sm:px-10 text-center">
-        <h1 className="text-4xl font-display font-bold text-foreground leading-tight">
+      <div className="flex flex-col items-center bg-background pt-8 pb-6 sm:pt-14 sm:pb-8 md:pt-16 md:pb-10 px-4 sm:px-10 md:px-12 text-center">
+        {/* Mobile availability toggle - shown in content area on mobile only */}
+        <div className="mb-4 sm:hidden">
+          <AvailabilityToggle
+            currentStatus={profile.availability}
+            onStatusChange={onAvailabilityChange}
+            className="bg-background/95 backdrop-blur-sm"
+          />
+        </div>
+
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-foreground leading-tight">
           {user.name}
         </h1>
         <span className="mt-1 text-sm font-mono text-muted-foreground">
@@ -82,14 +91,14 @@ export default function ProfileHeader({
 
         <p
           className={cn(
-            'mt-3 text-base font-body font-medium text-foreground',
+            'mt-3 text-sm sm:text-base md:text-lg font-body font-medium text-foreground max-w-2xl',
             !profile.headline && 'italic text-muted-foreground'
           )}
         >
           {profile.headline || 'Add a headline to introduce yourself'}
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-x-3 sm:gap-x-6 gap-y-2">
           {profile.location ? (
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <MapPin className="size-3.5 text-primary" />
@@ -108,7 +117,8 @@ export default function ProfileHeader({
 
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Mail className="size-3.5 text-primary" />
-            <span>{user.email}</span>
+            <span className="hidden sm:inline">{user.email}</span>
+            <span className="sm:hidden">{user.email.split('@')[0]}@...</span>
           </div>
 
           {user.emailVerified ? (
@@ -126,12 +136,13 @@ export default function ProfileHeader({
           )}
         </div>
 
-        <div className="mt-5 flex items-center gap-3">
+        <div className="mt-5 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
           <Button
             type="button"
             variant={'outline'}
             onClick={handleEditProfile}
             size={'sm'}
+            className="w-full sm:w-auto"
           >
             Edit Profile
           </Button>
@@ -140,6 +151,7 @@ export default function ProfileHeader({
             variant={'default'}
             onClick={handleShareProfile}
             size={'sm'}
+            className="w-full sm:w-auto"
           >
             Share Profile
           </Button>

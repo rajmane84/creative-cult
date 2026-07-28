@@ -64,19 +64,19 @@ export function CoverImageCropDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Position your cover image</DialogTitle>
         </DialogHeader>
 
-        <div className="relative w-full h-96 overflow-hidden bg-muted">
+        <div className="relative w-full h-64 sm:h-80 md:h-96 overflow-hidden bg-muted flex-shrink-0">
           <Cropper
             image={imageSrc}
             crop={crop}
             zoom={zoom}
             aspect={COVER_IMAGE_ASPECT_RATIO}
             objectFit="contain"
-            cropSize={{ width: 320, height: 320 / COVER_IMAGE_ASPECT_RATIO }}
+            cropSize={{ width: 280, height: 280 / COVER_IMAGE_ASPECT_RATIO }}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={handleCropComplete}
@@ -89,7 +89,7 @@ export function CoverImageCropDialog({
           />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 py-4">
           <span className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
             Zoom
           </span>
@@ -105,7 +105,7 @@ export function CoverImageCropDialog({
           />
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0">
           <Button
             type="button"
             variant="outline"

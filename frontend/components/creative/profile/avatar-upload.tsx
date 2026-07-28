@@ -62,7 +62,7 @@ export default function AvatarUpload({
   };
 
   return (
-    <div className="absolute left-1/2 -translate-x-1/2 -bottom-11 flex flex-col items-center">
+    <div className="absolute left-1/2 -translate-x-1/2 -bottom-8 sm:-bottom-12 md:-bottom-14 flex flex-col items-center">
       <button
         type="button"
         onClick={handleButtonClick}
@@ -71,7 +71,7 @@ export default function AvatarUpload({
         className="group relative block cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         aria-label="Change profile picture"
       >
-        <Avatar className="size-44 rounded-2xl border-4 border-background shadow-sm transition-opacity group-focus-visible:opacity-90">
+        <Avatar className="size-22 sm:size-44 md:size-48 rounded-2xl border-4 border-background shadow-sm transition-opacity group-focus-visible:opacity-90">
           <AvatarImage
             src={
               displayImage ||
@@ -79,21 +79,21 @@ export default function AvatarUpload({
             }
             alt={name}
           />
-          <AvatarFallback className="rounded-2xl text-4xl font-display">
+          <AvatarFallback className="rounded-2xl text-2xl sm:text-4xl md:text-5xl font-display">
             {name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
 
         <span
           className={cn(
-            'absolute -bottom-2 -right-2 z-10 flex size-7 items-center justify-center rounded-full bg-background shadow-md transition-transform duration-200 ease-out motion-safe:group-hover:scale-110 motion-safe:group-focus-visible:scale-110 group-active:scale-95',
+            'absolute -bottom-2 -right-2 z-10 flex size-8 sm:size-7 md:size-8 items-center justify-center rounded-full bg-background shadow-md transition-transform duration-200 ease-out motion-safe:group-hover:scale-110 motion-safe:group-focus-visible:scale-110 group-active:scale-95',
             isUploading && 'motion-safe:group-hover:scale-100'
           )}
         >
           {isUploading ? (
-            <Loader2 className="size-3.5 animate-spin" />
+            <Loader2 className="size-4 sm:size-3.5 md:size-4 animate-spin" />
           ) : (
-            <Camera className="size-3.5" />
+            <Camera className="size-4 sm:size-3.5 md:size-4" />
           )}
         </span>
       </button>

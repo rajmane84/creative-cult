@@ -86,12 +86,12 @@ export default function CoverImageUpload({
         onClick={handleButtonClick}
         disabled={isUploading}
         aria-busy={isUploading}
-        className="absolute top-4 left-6 flex items-center gap-1.5 rounded-lg bg-background/95 backdrop-blur-sm border border-border px-3 py-1.5 text-xs font-body font-medium text-foreground cursor-pointer hover:bg-background transition-colors disabled:cursor-wait disabled:opacity-70"
+        className="absolute top-4 left-6 flex items-center gap-1.5 rounded-lg bg-background/95 backdrop-blur-sm border border-border px-3 py-1.5 text-[10px] font-body font-medium text-foreground cursor-pointer hover:bg-background transition-colors disabled:cursor-wait disabled:opacity-70"
       >
         {isUploading ? (
-          <Loader2 className="size-3.5 animate-spin" />
+          <Loader2 className="size-3 md:size-3.5 animate-spin" />
         ) : (
-          <Camera className="size-3.5" />
+          <Camera className="size-3 md:size-3.5 " />
         )}
         Change cover
       </button>
