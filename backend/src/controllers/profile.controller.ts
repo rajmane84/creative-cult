@@ -42,6 +42,9 @@ export const handleGetProfile = asyncHandler(
         },
         experiences: true,
         education: true,
+        _count: {
+          select: { ownedPortfolioItems: true },
+        },
       },
     });
 
@@ -49,11 +52,28 @@ export const handleGetProfile = asyncHandler(
       throw new NotFoundError('Creative profile not found');
     }
 
+    const completionSteps = {
+      about: Boolean(creativeProfile.headline && creativeProfile.bio),
+      skills: creativeProfile.skills.length > 0,
+      experience: creativeProfile.experiences.length > 0,
+      education: creativeProfile.education.length > 0,
+      portfolio: creativeProfile._count.ownedPortfolioItems > 0,
+    };
+    const totalSteps = Object.keys(completionSteps).length;
+    const completedSteps =
+      Object.values(completionSteps).filter(Boolean).length;
+
     return ApiResponse.success(
       res,
       {
         user,
         creativeProfile,
+        completion: {
+          steps: completionSteps,
+          completedSteps,
+          totalSteps,
+          percentage: Math.round((completedSteps / totalSteps) * 100),
+        },
       },
       'Profile retrieved successfully'
     );

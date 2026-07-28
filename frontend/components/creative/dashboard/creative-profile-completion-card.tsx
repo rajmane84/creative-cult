@@ -52,15 +52,16 @@ function ProfileCompletePercentageSvg({
 }
 
 interface CreativeProfileCompletionCardProps {
-  completedSteps?: number;
-  totalSteps?: number;
+  completedSteps: number;
+  totalSteps: number;
 }
 
 export function CreativeProfileCompletionCard({
-  completedSteps = 2,
-  totalSteps = 5,
+  completedSteps,
+  totalSteps,
 }: CreativeProfileCompletionCardProps) {
-  const percentage = Math.round((completedSteps / totalSteps) * 100);
+  const percentage =
+    totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
 
   return (
     <ActionCard>

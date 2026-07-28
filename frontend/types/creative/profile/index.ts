@@ -66,6 +66,19 @@ export interface Education {
   yearOfGraduation: string;
 }
 
+export interface ProfileCompletion {
+  steps: {
+    about: boolean;
+    skills: boolean;
+    experience: boolean;
+    education: boolean;
+    portfolio: boolean;
+  };
+  completedSteps: number;
+  totalSteps: number;
+  percentage: number;
+}
+
 export interface ProfileData {
   user: UserProfile;
   creativeProfile: CreativeProfile & {
@@ -73,6 +86,7 @@ export interface ProfileData {
     experiences: Experience[];
     education: Education[];
   };
+  completion: ProfileCompletion;
 }
 
 export interface UpdateProfileData {

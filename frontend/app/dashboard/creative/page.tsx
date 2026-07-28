@@ -8,14 +8,36 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 import { CreativeProfileCompletionCard } from '@/components/creative/dashboard';
 import { EmailVerificationCard } from '@/components/auth/email-verification-card';
+import { LoadingState } from '@/components/loading-state';
+import { ErrorState } from '@/components/error-state';
+import { useProfile } from '@/hooks/creative/profile/use-profile';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 
 export default function CreativeDashboard() {
   const { data: sessionData, isPending } = authClient.useSession();
+  const {
+    data: profileData,
+    isPending: isProfileDataPending,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useProfile();
   const user = sessionData?.user;
 
-  if (isPending || !user) return null;
+  if (isPending || isProfileDataPending || !user) {
+    return <LoadingState message="Loading dashboard..." />;
+  }
+
+  if (profileError || !profileData) {
+    return (
+      <ErrorState
+        title="Couldn't load your dashboard"
+        onRetry={() => refetchProfile()}
+      />
+    );
+  }
+
+  const completion = profileData?.data.completion;
 
   const fullName = user.name;
   const displayName = fullName ? fullName.split(' ')[0] : 'Creative';
@@ -74,7 +96,10 @@ export default function CreativeDashboard() {
         {/* Dynamic Responsive Notice Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className={cn('w-full', isEmailVerified && 'lg:col-span-2')}>
-            <CreativeProfileCompletionCard completedSteps={2} totalSteps={5} />
+            <CreativeProfileCompletionCard
+              completedSteps={completion?.completedSteps ?? 0}
+              totalSteps={completion?.totalSteps ?? 5}
+            />
           </div>
 
           <AnimatePresence>
