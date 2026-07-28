@@ -1,9 +1,6 @@
 export { default as AvailabilityToggle } from './availability-toggle';
 export * from './availability-toggle';
 
-export { default as ProfileAbout } from './profile-about';
-export * from './profile-about';
-
 export { default as ProfileEducation } from './profile-education';
 export * from './profile-education';
 

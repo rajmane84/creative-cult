@@ -5,7 +5,6 @@ import { LoadingState } from '@/components/loading-state';
 import { useProfile } from '@/hooks/creative/profile';
 import {
   ProfileHeader,
-  ProfileAbout,
   ProfileSkills,
   ProfileExperience,
   ProfileEducation,
@@ -65,10 +64,6 @@ export default function CreativeProfilePage() {
         />
 
         <div className="space-y-12 md:space-y-16">
-          <ProfileAbout
-            headline={creativeProfile.headline || ''}
-            bio={creativeProfile.bio || ''}
-          />
           <ProfileSkills skills={skills} />
           <ProfileExperience experiences={creativeProfile.experiences} />
           <ProfileEducation education={creativeProfile.education} />
