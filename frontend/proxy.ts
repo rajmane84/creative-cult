@@ -16,6 +16,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Soft launch: in production, restrict access to the waitlist landing page only
+  if (process.env.NODE_ENV === 'production' && pathname !== '/') {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
   // Check if this is a public route
   const isPublicRoute = publicRoutes.some((path) => pathname.startsWith(path));
 

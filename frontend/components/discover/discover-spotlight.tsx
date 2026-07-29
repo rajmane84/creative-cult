@@ -1,7 +1,12 @@
 'use client';
 
 import { Sparkles } from 'lucide-react';
-import { MOCK_CULTS, MOCK_FREELANCERS } from './mock-data';
+import {
+  MOCK_CULTS,
+  MOCK_FREELANCERS,
+  formatRate,
+  getRateLabel,
+} from './mock-data';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { SpotlightCard } from './spotlight-card';
 
@@ -101,8 +106,11 @@ export function DiscoverSpotlight() {
               </div>
             }
             tags={featuredFreelancer.skills.slice(0, 3)}
-            footerLabel="Day Rate"
-            price={featuredFreelancer.dailyRate}
+            footerLabel={getRateLabel(featuredFreelancer.rateType)}
+            price={formatRate(
+              featuredFreelancer.rateType,
+              featuredFreelancer.rateAmount
+            )}
             rating={featuredFreelancer.rating}
             reviewCount={featuredFreelancer.reviewCount}
             ctaLabel="View Profile"

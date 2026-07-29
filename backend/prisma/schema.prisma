@@ -45,6 +45,25 @@ enum AvailabilityStatus {
   NOT_AVAILABLE
 }
 
+// Fixed vocabulary so the discover-page filter tabs never drift out of sync
+// with what creatives can actually select on their profile.
+enum Discipline {
+  FILM_VIDEO
+  VFX_3D
+  FASHION_STYLING
+  SOUND_AUDIO
+  DESIGN_BRAND
+  PHOTOGRAPHY
+  MOTION_GRAPHICS
+}
+
+enum RateType {
+  HOURLY
+  DAILY
+  PROJECT
+  NEGOTIABLE
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME
@@ -171,6 +190,28 @@ model CreativeProfile {
   availability        AvailabilityStatus @default(AVAILABLE)
   onboardingCompleted Boolean            @default(false)
   coverImage          String?
+
+  // Broad category tags used for discover-page filtering — distinct from the
+  // granular CreativeSkill relation below.
+  disciplines Discipline[]
+
+  // rateAmount is null when rateType is NEGOTIABLE (no fixed number to show).
+  rateType   RateType?
+  rateAmount Int?
+
+  experienceYears Int?
+  tools           String[] // hardware/software stack, shown separately from skills
+
+  isVerified Boolean @default(false)
+  isFeatured Boolean @default(false)
+
+  // Denormalized discover-page stats. No Booking/Review models exist yet —
+  // these are placeholders to keep the discover page functional until those
+  // are built, at which point they should become computed aggregates instead
+  // of hand-maintained counters.
+  completedProjects Int   @default(0)
+  rating            Float?
+  reviewCount       Int   @default(0)
 
   resumeUrl        String?
   resumeFileName   String?
@@ -311,6 +352,7 @@ model CultInvite {
 model PortfolioItem {
   id            String             @id @default(cuid())
   title         String
+  category      String? // display label shown as a badge on portfolio cards, e.g. "Cinematography"
   description   String?
   coverImageUrl String?
   mediaUrls     String[]

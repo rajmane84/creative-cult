@@ -16,7 +16,7 @@ export interface CultDiscoverItem {
   coverImage: string;
   avatarUrl: string;
   members: CultMemberDetail[];
-  disciplines: string[];
+  disciplines: Discipline[];
   tags: string[];
   location: string;
   startingPrice: string;
@@ -43,10 +43,11 @@ export interface FreelancerDiscoverItem {
   avatarUrl: string;
   coverImage: string;
   location: string;
-  disciplines: string[];
+  disciplines: Discipline[];
   skills: string[];
-  dailyRate: string;
-  dailyRateNum: number;
+  rateType: RateType;
+  // Null exactly when rateType is 'NEGOTIABLE' — no fixed number to sort/display.
+  rateAmount: number | null;
   experienceYears: number;
   completedProjects: number;
   rating: number;
@@ -70,6 +71,49 @@ export const CATEGORIES = [
   'Photography',
   'Motion Graphics',
 ] as const;
+
+// Mirrors the backend `Discipline` enum. 'All Disciplines' is a filter-UI
+// option only, never a value a profile can actually hold.
+export type Discipline = Exclude<
+  (typeof CATEGORIES)[number],
+  'All Disciplines'
+>;
+
+// Mirrors the backend `RateType` enum.
+export type RateType = 'HOURLY' | 'DAILY' | 'PROJECT' | 'NEGOTIABLE';
+
+export function getRateLabel(rateType: RateType): string {
+  switch (rateType) {
+    case 'HOURLY':
+      return 'Hourly Rate';
+    case 'DAILY':
+      return 'Day Rate';
+    case 'PROJECT':
+      return 'Project Rate';
+    case 'NEGOTIABLE':
+      return 'Rate';
+  }
+}
+
+export function formatRate(
+  rateType: RateType,
+  rateAmount: number | null
+): string {
+  if (rateType === 'NEGOTIABLE' || rateAmount === null) {
+    return 'Negotiable';
+  }
+
+  const formatted = `₹${rateAmount.toLocaleString('en-IN')}`;
+
+  switch (rateType) {
+    case 'HOURLY':
+      return `${formatted} / hr`;
+    case 'DAILY':
+      return `${formatted} / day`;
+    case 'PROJECT':
+      return `${formatted} / project`;
+  }
+}
 
 export const MOCK_CULTS: CultDiscoverItem[] = [
   {
@@ -382,8 +426,8 @@ export const MOCK_FREELANCERS: FreelancerDiscoverItem[] = [
       'Color Grading',
       'Lighting Direction',
     ],
-    dailyRate: '₹45,000 / day',
-    dailyRateNum: 45000,
+    rateType: 'DAILY',
+    rateAmount: 45000,
     experienceYears: 10,
     completedProjects: 112,
     rating: 4.99,
@@ -440,8 +484,8 @@ export const MOCK_FREELANCERS: FreelancerDiscoverItem[] = [
       'Substance Painter',
       'Octane Render',
     ],
-    dailyRate: '₹30,000 / day',
-    dailyRateNum: 30000,
+    rateType: 'PROJECT',
+    rateAmount: 250000,
     experienceYears: 6,
     completedProjects: 78,
     rating: 4.96,
@@ -483,10 +527,10 @@ export const MOCK_FREELANCERS: FreelancerDiscoverItem[] = [
       'Modular Synths',
       'Pro Tools HD',
       'Game Audio (Wwise)',
-      'Foley Foley',
+      'Foley Design',
     ],
-    dailyRate: '₹22,000 / day',
-    dailyRateNum: 22000,
+    rateType: 'HOURLY',
+    rateAmount: 2500,
     experienceYears: 8,
     completedProjects: 64,
     rating: 4.93,
@@ -527,8 +571,8 @@ export const MOCK_FREELANCERS: FreelancerDiscoverItem[] = [
       'Archive Pulls',
       'Lookbook Curation',
     ],
-    dailyRate: '₹35,000 / day',
-    dailyRateNum: 35000,
+    rateType: 'DAILY',
+    rateAmount: 35000,
     experienceYears: 7,
     completedProjects: 89,
     rating: 4.98,
@@ -565,8 +609,8 @@ export const MOCK_FREELANCERS: FreelancerDiscoverItem[] = [
       'High-Speed Tracking',
       'Indoor Flythrough',
     ],
-    dailyRate: '₹28,000 / day',
-    dailyRateNum: 28000,
+    rateType: 'NEGOTIABLE',
+    rateAmount: null,
     experienceYears: 5,
     completedProjects: 55,
     rating: 4.94,

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FreelancerDiscoverItem } from './mock-data';
+import { FreelancerDiscoverItem, formatRate, getRateLabel } from './mock-data';
 import {
   ArrowLeft,
   ShieldCheck,
@@ -234,10 +234,10 @@ export function FreelancerDetailView({
 
               <div className="space-y-1">
                 <span className="font-mono text-[10px] text-muted-foreground uppercase block">
-                  Daily Rate
+                  {getRateLabel(freelancer.rateType)}
                 </span>
                 <div className="font-display text-4xl text-foreground">
-                  {freelancer.dailyRate}
+                  {formatRate(freelancer.rateType, freelancer.rateAmount)}
                 </div>
               </div>
 

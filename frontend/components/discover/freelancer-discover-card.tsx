@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { FreelancerDiscoverItem } from './mock-data';
+import { FreelancerDiscoverItem, formatRate } from './mock-data';
 import { Star } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { AvailabilityBadge } from './availability-badge';
@@ -128,7 +128,7 @@ export function FreelancerDiscoverCard({
           {/* Footer — identical structure to cult card footer */}
           <div className="px-5 py-3 border-t border-border bg-background flex items-center justify-between font-mono text-xs">
             <span className="font-bold text-primary text-sm font-mono">
-              {freelancer.dailyRate}
+              {formatRate(freelancer.rateType, freelancer.rateAmount)}
             </span>
             <div className="flex items-center gap-1">
               <Star className="size-3.5 fill-primary text-primary" />

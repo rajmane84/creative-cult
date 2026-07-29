@@ -45,7 +45,7 @@ export function DiscoverView() {
 
       const matchesCategory =
         selectedCategory === 'All Disciplines' ||
-        cult.disciplines.includes(selectedCategory);
+        (cult.disciplines as string[]).includes(selectedCategory);
 
       const matchesAvailability =
         availabilityFilter === 'ALL' ||
@@ -70,7 +70,7 @@ export function DiscoverView() {
 
       const matchesCategory =
         selectedCategory === 'All Disciplines' ||
-        free.disciplines.includes(selectedCategory);
+        (free.disciplines as string[]).includes(selectedCategory);
 
       const matchesAvailability =
         availabilityFilter === 'ALL' ||
@@ -102,15 +102,17 @@ export function DiscoverView() {
       if (sortBy === 'PROJECTS') {
         return b.completedProjects - a.completedProjects;
       }
-      if (sortBy === 'PRICE_LOW') {
-        const priceA = a.type === 'cult' ? a.startingPriceNum : a.dailyRateNum;
-        const priceB = b.type === 'cult' ? b.startingPriceNum : b.dailyRateNum;
-        return priceA - priceB;
-      }
-      if (sortBy === 'PRICE_HIGH') {
-        const priceA = a.type === 'cult' ? a.startingPriceNum : a.dailyRateNum;
-        const priceB = b.type === 'cult' ? b.startingPriceNum : b.dailyRateNum;
-        return priceB - priceA;
+      if (sortBy === 'PRICE_LOW' || sortBy === 'PRICE_HIGH') {
+        // Negotiable freelancers have no numeric rate — always sort them last,
+        // regardless of direction, rather than treating null as 0.
+        const priceA = a.type === 'cult' ? a.startingPriceNum : a.rateAmount;
+        const priceB = b.type === 'cult' ? b.startingPriceNum : b.rateAmount;
+
+        if (priceA === null && priceB === null) return 0;
+        if (priceA === null) return 1;
+        if (priceB === null) return -1;
+
+        return sortBy === 'PRICE_LOW' ? priceA - priceB : priceB - priceA;
       }
       return 0;
     });
