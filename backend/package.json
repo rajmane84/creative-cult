@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "prisma:generate": "bun --bun prisma generate",
     "prisma:studio": "bun --bun prisma studio",
-    "prisma:reset": "bun --bun prisma migrate reset --force"
+    "prisma:reset": "bun --bun prisma migrate reset --force",
+    "prisma:format": "bun --bun prisma format"
   },
   "devDependencies": {
     "@types/bun": "latest",

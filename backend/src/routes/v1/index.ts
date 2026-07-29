@@ -8,6 +8,7 @@ import creativeRouter from './creative.route';
 import waitlistRouter from './waitlist.route';
 import resumeRouter from './resume.route';
 import profileRouter from './profile.route';
+import clientProfileRouter from './client-profile.route';
 import cultRouter from './cult.route';
 import portfolioRouter from './portfolio.route';
 
@@ -18,6 +19,7 @@ router.use('/creative', creativeRouter);
 router.use('/waitlist', waitlistRouter);
 router.use('/resume', resumeRouter);
 router.use('/profile', profileRouter);
+router.use('/client-profile', clientProfileRouter);
 router.use('/cult', cultRouter);
 router.use('/portfolio', portfolioRouter);
 

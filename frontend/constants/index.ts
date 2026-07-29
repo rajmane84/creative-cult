@@ -58,6 +58,11 @@ export const DASHBOARD_NAVIGATION = {
       icon: LayoutDashboard,
     },
     {
+      href: '/dashboard/client/profile',
+      label: 'Profile',
+      icon: User,
+    },
+    {
       href: '/dashboard/client/listings',
       label: 'Listings',
       icon: Briefcase,

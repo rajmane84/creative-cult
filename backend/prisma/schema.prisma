@@ -29,7 +29,7 @@ enum CultInviteStatus {
   PENDING
   ACCEPTED
   DECLINED
-  REVOKED  // leader cancelled it before response
+  REVOKED // leader cancelled it before response
   EXPIRED
 }
 
@@ -101,6 +101,43 @@ enum PortfolioCreditStatus {
   DECLINED
 }
 
+enum ClientType {
+  INDIVIDUAL
+  COMPANY
+}
+
+enum CompanySize {
+  SOLO // just me
+  SMALL // 2-10 employees
+  MEDIUM // 11-50 employees
+  LARGE // 51-200 employees
+  ENTERPRISE // 201+ employees
+}
+
+enum Industry {
+  ADVERTISING_MARKETING
+  FASHION_APPAREL
+  FILM_TV_ENTERTAINMENT
+  MUSIC_AUDIO
+  GAMING
+  PUBLISHING_MEDIA
+  PHOTOGRAPHY_STUDIO
+  TECHNOLOGY_SOFTWARE
+  ECOMMERCE_RETAIL
+  REAL_ESTATE
+  HOSPITALITY_TRAVEL
+  FOOD_BEVERAGE
+  BEAUTY_COSMETICS
+  HEALTH_WELLNESS
+  SPORTS_FITNESS
+  EDUCATION
+  FINANCE_BANKING
+  NONPROFIT_NGO
+  ARCHITECTURE_INTERIOR_DESIGN
+  AUTOMOTIVE
+  EVENTS_WEDDINGS
+  OTHER
+}
 
 // ---------------------- Schemas -----------------------------
 
@@ -113,12 +150,13 @@ model User {
   role            Role?
   username        String?          @unique
   creativeProfile CreativeProfile?
+  clientProfile   ClientProfile?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   sessions        Session[]
   accounts        Account[]
 
-  cultsCreated Cult[]
+  cultsCreated    Cult[]
   cultInvitesSent CultInvite[] @relation("CultInvitesSent")
 
   @@unique([email])
@@ -126,21 +164,21 @@ model User {
 }
 
 model CreativeProfile {
-  id     String @id @default(cuid())
+  id                  String             @id @default(cuid())
   headline            String?
   bio                 String?
   location            String? // We're not allowing the users to manually change the location
   availability        AvailabilityStatus @default(AVAILABLE)
   onboardingCompleted Boolean            @default(false)
-  coverImage String?
+  coverImage          String?
 
   resumeUrl        String?
   resumeFileName   String?
   resumeUploadedAt DateTime?
 
-  skills         CreativeSkill[]
-  experiences    Experience[]
-  education      Education[]
+  skills      CreativeSkill[]
+  experiences Experience[]
+  education   Education[]
   // applications  Application[]    // applying to client projects
 
   userId String @unique
@@ -156,34 +194,63 @@ model CreativeProfile {
   updatedAt DateTime @updatedAt
 }
 
-model CreativeSkill {
-  id                String          @id @default(cuid())
-  name              String
-  level             SkillLevel?
+model ClientProfile {
+  id         String     @id @default(cuid())
+  clientType ClientType @default(INDIVIDUAL)
 
-  skillId           String
-  skill             Skill           @relation(fields: [skillId], references: [id])
+  // Company-specific — only meaningful when clientType is COMPANY.
+  // Individual clients rely on User.name instead of companyName.
+  companyName String?
+  industry    Industry?
+  companySize CompanySize?
+  foundedYear String?
+
+  bio        String?
+  website    String?
+  coverImage String?
+  location   String?
+
+  phoneNumber   String?
+  phoneVerified Boolean @default(false)
+
+  onboardingCompleted Boolean @default(false)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CreativeSkill {
+  id    String      @id @default(cuid())
+  name  String
+  level SkillLevel?
+
+  skillId String
+  skill   Skill  @relation(fields: [skillId], references: [id])
 
   creativeProfileId String
   creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
+
   @@unique([creativeProfileId, skillId])
 }
 
 model Skill {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  slug      String   @unique
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
 
   creativeSkills CreativeSkill[]
-  createdAt      DateTime @default(now())
+  createdAt      DateTime        @default(now())
 }
 
 model Cult {
-  id       String  @id @default(cuid())
-  name     String
-  slug     String  @unique // for public cult profile URL, e.g. /cults/pixel-punks
-  tagline  String?
-  bio      String?
+  id        String  @id @default(cuid())
+  name      String
+  slug      String  @unique // for public cult profile URL, e.g. /cults/pixel-punks
+  tagline   String?
+  bio       String?
   avatarUrl String?
 
   createdByUserId String
@@ -200,9 +267,9 @@ model Cult {
 }
 
 model CultMembership {
-  id     String                @id @default(cuid())
-  role   CultMemberRole        @default(MEMBER)
-  status CultMembershipStatus  @default(ACTIVE)
+  id     String               @id @default(cuid())
+  role   CultMemberRole       @default(MEMBER)
+  status CultMembershipStatus @default(ACTIVE)
 
   cultId String
   cult   Cult   @relation(fields: [cultId], references: [id], onDelete: Cascade)
@@ -218,8 +285,8 @@ model CultMembership {
 }
 
 model CultInvite {
-  id     String            @id @default(cuid())
-  status CultInviteStatus  @default(PENDING)
+  id     String           @id @default(cuid())
+  status CultInviteStatus @default(PENDING)
 
   cultId String
   cult   Cult   @relation(fields: [cultId], references: [id], onDelete: Cascade)
@@ -308,12 +375,12 @@ model Experience {
 }
 
 model Education {
-  id                String          @id @default(cuid())
-  country           String
-  school            String
-  degree            Degree
-  fieldOfStudy      String
-  yearOfGraduation  String
+  id               String @id @default(cuid())
+  country          String
+  school           String
+  degree           Degree
+  fieldOfStudy     String
+  yearOfGraduation String
 
   creativeProfileId String
   creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
@@ -368,10 +435,10 @@ model Verification {
 }
 
 model Waitlist {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  joinAs    JoinAs
-  createdAt DateTime @default(now())
-  notifiedAt DateTime?
-  inviteToken String? @unique
+  id          String    @id @default(cuid())
+  email       String    @unique
+  joinAs      JoinAs
+  createdAt   DateTime  @default(now())
+  notifiedAt  DateTime?
+  inviteToken String?   @unique
 }
