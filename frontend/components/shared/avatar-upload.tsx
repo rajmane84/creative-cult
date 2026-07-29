@@ -6,17 +6,21 @@ import { Camera, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { toast } from 'sonner';
 import { MAX_AVATAR_SIZE, ALLOWED_AVATAR_TYPES } from '@/constants';
-import { useUpdateAvatar } from '@/hooks/creative/profile';
 
 interface AvatarUploadProps {
   name: string;
   image?: string | null;
+  isUploading: boolean;
+  onUpload: (file: File) => void;
 }
 
-export default function AvatarUpload({ name, image }: AvatarUploadProps) {
+export default function AvatarUpload({
+  name,
+  image,
+  isUploading,
+  onUpload,
+}: AvatarUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { updateAvatarMutation } = useUpdateAvatar();
-  const isUploading = updateAvatarMutation.isPending;
   const [displayImage, setDisplayImage] = useState<string | undefined>('');
 
   // Preload new image to prevent fallback flash
@@ -53,7 +57,7 @@ export default function AvatarUpload({ name, image }: AvatarUploadProps) {
       return;
     }
 
-    updateAvatarMutation.mutate(file);
+    onUpload(file);
   };
 
   return (

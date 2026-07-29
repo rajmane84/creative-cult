@@ -4,11 +4,12 @@ import { useRef, useState } from 'react';
 import { Camera, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { MAX_COVER_IMAGE_SIZE, ALLOWED_AVATAR_TYPES } from '@/constants';
-import { useUpdateCoverImage } from '@/hooks/client/profile';
-import { CoverImageCropDialog } from '@/components/creative/profile/dialog';
+import { CoverImageCropDialog } from './cover-image-crop-dialog';
 
 interface CoverImageUploadProps {
   coverImage?: string | null;
+  isUploading: boolean;
+  onUpload: (file: File) => Promise<unknown>;
 }
 
 interface PendingImage {
@@ -19,10 +20,10 @@ interface PendingImage {
 
 export default function CoverImageUpload({
   coverImage,
+  isUploading,
+  onUpload,
 }: CoverImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { updateCoverImageMutation } = useUpdateCoverImage();
-  const isUploading = updateCoverImageMutation.isPending;
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
 
   const handleButtonClick = () => {
@@ -60,10 +61,14 @@ export default function CoverImageUpload({
     setPendingImage(null);
   };
 
-  const handleCropSave = (file: File) => {
-    updateCoverImageMutation.mutate(file, {
-      onSuccess: closeCropDialog,
-    });
+  const handleCropSave = async (file: File) => {
+    try {
+      await onUpload(file);
+      closeCropDialog();
+    } catch {
+      // Error toast is handled by the caller's mutation - keep the dialog
+      // open so the user can retry without re-selecting the image.
+    }
   };
 
   return (

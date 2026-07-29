@@ -14,9 +14,7 @@ import {
   Building2,
   User as UserIcon,
 } from 'lucide-react';
-import { StatusTag } from '@/components/creative/profile/status-tag';
-import AvatarUpload from './avatar-upload';
-import CoverImageUpload from './cover-image-upload';
+import { AvatarUpload, CoverImageUpload, StatusTag } from '@/components/shared';
 import { ClientType } from '@/types';
 import { cn } from '@/lib/cn';
 import { toast } from 'sonner';
@@ -24,7 +22,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useUpdateClientProfile } from '@/hooks/client/profile';
+import {
+  useUpdateClientProfile,
+  useUpdateAvatar,
+  useUpdateCoverImage,
+} from '@/hooks/client/profile';
 import { handleApiError } from '@/lib/handle-error';
 import { COVER_IMAGE_ASPECT_RATIO } from '@/constants';
 import { profileHeaderSchema } from '@/validations/client/profile';
@@ -52,6 +54,8 @@ export default function ProfileHeader({ user, profile }: ProfileHeaderProps) {
   const [localBio, setLocalBio] = useState(profile.bio);
   const [localLocation, setLocalLocation] = useState(profile.location);
   const { updateProfileMutation } = useUpdateClientProfile();
+  const { updateAvatarMutation } = useUpdateAvatar();
+  const { updateCoverImageMutation } = useUpdateCoverImage();
 
   const displayName =
     profile.clientType === ClientType.COMPANY && profile.companyName
@@ -114,7 +118,11 @@ export default function ProfileHeader({ user, profile }: ProfileHeaderProps) {
         className="group relative w-full bg-muted"
         style={{ aspectRatio: COVER_IMAGE_ASPECT_RATIO }}
       >
-        <CoverImageUpload coverImage={profile.coverImage} />
+        <CoverImageUpload
+          coverImage={profile.coverImage}
+          isUploading={updateCoverImageMutation.isPending}
+          onUpload={(file) => updateCoverImageMutation.mutateAsync(file)}
+        />
 
         <div className="absolute top-3 right-3 sm:top-4 sm:right-6 hidden sm:block">
           <StatusTag
@@ -131,7 +139,12 @@ export default function ProfileHeader({ user, profile }: ProfileHeaderProps) {
           />
         </div>
 
-        <AvatarUpload name={user.name} image={user.image} />
+        <AvatarUpload
+          name={user.name}
+          image={user.image}
+          isUploading={updateAvatarMutation.isPending}
+          onUpload={(file) => updateAvatarMutation.mutate(file)}
+        />
       </div>
 
       {/* Content below banner - centered */}

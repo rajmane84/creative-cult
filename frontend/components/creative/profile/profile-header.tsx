@@ -13,9 +13,7 @@ import {
 } from 'lucide-react';
 import AvailabilityToggle from './availability-toggle';
 import { SetLocationDialog } from './dialog/set-location-dialog';
-import { StatusTag } from './status-tag';
-import AvatarUpload from './avatar-upload';
-import CoverImageUpload from './cover-image-upload';
+import { AvatarUpload, CoverImageUpload, StatusTag } from '@/components/shared';
 import { AvailabilityStatus } from '@/types';
 import { cn } from '@/lib/cn';
 import { toast } from 'sonner';
@@ -23,7 +21,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { useUpdateProfile } from '@/hooks/creative/profile';
+import {
+  useUpdateProfile,
+  useUpdateAvatar,
+  useUpdateCoverImage,
+} from '@/hooks/creative/profile';
 import { handleApiError } from '@/lib/handle-error';
 import { COVER_IMAGE_ASPECT_RATIO } from '@/constants';
 import { profileHeaderSchema } from '@/validations/creative/profile';
@@ -56,6 +58,8 @@ export default function ProfileHeader({
   const [localHeadline, setLocalHeadline] = useState(profile.headline);
   const [localBio, setLocalBio] = useState(profile.bio);
   const { updateProfileMutation } = useUpdateProfile();
+  const { updateAvatarMutation } = useUpdateAvatar();
+  const { updateCoverImageMutation } = useUpdateCoverImage();
 
   const handleEditProfile = () => {
     setLocalHeadline(profile.headline);
@@ -122,7 +126,11 @@ export default function ProfileHeader({
         className="group relative w-full bg-muted"
         style={{ aspectRatio: COVER_IMAGE_ASPECT_RATIO }}
       >
-        <CoverImageUpload coverImage={profile.coverImage} />
+        <CoverImageUpload
+          coverImage={profile.coverImage}
+          isUploading={updateCoverImageMutation.isPending}
+          onUpload={(file) => updateCoverImageMutation.mutateAsync(file)}
+        />
 
         {/* Availability toggle - hide on mobile, show on larger screens */}
         <div className="absolute top-3 right-3 sm:top-4 sm:right-6 hidden sm:block">
@@ -133,7 +141,12 @@ export default function ProfileHeader({
           />
         </div>
 
-        <AvatarUpload name={user.name} image={user.image} />
+        <AvatarUpload
+          name={user.name}
+          image={user.image}
+          isUploading={updateAvatarMutation.isPending}
+          onUpload={(file) => updateAvatarMutation.mutate(file)}
+        />
       </div>
 
       {/* Content below banner - centered */}

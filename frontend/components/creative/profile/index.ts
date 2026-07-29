@@ -15,6 +15,3 @@ export * from './profile-portfolio';
 
 export { default as ProfileSkills } from './profile-skills';
 export * from './profile-skills';
-
-export { StatusTag } from './status-tag';
-export * from './status-tag';
