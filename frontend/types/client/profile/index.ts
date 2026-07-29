@@ -30,9 +30,17 @@ export interface ClientProfile {
   updatedAt: string;
 }
 
+export interface ClientProfileCompletion {
+  steps: Record<string, boolean>;
+  completedSteps: number;
+  totalSteps: number;
+  percentage: number;
+}
+
 export interface ProfileData {
   user: UserProfile;
   clientProfile: ClientProfile;
+  completion: ClientProfileCompletion;
 }
 
 export interface UpdateClientProfileData {

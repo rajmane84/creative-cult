@@ -56,9 +56,50 @@ export const handleGetClientProfile = asyncHandler(
       }
     }
 
+    // Company-only fields (companyName, industry, companySize, foundedYear)
+    // don't apply to individual clients, so they'd never be able to reach
+    // 100% otherwise - only include those steps when clientType is COMPANY.
+    const completionSteps =
+      clientProfile.clientType === 'COMPANY'
+        ? {
+            basics: Boolean(clientProfile.companyName),
+            details: Boolean(
+              clientProfile.industry &&
+              clientProfile.companySize &&
+              clientProfile.foundedYear
+            ),
+            bio: Boolean(clientProfile.bio),
+            contact: Boolean(
+              clientProfile.phoneNumber && clientProfile.website
+            ),
+            location: Boolean(clientProfile.location),
+            isEmailVerified: Boolean(user.emailVerified),
+            isMobileVerified: Boolean(clientProfile.phoneVerified),
+          }
+        : {
+            bio: Boolean(clientProfile.bio),
+            phoneNumber: Boolean(clientProfile.phoneNumber),
+            website: Boolean(clientProfile.website),
+            location: Boolean(clientProfile.location),
+            isEmailVerified: Boolean(user.emailVerified),
+            isMobileVerified: Boolean(clientProfile.phoneVerified),
+          };
+    const totalSteps = Object.keys(completionSteps).length;
+    const completedSteps =
+      Object.values(completionSteps).filter(Boolean).length;
+
     return ApiResponse.success(
       res,
-      { user, clientProfile },
+      {
+        user,
+        clientProfile,
+        completion: {
+          steps: completionSteps,
+          completedSteps,
+          totalSteps,
+          percentage: Math.round((completedSteps / totalSteps) * 100),
+        },
+      },
       'Profile retrieved successfully'
     );
   }

@@ -45,6 +45,7 @@ interface ProfileHeaderProps {
     bio: string;
     location: string;
     phoneNumber?: string | null;
+    phoneVerified?: boolean;
     coverImage?: string | null;
   };
 }
@@ -301,27 +302,39 @@ export default function ProfileHeader({ user, profile }: ProfileHeaderProps) {
             <Mail className="size-3.5 text-primary" />
             <span className="hidden sm:inline">{user.email}</span>
             <span className="sm:hidden">{user.email.split('@')[0]}@...</span>
+            {user.emailVerified ? (
+              <StatusTag
+                label="Verified"
+                icon={CheckCircle2}
+                variant="positive"
+              />
+            ) : (
+              <StatusTag
+                label="Not Verified"
+                icon={ShieldAlert}
+                variant="attention"
+              />
+            )}
           </div>
 
           {profile.phoneNumber && (
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <Phone className="size-3.5 text-primary" />
               <span>{profile.phoneNumber}</span>
+              {profile.phoneVerified ? (
+                <StatusTag
+                  label="Verified"
+                  icon={CheckCircle2}
+                  variant="positive"
+                />
+              ) : (
+                <StatusTag
+                  label="Not Verified"
+                  icon={ShieldAlert}
+                  variant="attention"
+                />
+              )}
             </div>
-          )}
-
-          {user.emailVerified ? (
-            <StatusTag
-              label="Verified"
-              icon={CheckCircle2}
-              variant="positive"
-            />
-          ) : (
-            <StatusTag
-              label="Not Verified"
-              icon={ShieldAlert}
-              variant="attention"
-            />
           )}
         </div>
 

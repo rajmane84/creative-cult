@@ -11,14 +11,37 @@ import {
   ClientStatsCards,
 } from '@/components/client/dashboard';
 import { EmailVerificationCard } from '@/components/auth/email-verification-card';
+import { LoadingState } from '@/components/loading-state';
+import { ErrorState } from '@/components/error-state';
+import { useClientProfile } from '@/hooks/client/profile';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 
 export default function ClientDashboard() {
   const { data: sessionData, isPending } = authClient.useSession();
+  const {
+    data: profileData,
+    isPending: isProfileDataPending,
+    error: profileError,
+    refetch: refetchProfile,
+  } = useClientProfile();
   const user = sessionData?.user;
 
-  if (isPending || !user) return null;
+  if (isPending || isProfileDataPending || !user) {
+    return <LoadingState message="Loading dashboard..." />;
+  }
+
+  if (profileError || !profileData) {
+    return (
+      <ErrorState
+        title="Couldn't load your dashboard"
+        onRetry={() => refetchProfile()}
+      />
+    );
+  }
+
+  const completion = profileData.data.completion;
+  const isProfileComplete = completion.completedSteps >= completion.totalSteps;
 
   const fullName = user.name;
   const displayName = fullName ? fullName.split(' ')[0] : 'Client';
@@ -76,9 +99,27 @@ export default function ClientDashboard() {
 
         {/* Dynamic Responsive Notice Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className={cn('w-full', isEmailVerified && 'lg:col-span-2')}>
-            <ProfileCompletionCard completedSteps={2} totalSteps={5} />
-          </div>
+          <AnimatePresence>
+            {!isProfileComplete && (
+              <motion.div
+                key="profile-completion-card"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
+                  y: -10,
+                  transition: { duration: 0.2 },
+                }}
+                transition={{ duration: 0.3 }}
+                className={cn('w-full', isEmailVerified && 'lg:col-span-2')}
+              >
+                <ProfileCompletionCard
+                  completedSteps={completion.completedSteps}
+                  totalSteps={completion.totalSteps}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <AnimatePresence>
             {!isEmailVerified && (
@@ -92,6 +133,7 @@ export default function ClientDashboard() {
                   transition: { duration: 0.2 },
                 }}
                 transition={{ duration: 0.3 }}
+                className={cn('w-full', isProfileComplete && 'lg:col-span-2')}
               >
                 <EmailVerificationCard email={userEmail} />
               </motion.div>

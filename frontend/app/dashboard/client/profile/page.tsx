@@ -43,6 +43,7 @@ export default function ClientProfilePage() {
           bio: clientProfile.bio || '',
           location: clientProfile.location || '',
           phoneNumber: clientProfile.phoneNumber,
+          phoneVerified: clientProfile.phoneVerified,
           coverImage: clientProfile.coverImage,
         }}
       />
