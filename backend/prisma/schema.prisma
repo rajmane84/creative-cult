@@ -178,6 +178,8 @@ model User {
   cultsCreated    Cult[]
   cultInvitesSent CultInvite[] @relation("CultInvitesSent")
 
+  reviewsGiven Review[] @relation("ReviewsGiven")
+
   @@unique([email])
   @@map("user")
 }
@@ -205,13 +207,12 @@ model CreativeProfile {
   isVerified Boolean @default(false)
   isFeatured Boolean @default(false)
 
-  // Denormalized discover-page stats. No Booking/Review models exist yet —
-  // these are placeholders to keep the discover page functional until those
-  // are built, at which point they should become computed aggregates instead
-  // of hand-maintained counters.
-  completedProjects Int   @default(0)
-  rating            Float?
-  reviewCount       Int   @default(0)
+  // rating/reviewCount are NOT stored — compute them from `reviews` at query
+  // time (avg + count). No Booking model exists yet, so completedProjects
+  // stays a hand-maintained placeholder until project completion is tracked
+  // for real; revisit it the same way once that model exists.
+  completedProjects Int      @default(0)
+  reviews           Review[]
 
   resumeUrl        String?
   resumeFileName   String?
@@ -233,6 +234,25 @@ model CreativeProfile {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// One review per (reviewer, creative) pair. rating/reviewCount on
+// CreativeProfile are derived from this table (avg + count), never stored.
+model Review {
+  id      String  @id @default(cuid())
+  rating  Int // 1-5, enforced at the application layer
+  comment String?
+
+  reviewerUserId String
+  reviewerUser   User   @relation("ReviewsGiven", fields: [reviewerUserId], references: [id], onDelete: Cascade)
+
+  creativeProfileId String
+  creativeProfile   CreativeProfile @relation(fields: [creativeProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([reviewerUserId, creativeProfileId])
+  @@index([creativeProfileId])
 }
 
 model ClientProfile {

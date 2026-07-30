@@ -3,17 +3,25 @@
 import { Sparkles } from 'lucide-react';
 import {
   MOCK_CULTS,
-  MOCK_FREELANCERS,
   formatRate,
   getRateLabel,
+  type FreelancerDiscoverItem,
 } from './mock-data';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { SpotlightCard } from './spotlight-card';
 
-export function DiscoverSpotlight() {
+interface DiscoverSpotlightProps {
+  freelancers: FreelancerDiscoverItem[];
+}
+
+export function DiscoverSpotlight({ freelancers }: DiscoverSpotlightProps) {
   const featuredCult = MOCK_CULTS.find((c) => c.isFeatured) || MOCK_CULTS[0];
   const featuredFreelancer =
-    MOCK_FREELANCERS.find((f) => f.isFeatured) || MOCK_FREELANCERS[0];
+    freelancers.find((f) => f.isFeatured) || freelancers[0];
+
+  if (!featuredFreelancer) {
+    return null;
+  }
 
   const freelancerImage =
     featuredFreelancer.portfolio[0]?.image ?? featuredFreelancer.coverImage;

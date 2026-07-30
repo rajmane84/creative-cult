@@ -133,11 +133,13 @@ export function FreelancerDiscoverCard({
             <div className="flex items-center gap-1">
               <Star className="size-3.5 fill-primary text-primary" />
               <span className="font-bold text-foreground">
-                {freelancer.rating}
+                {freelancer.rating !== null ? freelancer.rating : 'New'}
               </span>
-              <span className="text-muted-foreground text-[10px]">
-                ({freelancer.reviewCount})
-              </span>
+              {freelancer.rating !== null && (
+                <span className="text-muted-foreground text-[10px]">
+                  ({freelancer.reviewCount})
+                </span>
+              )}
             </div>
           </div>
         </div>

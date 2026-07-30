@@ -11,6 +11,8 @@ import profileRouter from './profile.route';
 import clientProfileRouter from './client-profile.route';
 import cultRouter from './cult.route';
 import portfolioRouter from './portfolio.route';
+import discoverRouter from './discover.route';
+import reviewRouter from './review.route';
 
 const router = Router();
 
@@ -22,6 +24,8 @@ router.use('/profile', profileRouter);
 router.use('/client-profile', clientProfileRouter);
 router.use('/cult', cultRouter);
 router.use('/portfolio', portfolioRouter);
+router.use('/discover', discoverRouter);
+router.use('/reviews', reviewRouter);
 
 router.get('/health', (_, res) => {
   const healthCheck = {

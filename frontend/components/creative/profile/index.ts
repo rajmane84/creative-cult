@@ -13,5 +13,8 @@ export * from './profile-header';
 export { default as ProfilePortfolio } from './profile-portfolio';
 export * from './profile-portfolio';
 
+export { default as ProfileRateDetails } from './profile-rate-details';
+export * from './profile-rate-details';
+
 export { default as ProfileSkills } from './profile-skills';
 export * from './profile-skills';

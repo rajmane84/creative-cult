@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Navbar } from '@/components/navbar';
-import {
-  FreelancerDetailView,
-  getFreelancerByUsername,
-} from '@/components/discover';
+import { FreelancerDetailView } from '@/components/discover';
+import { discoverService } from '@/services/discover';
 
 interface FreelancerPageProps {
   params: Promise<{
@@ -16,7 +14,7 @@ export async function generateMetadata({
   params,
 }: FreelancerPageProps): Promise<Metadata> {
   const { username } = await params;
-  const freelancer = getFreelancerByUsername(username);
+  const freelancer = await discoverService.getFreelancerByUsername(username);
 
   if (!freelancer) {
     return {
@@ -34,7 +32,7 @@ export default async function FreelancerDetailPage({
   params,
 }: FreelancerPageProps) {
   const { username } = await params;
-  const freelancer = getFreelancerByUsername(username);
+  const freelancer = await discoverService.getFreelancerByUsername(username);
 
   if (!freelancer) {
     notFound();

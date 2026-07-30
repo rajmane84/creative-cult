@@ -108,7 +108,16 @@ export const handleGetProfile = asyncHandler(
 export const handleUpdateProfile = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const { headline, bio, availability } = req.body;
+    const {
+      headline,
+      bio,
+      availability,
+      disciplines,
+      rateType,
+      rateAmount,
+      experienceYears,
+      tools,
+    } = req.body;
 
     const creativeProfile = await prisma.creativeProfile.findUnique({
       where: { userId },
@@ -127,6 +136,21 @@ export const handleUpdateProfile = asyncHandler(
           availability !== undefined
             ? availability
             : creativeProfile.availability,
+        disciplines:
+          disciplines !== undefined ? disciplines : creativeProfile.disciplines,
+        rateType: rateType !== undefined ? rateType : creativeProfile.rateType,
+        // Explicit NEGOTIABLE clears any previously set amount.
+        rateAmount:
+          rateType === 'NEGOTIABLE'
+            ? null
+            : rateAmount !== undefined
+              ? rateAmount
+              : creativeProfile.rateAmount,
+        experienceYears:
+          experienceYears !== undefined
+            ? experienceYears
+            : creativeProfile.experienceYears,
+        tools: tools !== undefined ? tools : creativeProfile.tools,
       },
     });
 

@@ -22,7 +22,7 @@ interface SpotlightCardProps {
   tags: string[];
   footerLabel: string;
   price: string;
-  rating: number;
+  rating: number | null;
   reviewCount: number;
   ctaLabel: string;
   delay?: number;
@@ -109,8 +109,12 @@ export function SpotlightCard({
 
             <div className="flex items-center gap-1 font-mono text-xs shrink-0">
               <Star className="size-3.5 fill-primary text-primary" />
-              <span className="font-bold text-foreground">{rating}</span>
-              <span className="text-muted-foreground">({reviewCount})</span>
+              <span className="font-bold text-foreground">
+                {rating !== null ? rating : 'New'}
+              </span>
+              {rating !== null && (
+                <span className="text-muted-foreground">({reviewCount})</span>
+              )}
             </div>
           </div>
 

@@ -9,6 +9,7 @@ import {
   ProfileExperience,
   ProfileEducation,
   ProfilePortfolio,
+  ProfileRateDetails,
 } from '@/components/creative/profile';
 import { EmailVerificationCard } from '@/components/auth/email-verification-card';
 
@@ -65,6 +66,13 @@ export default function CreativeProfilePage() {
 
         <div className="space-y-12 md:space-y-16">
           <ProfileSkills skills={skills} />
+          <ProfileRateDetails
+            disciplines={creativeProfile.disciplines}
+            rateType={creativeProfile.rateType}
+            rateAmount={creativeProfile.rateAmount}
+            experienceYears={creativeProfile.experienceYears}
+            tools={creativeProfile.tools}
+          />
           <ProfileExperience experiences={creativeProfile.experiences} />
           <ProfileEducation education={creativeProfile.education} />
           <ProfilePortfolio />

@@ -112,9 +112,9 @@ export function FreelancerDetailView({
               <div className="flex items-center gap-1 border border-border px-3 py-1.5 bg-card">
                 <Star className="size-4 fill-primary text-primary selection:text-background selection:bg-primary" />
                 <strong className="text-foreground font-bold">
-                  {freelancer.rating}
+                  {freelancer.rating !== null ? freelancer.rating : 'New'}
                 </strong>{' '}
-                ({freelancer.reviewCount})
+                {freelancer.rating !== null && `(${freelancer.reviewCount})`}
               </div>
 
               <div className="border border-border px-3 py-1.5 bg-card">
@@ -260,7 +260,9 @@ export function FreelancerDetailView({
                 <div className="flex justify-between items-center text-muted-foreground">
                   <span>Rating:</span>
                   <span className="text-foreground font-bold">
-                    {freelancer.rating} / 5.0
+                    {freelancer.rating !== null
+                      ? `${freelancer.rating} / 5.0`
+                      : 'No reviews yet'}
                   </span>
                 </div>
               </div>

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { motion, LayoutGroup } from 'motion/react';
-import { MOCK_CULTS, MOCK_FREELANCERS, DiscoverItem } from './mock-data';
+import { MOCK_CULTS, DiscoverItem } from './mock-data';
 import { DiscoverHeader } from './discover-header';
 import { DiscoverSpotlight } from './discover-spotlight';
 import { DiscoverFilters, TabType, SortOption } from './discover-filters';
@@ -10,6 +10,9 @@ import { CultDiscoverCard } from './cult-discover-card';
 import { FreelancerDiscoverCard } from './freelancer-discover-card';
 import { SearchX, RefreshCw, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LoadingState } from '@/components/loading-state';
+import { ErrorState } from '@/components/error-state';
+import { useFreelancers } from '@/hooks/discover';
 
 export function DiscoverView() {
   const [activeTab, setActiveTab] = useState<TabType>('ALL');
@@ -17,6 +20,16 @@ export function DiscoverView() {
   const [selectedCategory, setSelectedCategory] = useState('All Disciplines');
   const [availabilityFilter, setAvailabilityFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState<SortOption>('FEATURED');
+
+  // Cults are still backed by mock data — the Cult schema doesn't yet carry
+  // most of what CultDiscoverItem needs (disciplines, pricing, rating,
+  // equipment, etc). Freelancers are wired to the real API below.
+  const {
+    data: freelancers,
+    isLoading: freelancersLoading,
+    error: freelancersError,
+    refetch: refetchFreelancers,
+  } = useFreelancers();
 
   const handleClearFilters = () => {
     setSearchQuery('');
@@ -57,7 +70,7 @@ export function DiscoverView() {
 
   // Filtered Freelancers
   const filteredFreelancers = useMemo(() => {
-    return MOCK_FREELANCERS.filter((free) => {
+    return (freelancers ?? []).filter((free) => {
       const query = searchQuery.toLowerCase().trim();
       const matchesSearch =
         !query ||
@@ -78,7 +91,7 @@ export function DiscoverView() {
 
       return matchesSearch && matchesCategory && matchesAvailability;
     });
-  }, [searchQuery, selectedCategory, availabilityFilter]);
+  }, [freelancers, searchQuery, selectedCategory, availabilityFilter]);
 
   // Combined and sorted items
   const displayItems = useMemo(() => {
@@ -97,7 +110,8 @@ export function DiscoverView() {
         return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
       }
       if (sortBy === 'RATING') {
-        return b.rating - a.rating;
+        // Freelancers with no reviews yet (rating === null) sort last.
+        return (b.rating ?? -1) - (a.rating ?? -1);
       }
       if (sortBy === 'PROJECTS') {
         return b.completedProjects - a.completedProjects;
@@ -118,13 +132,26 @@ export function DiscoverView() {
     });
   }, [activeTab, filteredCults, filteredFreelancers, sortBy]);
 
+  if (freelancersLoading) {
+    return <LoadingState message="Loading creatives..." />;
+  }
+
+  if (freelancersError || !freelancers) {
+    return (
+      <ErrorState
+        title="Couldn't load the discover page"
+        onRetry={() => refetchFreelancers()}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground w-full overflow-x-hidden">
       {/* Full-width Header Banner */}
       <DiscoverHeader />
 
       {/* Full-width Spotlight Highlights Section */}
-      <DiscoverSpotlight />
+      <DiscoverSpotlight freelancers={freelancers} />
 
       {/* Full-width Search, Filter & Controls Toolbar */}
       <DiscoverFilters

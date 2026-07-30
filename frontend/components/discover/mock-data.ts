@@ -45,12 +45,15 @@ export interface FreelancerDiscoverItem {
   location: string;
   disciplines: Discipline[];
   skills: string[];
-  rateType: RateType;
-  // Null exactly when rateType is 'NEGOTIABLE' — no fixed number to sort/display.
+  // Null when a real creative hasn't set a rate yet — distinct from
+  // rateType === 'NEGOTIABLE', which is an explicit choice.
+  rateType: RateType | null;
+  // Null when rateType is 'NEGOTIABLE'/unset — no fixed number to sort/display.
   rateAmount: number | null;
   experienceYears: number;
   completedProjects: number;
-  rating: number;
+  // Null when the creative has no reviews yet.
+  rating: number | null;
   reviewCount: number;
   isVerified: boolean;
   availability: 'AVAILABLE' | 'BUSY' | 'NOT_AVAILABLE';
@@ -82,7 +85,7 @@ export type Discipline = Exclude<
 // Mirrors the backend `RateType` enum.
 export type RateType = 'HOURLY' | 'DAILY' | 'PROJECT' | 'NEGOTIABLE';
 
-export function getRateLabel(rateType: RateType): string {
+export function getRateLabel(rateType: RateType | null): string {
   switch (rateType) {
     case 'HOURLY':
       return 'Hourly Rate';
@@ -91,14 +94,19 @@ export function getRateLabel(rateType: RateType): string {
     case 'PROJECT':
       return 'Project Rate';
     case 'NEGOTIABLE':
+    case null:
       return 'Rate';
   }
 }
 
 export function formatRate(
-  rateType: RateType,
+  rateType: RateType | null,
   rateAmount: number | null
 ): string {
+  if (rateType === null) {
+    return 'Rate not set';
+  }
+
   if (rateType === 'NEGOTIABLE' || rateAmount === null) {
     return 'Negotiable';
   }
@@ -406,240 +414,6 @@ export const MOCK_CULTS: CultDiscoverItem[] = [
   },
 ];
 
-export const MOCK_FREELANCERS: FreelancerDiscoverItem[] = [
-  {
-    id: 'free-1',
-    type: 'freelancer',
-    name: 'Aarav Sharma',
-    username: 'aarav.frames',
-    headline: 'Senior Cinematographer & Arri/RED Specialist',
-    bio: '10+ years directing photography for music videos, luxury brand ads, and narrative feature films. Master of low-light anamorphic framing and high-speed robotic camera rigs.',
-    avatarUrl:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=srgb&fm=jpg&q=85&w=300',
-    coverImage:
-      'https://images.unsplash.com/photo-1611784728558-6c7d9b409cdf?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200',
-    location: 'Mumbai, India',
-    disciplines: ['Film & Video', 'Photography'],
-    skills: [
-      'ARRI Alexa',
-      'Anamorphic Lenses',
-      'Color Grading',
-      'Lighting Direction',
-    ],
-    rateType: 'DAILY',
-    rateAmount: 45000,
-    experienceYears: 10,
-    completedProjects: 112,
-    rating: 4.99,
-    reviewCount: 84,
-    isVerified: true,
-    availability: 'AVAILABLE',
-    isFeatured: true,
-    portfolio: [
-      {
-        id: 'fp1',
-        title: 'Neon Nights Music Video',
-        image:
-          'https://images.unsplash.com/photo-1611784728558-6c7d9b409cdf?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: 'Cinematography',
-      },
-      {
-        id: 'fp2',
-        title: 'Maharaja Heritage Commercial',
-        image:
-          'https://images.unsplash.com/photo-1587090564077-c7b8f2f1249e?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: 'Commercial AD',
-      },
-      {
-        id: 'fp3',
-        title: 'Monsoon Indie Drama',
-        image:
-          'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: 'Feature Film',
-      },
-    ],
-    tools: [
-      'ARRI Alexa Mini LF',
-      'Kowa Anamorphic Lenses',
-      'DaVinci Resolve Studio',
-      'Aputure 600d Pro',
-    ],
-  },
-  {
-    id: 'free-2',
-    type: 'freelancer',
-    name: 'Maya Lin',
-    username: 'mayalin.3d',
-    headline: '3D Generalist & Real-Time Unreal Engine Artist',
-    bio: 'Creating photorealistic product renders, procedural environment designs, and high-octane 3D visual art for tech disruptors and web3 experiences.',
-    avatarUrl:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=srgb&fm=jpg&q=85&w=300',
-    coverImage:
-      'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200',
-    location: 'Bengaluru, India',
-    disciplines: ['3D & VFX', 'Motion Graphics'],
-    skills: [
-      'Unreal Engine 5',
-      'Blender 3D',
-      'Substance Painter',
-      'Octane Render',
-    ],
-    rateType: 'PROJECT',
-    rateAmount: 250000,
-    experienceYears: 6,
-    completedProjects: 78,
-    rating: 4.96,
-    reviewCount: 52,
-    isVerified: true,
-    availability: 'AVAILABLE',
-    portfolio: [
-      {
-        id: 'fp4',
-        title: 'Futuristic EV Concept',
-        image:
-          'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: '3D Renders',
-      },
-      {
-        id: 'fp5',
-        title: 'Organic Fluid Simulation',
-        image:
-          'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: 'Procedural FX',
-      },
-    ],
-    tools: ['Blender 4.2', 'Unreal Engine 5.4', 'ZBrush', 'Substance 3D Suite'],
-  },
-  {
-    id: 'free-3',
-    type: 'freelancer',
-    name: 'Kabir Varma',
-    username: 'kabir.sound',
-    headline: 'Sound Designer & Modular Synthesist',
-    bio: 'Crafting immersive soundscapes, foley design, and punchy audio post-production for AAA game trailers, short films, and high-fashion commercials.',
-    avatarUrl:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=srgb&fm=jpg&q=85&w=300',
-    coverImage:
-      'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200',
-    location: 'Goa, India',
-    disciplines: ['Sound & Audio'],
-    skills: [
-      'Modular Synths',
-      'Pro Tools HD',
-      'Game Audio (Wwise)',
-      'Foley Design',
-    ],
-    rateType: 'HOURLY',
-    rateAmount: 2500,
-    experienceYears: 8,
-    completedProjects: 64,
-    rating: 4.93,
-    reviewCount: 41,
-    isVerified: true,
-    availability: 'AVAILABLE',
-    portfolio: [
-      {
-        id: 'fp6',
-        title: 'Cyberpunk Game Teaser',
-        image:
-          'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: 'Sound Design',
-      },
-    ],
-    tools: [
-      'Eurorack Modular Synth',
-      'Pro Tools Ultimate',
-      'Universal Audio Apollo x8p',
-    ],
-  },
-  {
-    id: 'free-4',
-    type: 'freelancer',
-    name: 'Zoya Chen',
-    username: 'zoyastyles',
-    headline: 'Editorial Costume Designer & Fashion Curator',
-    bio: 'Specializing in avant-garde costume curation, street-style editorial spreads, and celebrity red carpet styling across Mumbai & London.',
-    avatarUrl:
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?crop=entropy&cs=srgb&fm=jpg&q=85&w=300',
-    coverImage:
-      'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200',
-    location: 'Mumbai / London',
-    disciplines: ['Fashion & Styling', 'Design & Brand'],
-    skills: [
-      'Costume Design',
-      'Creative Direction',
-      'Archive Pulls',
-      'Lookbook Curation',
-    ],
-    rateType: 'DAILY',
-    rateAmount: 35000,
-    experienceYears: 7,
-    completedProjects: 89,
-    rating: 4.98,
-    reviewCount: 67,
-    isVerified: true,
-    availability: 'BUSY',
-    portfolio: [
-      {
-        id: 'fp7',
-        title: 'Tokyo Streetwear Lookbook',
-        image:
-          'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: 'Fashion Curation',
-      },
-    ],
-    tools: ['Custom Tailoring Atelier', 'Archive Designer Wardrobe'],
-  },
-  {
-    id: 'free-5',
-    type: 'freelancer',
-    name: 'Priya Nair',
-    username: 'priyadrones',
-    headline: 'DGCA Certified FPV Drone Pilot & Aerial DP',
-    bio: 'High-speed cinematic FPV drone operator for action sequences, landscape car commercials, and indoor fly-throughs. Experienced in extreme environments.',
-    avatarUrl:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=srgb&fm=jpg&q=85&w=300',
-    coverImage:
-      'https://images.unsplash.com/photo-1508614589041-895b88991e3e?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200',
-    location: 'Kochi, India',
-    disciplines: ['Film & Video', 'Photography'],
-    skills: [
-      'Custom FPV Rigs',
-      'RED Komodo Aerial',
-      'High-Speed Tracking',
-      'Indoor Flythrough',
-    ],
-    rateType: 'NEGOTIABLE',
-    rateAmount: null,
-    experienceYears: 5,
-    completedProjects: 55,
-    rating: 4.94,
-    reviewCount: 38,
-    isVerified: true,
-    availability: 'AVAILABLE',
-    portfolio: [
-      {
-        id: 'fp8',
-        title: 'Himalayan Ridge Drift',
-        image:
-          'https://images.unsplash.com/photo-1508614589041-895b88991e3e?crop=entropy&cs=srgb&fm=jpg&q=85&w=800',
-        category: 'FPV Cinema',
-      },
-    ],
-    tools: ['Custom 7" FPV Drone', 'RED Komodo 6K', 'DJI Inspire 3'],
-  },
-];
-
 export function getCultBySlug(slug: string): CultDiscoverItem | undefined {
   return MOCK_CULTS.find((c) => c.slug === slug);
-}
-
-export function getFreelancerByUsername(
-  username: string
-): FreelancerDiscoverItem | undefined {
-  // Decode URL component if handle starts with @ or has encoded chars
-  const cleanUsername = decodeURIComponent(username).replace(/^@/, '');
-  return MOCK_FREELANCERS.find(
-    (f) => f.username.toLowerCase() === cleanUsername.toLowerCase()
-  );
 }

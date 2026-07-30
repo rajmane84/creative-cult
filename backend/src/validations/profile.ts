@@ -4,20 +4,48 @@ import {
   SkillLevel,
   Degree,
   EmploymentType,
+  Discipline,
+  RateType,
 } from '@prisma/client';
 
-export const updateProfileSchema = z.object({
-  headline: z.string('Headline is required').optional(),
-  bio: z.string('Bio is required').optional(),
-  availability: z
-    .enum(AvailabilityStatus, {
-      error: (issue) =>
-        issue.input === undefined
-          ? 'Availability is required'
-          : 'Invalid availability status. Must be one of: AVAILABLE, BUSY, NOT_AVAILABLE',
-    })
-    .optional(),
-});
+export const updateProfileSchema = z
+  .object({
+    headline: z.string('Headline is required').optional(),
+    bio: z.string('Bio is required').optional(),
+    availability: z
+      .enum(AvailabilityStatus, {
+        error: (issue) =>
+          issue.input === undefined
+            ? 'Availability is required'
+            : 'Invalid availability status. Must be one of: AVAILABLE, BUSY, NOT_AVAILABLE',
+      })
+      .optional(),
+    disciplines: z.array(z.enum(Discipline)).max(7).optional(),
+    rateType: z.enum(RateType).nullable().optional(),
+    rateAmount: z
+      .number('Rate amount must be a number')
+      .int()
+      .positive('Rate amount must be greater than 0')
+      .nullable()
+      .optional(),
+    experienceYears: z
+      .number('Experience years must be a number')
+      .int()
+      .min(0)
+      .max(60)
+      .nullable()
+      .optional(),
+    tools: z.array(z.string().min(1).max(60)).max(30).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.rateType === 'NEGOTIABLE' && data.rateAmount) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'rateAmount must not be set when rateType is NEGOTIABLE',
+        path: ['rateAmount'],
+      });
+    }
+  });
 
 export const setLocationSchema = z.object({
   location: z
