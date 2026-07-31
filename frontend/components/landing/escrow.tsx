@@ -48,7 +48,7 @@ export default function Escrow() {
           </p>
 
           <p className="font-body mt-6 max-w-md leading-relaxed text-background/70">
-            Every project on cre8ive-cult is guarded by a neutral vault. Funds
+            Every project on Atelier-Hub is guarded by a neutral vault. Funds
             are held the moment a brief is accepted, released the moment the
             client signs off. No invoicing gymnastics. No ghost clients.
           </p>

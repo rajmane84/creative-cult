@@ -15,7 +15,7 @@ export default function Footer() {
           </div>
 
           <div className="font-editorial mt-2 text-xl">
-            hello@cre8ive-cult.co
+            hello@Atelier-Hub.co
           </div>
         </div>
 
@@ -107,15 +107,15 @@ export default function Footer() {
         className="relative select-none"
       >
         <h3 className="font-display text-[22vw] leading-[0.82] tracking-tight text-foreground">
-          cre8ive
+          Atelier
           <span className="text-primary">-</span>
-          cult
+          Hub
         </h3>
       </motion.div>
 
       {/* Bottom rail */}
       <div className="mt-8 flex flex-col items-start justify-between gap-2 border-t border-border pt-4 font-mono text-[10px] uppercase md:flex-row md:items-center">
-        <span>© 2026 cre8ive-cult — Made by cults, for cults.</span>
+        <span>© 2026 Atelier-Hub — Made by cults, for cults.</span>
 
         <span className="opacity-60">v0.1.0 · prologue</span>
       </div>

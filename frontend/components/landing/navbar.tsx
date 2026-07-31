@@ -20,9 +20,9 @@ export default function Nav() {
           data-testid="nav-brand"
           className="font-editorial font-bold text-lg md:text-xl tracking-tight"
         >
-          cre8ive
+          Atelier
           <span className="text-primary">-</span>
-          cult
+          Hub
           <span className="ml-2 font-mono text-[10px] align-super opacity-60">
             ™
           </span>

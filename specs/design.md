@@ -10,7 +10,7 @@ codebase → matching tokens → confirming components → "Matching your system
 inventing one"). Each line lands with a slight delay, mimicking real work being
 done.
 
-**Applicable pattern for Cre8ive Cult:** Use for any process that takes a moment
+**Applicable pattern for AtelierHub:** Use for any process that takes a moment
 conceptually, even if the actual computation is instant — e.g. matching a Client's
 brief to Creatives, generating a portfolio preview, submitting a booking request.
 A staged reveal ("Reading brief → Matching creatives → 3 matches found") reads as
@@ -68,7 +68,7 @@ hover, distinctly from its resting state, before a click commits to an action.
 This site's entire premise is packaging micro-transitions as discrete, reusable,
 tree-shakeable components rather than one-off animations buried in page code.
 
-**Applicable pattern:** Treat Cre8ive Cult's own micro-interactions the same way —
+**Applicable pattern:** Treat AtelierHub own micro-interactions the same way —
 as a small internal library (button press states, card hover lift, skeleton
 loaders, toast entrances) defined once and reused everywhere, rather than
 redefined per page. This keeps motion consistent across the Creative and Client
@@ -90,8 +90,8 @@ richness comes from simple, clearly-labeled link cards (e.g. "Design Engineer" /
 Nothing fights for attention.
 
 **Applicable pattern:** A useful counter-example / calibration point — proof that
-restraint itself is a legitimate interaction choice. Not every surface in Cre8ive
-Cult needs heavy motion; simple, confident hover-underline and clear tap targets
+restraint itself is a legitimate interaction choice. Not every surface in AtelierHub
+needs heavy motion; simple, confident hover-underline and clear tap targets
 are sometimes the correct, tasteful choice (e.g. footer nav, secondary settings
 pages).
 
@@ -136,7 +136,7 @@ Both use a horizontally auto-scrolling row of short testimonial quotes with
 avatar + name + handle, looping continuously. Impeccable pairs this with a dense
 wall of real tweet embeds; Sam's site keeps it shorter and more curated.
 
-**Applicable pattern:** Directly usable for Cre8ive Cult's landing/marketing page —
+**Applicable pattern:** Directly usable for AtelierHub landing/marketing page —
 a marquee of Client testimonials about Creatives they've booked, or a Creative's
 own client reviews on their public profile. Keep it slow, pause-on-hover, and
 never so dense it becomes noise (Impeccable's version is closer to "wall," Sam's

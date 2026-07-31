@@ -17,12 +17,12 @@ export async function generateMetadata({
 
   if (!cult) {
     return {
-      title: 'Cult Not Found — cre8ive-cult',
+      title: 'Cult Not Found — Atelier-Hub',
     };
   }
 
   return {
-    title: `${cult.name} — Cult Collective | cre8ive-cult`,
+    title: `${cult.name} — Cult Collective | Atelier-Hub`,
     description: cult.tagline || cult.bio,
   };
 }

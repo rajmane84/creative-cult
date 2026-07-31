@@ -3,7 +3,7 @@ import { Navbar } from '@/components/navbar';
 import { DiscoverView } from '@/components/discover';
 
 export const metadata: Metadata = {
-  title: 'Discover Cults & Freelancers — cre8ive-cult',
+  title: 'Discover Cults & Freelancers — Atelier-Hub',
   description:
     'Explore vetted creative collectives (Cults) and independent visionaries. Book unified multi-disciplinary teams with guaranteed escrow protection.',
 };

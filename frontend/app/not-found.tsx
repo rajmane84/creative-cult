@@ -146,7 +146,7 @@ export default function NotFound() {
         [ SYS.ERR.404 ]
       </div>
       <div className="pointer-events-none absolute bottom-6 right-6 hidden font-mono text-[10px] uppercase tracking-widest text-muted-foreground sm:block">
-        [ CRE8IVE-CULT ]
+        [ Atelier-Hub ]
       </div>
     </div>
   );

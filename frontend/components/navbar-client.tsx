@@ -96,11 +96,11 @@ export function NavbarClient({ user }: NavbarClientProps) {
             href={`/dashboard/${user.role.toLowerCase()}`}
             className="font-editorial font-bold text-base md:text-lg lg:text-xl tracking-tight flex items-center shrink-0 min-h-11"
           >
-            cre8ive
+            Atelier
             <span className="text-primary selection:text-background selection:bg-primary">
               -
             </span>
-            cult
+            Hub
             <span className="ml-1 font-mono text-[9px] md:text-[10px] align-super opacity-60">
               ™
             </span>
@@ -110,11 +110,11 @@ export function NavbarClient({ user }: NavbarClientProps) {
             href="/"
             className="font-editorial font-bold text-base md:text-lg lg:text-xl tracking-tight flex items-center shrink-0 min-h-11"
           >
-            cre8ive
+            Atelier
             <span className="text-primary selection:text-background selection:bg-primary">
               -
             </span>
-            cult
+            Hub
             <span className="ml-1 font-mono text-[9px] md:text-[10px] align-super opacity-60">
               ™
             </span>

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'My Profile — cre8ive-cult',
+  title: 'My Profile — Atelier-Hub',
   description:
-    'Manage your client profile and business details on cre8ive-cult.',
+    'Manage your client profile and business details on Atelier-Hub.',
 };
 
 export default function ClientProfileLayout({

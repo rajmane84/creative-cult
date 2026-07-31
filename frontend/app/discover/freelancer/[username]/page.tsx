@@ -18,12 +18,12 @@ export async function generateMetadata({
 
   if (!freelancer) {
     return {
-      title: 'Creative Not Found — cre8ive-cult',
+      title: 'Creative Not Found — Atelier-Hub',
     };
   }
 
   return {
-    title: `${freelancer.name} (@${freelancer.username}) — Freelancer Profile | cre8ive-cult`,
+    title: `${freelancer.name} (@${freelancer.username}) — Freelancer Profile | Atelier-Hub`,
     description: freelancer.headline || freelancer.bio,
   };
 }
