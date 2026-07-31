@@ -9,12 +9,14 @@ import {
   Skill,
   Education,
 } from '@/validations/creative/onboarding';
+import { Experience } from '@/validations/creative/experience';
 import { useUsernameCheck } from '@/hooks/auth/use-username-check';
 import { useCreativeOnboarding } from '@/hooks/auth/use-creative-onboarding';
 import MultiStepOnboarding from '@/components/creative/onboarding/multi-step-onboarding';
 import BasicInfoStep from '@/components/creative/onboarding/basic-info-step';
 import SkillsStep from '@/components/creative/onboarding/skills-step';
 import EducationStep from '@/components/creative/onboarding/education-step';
+import ExperienceStep from '@/components/creative/onboarding/experience-step';
 import StepNavigation from '@/components/creative/onboarding/step-navigation';
 import type { ResumeParseResponse } from '@/services/creative/resume';
 import {
@@ -29,6 +31,7 @@ export function CreativeManualOnboardingForm() {
   const [usernameInput, setUsernameInput] = useState('');
   const [skills, setSkills] = useState<Skill[]>([]);
   const [educationList, setEducationList] = useState<Education[]>([]);
+  const [experienceList, setExperienceList] = useState<Experience[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [resumeData, setResumeData] = useState<ResumeParseResponse | null>(
     null
@@ -39,6 +42,7 @@ export function CreativeManualOnboardingForm() {
     defaultValues: {
       skills: [],
       education: [],
+      experience: [],
     },
     mode: 'onChange', // Validate on change for real-time feedback
   });
@@ -72,6 +76,7 @@ export function CreativeManualOnboardingForm() {
     }
     // Step 2: Skills are optional, always valid
     // Step 3: Education is optional, always valid
+    // Step 4: Experience is optional, always valid
     return true;
   };
 
@@ -91,6 +96,11 @@ export function CreativeManualOnboardingForm() {
       title: 'Education',
       description: 'Degrees & qualifications',
     },
+    {
+      id: 4,
+      title: 'Experience',
+      description: 'Work history',
+    },
   ];
 
   // Sync skills with form value
@@ -102,6 +112,11 @@ export function CreativeManualOnboardingForm() {
   useEffect(() => {
     setValue('education', educationList);
   }, [educationList, setValue]);
+
+  // Sync experience with form value
+  useEffect(() => {
+    setValue('experience', experienceList);
+  }, [experienceList, setValue]);
 
   // Check for resume data from session storage (when coming from upload flow)
   useEffect(() => {
@@ -180,7 +195,7 @@ export function CreativeManualOnboardingForm() {
           </CardTitle>
 
           <CardDescription className="font-editorial text-xl text-foreground opacity-70 max-w-lg pt-2">
-            Complete your profile in just 3 steps.
+            Complete your profile in just 4 steps.
           </CardDescription>
         </CardHeader>
 
@@ -208,6 +223,13 @@ export function CreativeManualOnboardingForm() {
                     onEducationChange={setEducationList}
                   />
                 )}
+
+                {currentStep === 3 && (
+                  <ExperienceStep
+                    experiences={experienceList}
+                    onExperienceChange={setExperienceList}
+                  />
+                )}
               </MultiStepOnboarding>
 
               <StepNavigation
@@ -222,7 +244,9 @@ export function CreativeManualOnboardingForm() {
                     ? 'Continue to Skills'
                     : currentStep === 1
                       ? 'Continue to Education'
-                      : 'Complete Profile'
+                      : currentStep === 2
+                        ? 'Continue to Experience'
+                        : 'Complete Profile'
                 }
               />
             </form>

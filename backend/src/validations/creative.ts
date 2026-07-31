@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SkillLevel, Degree } from '@prisma/client';
+import { SkillLevel, Degree, EmploymentType } from '@prisma/client';
 
 export const educationItemSchema = z.object({
   school: z
@@ -21,6 +21,27 @@ export const educationItemSchema = z.object({
       /^(19|20)\d{2}$/,
       'Please enter a valid 4-digit graduation year (e.g. 2024)'
     ),
+});
+
+export const experienceItemSchema = z.object({
+  title: z
+    .string('Title is required')
+    .min(2, 'Title must be at least 2 characters'),
+  employmentType: z.enum(EmploymentType, {
+    error: (issue) =>
+      issue.input === undefined
+        ? 'Employment type is required'
+        : 'Invalid employment type',
+  }),
+  companyName: z
+    .string('Company name is required')
+    .min(1, 'Company name is required'),
+  industry: z.string('Industry is required').min(1, 'Industry is required'),
+  startDate: z.coerce.date('Start date is required'),
+  endDate: z.coerce.date().optional(),
+  currentlyWorking: z.boolean().default(false),
+  description: z.string().optional(),
+  skills: z.array(z.string()).default([]),
 });
 
 export const creativeOnboardingSchema = z.object({
@@ -47,6 +68,7 @@ export const creativeOnboardingSchema = z.object({
     )
     .optional(),
   education: z.array(educationItemSchema).optional(),
+  experience: z.array(experienceItemSchema).optional(),
   resumeUrl: z.string().optional(),
   resumePublicId: z.string().optional(),
 });

@@ -5,7 +5,7 @@ import { BadRequestError } from '../util/errors/AppError';
 import { ApiResponse } from '../util/response/ApiResponse';
 import { deleteFromCloudinary } from '../util/cloudinary';
 import { getLocationFromRequest } from '../util/geolocation';
-import type { EducationItemInput } from '../types/profile';
+import type { EducationItemInput, ExperienceItemInput } from '../types/profile';
 
 export const handleCreativeOnboarding = asyncHandler(
   async (req: Request, res: Response) => {
@@ -15,6 +15,7 @@ export const handleCreativeOnboarding = asyncHandler(
       bio,
       skills,
       education,
+      experience,
       resumeUrl,
       resumePublicId,
     } = req.body;
@@ -169,7 +170,30 @@ export const handleCreativeOnboarding = asyncHandler(
       });
     }
 
-    // Fetch updated profile with skills and education
+    // Handle experience if provided
+    if (experience && Array.isArray(experience) && experience.length > 0) {
+      // Delete existing experience records to avoid duplicates
+      await prisma.experience.deleteMany({
+        where: { creativeProfileId: creativeProfile.id },
+      });
+
+      await prisma.experience.createMany({
+        data: experience.map((item: ExperienceItemInput) => ({
+          creativeProfileId: creativeProfile.id,
+          title: item.title.trim(),
+          employmentType: item.employmentType,
+          companyName: item.companyName.trim(),
+          industry: item.industry.trim(),
+          startDate: item.startDate,
+          endDate: item.currentlyWorking ? undefined : item.endDate,
+          currentlyWorking: item.currentlyWorking,
+          description: item.description,
+          skills: item.skills,
+        })),
+      });
+    }
+
+    // Fetch updated profile with skills, education, and experience
     const updatedProfile = await prisma.creativeProfile.findUnique({
       where: { id: creativeProfile.id },
       include: {
@@ -179,6 +203,7 @@ export const handleCreativeOnboarding = asyncHandler(
           },
         },
         education: true,
+        experiences: true,
       },
     });
 

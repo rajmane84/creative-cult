@@ -92,6 +92,19 @@ export interface UpdateAvailabilityData {
   availability: AvailabilityStatus;
 }
 
+export interface ExperienceItemInput {
+  id?: string;
+  title: string;
+  employmentType: EmploymentType;
+  companyName: string;
+  industry: string;
+  startDate: Date;
+  endDate?: Date;
+  currentlyWorking: boolean;
+  description?: string;
+  skills: string[];
+}
+
 export interface EducationItemInput {
   id?: string;
   school: string;

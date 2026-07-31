@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Degree } from '@/types';
+import { experienceSchema } from '@/validations/creative/experience';
 
 // ------------------------------- Skill schema -----------------------------------------
 
@@ -55,14 +56,18 @@ export const creativeOnboardingSchema = z.object({
       /^[a-zA-Z0-9_]+$/,
       'Username can only contain letters, numbers, and underscores'
     ),
-  headline: z.string().optional(),
-  bio: z.string().optional(),
+  headline: z
+    .string()
+    .max(100, 'Headline must be less than 100 characters')
+    .optional(),
+  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
   skills: z.array(skillSchema).optional(),
   education: z.array(educationSchema).optional(),
+  experience: z.array(experienceSchema).optional(),
   resumeUrl: z.string().optional(),
   resumePublicId: z.string().optional(),
 });
 
-export type CreativeOnboardingFormData = z.infer<
+export type CreativeOnboardingFormData = z.input<
   typeof creativeOnboardingSchema
 >;

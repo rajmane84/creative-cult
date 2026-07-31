@@ -27,7 +27,11 @@ export default function BasicInfoStep({
     register,
     formState: { errors },
     setValue,
+    watch,
   } = useFormContext();
+
+  const headlineValue: string = watch('headline') || '';
+  const bioValue: string = watch('bio') || '';
 
   const [localUsername, setLocalUsername] = useState(usernameInput);
 
@@ -130,16 +134,30 @@ export default function BasicInfoStep({
       </div>
 
       <div className="space-y-4">
-        <Label
-          htmlFor="headline"
-          className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
-        >
-          Headline
-        </Label>
+        <div className="flex items-center justify-between">
+          <Label
+            htmlFor="headline"
+            className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
+          >
+            Headline
+          </Label>
+          <span
+            className={cn(
+              'font-mono text-[10px]',
+              headlineValue.length >= 90
+                ? 'text-amber-600'
+                : 'text-muted-foreground',
+              headlineValue.length >= 100 ? 'text-red-600' : ''
+            )}
+          >
+            {headlineValue.length}/100
+          </span>
+        </div>
         <Input
           id="headline"
           type="text"
           placeholder="e.g., Senior Graphic Designer"
+          maxLength={100}
           {...register('headline')}
           className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors"
         />
@@ -151,16 +169,30 @@ export default function BasicInfoStep({
       </div>
 
       <div className="space-y-4">
-        <Label
-          htmlFor="bio"
-          className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
-        >
-          Bio
-        </Label>
+        <div className="flex items-center justify-between">
+          <Label
+            htmlFor="bio"
+            className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
+          >
+            Bio
+          </Label>
+          <span
+            className={cn(
+              'font-mono text-[10px]',
+              bioValue.length >= 450
+                ? 'text-amber-600'
+                : 'text-muted-foreground',
+              bioValue.length >= 500 ? 'text-red-600' : ''
+            )}
+          >
+            {bioValue.length}/500
+          </span>
+        </div>
         <Textarea
           id="bio"
           placeholder="Tell us about yourself and your work..."
           rows={4}
+          maxLength={500}
           {...register('bio')}
           className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary resize-none transition-colors"
         />

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { MonthPicker } from '@/components/ui/date-picker';
 import { cn } from '@/lib/cn';
 import { EmploymentType } from '@/types';
 import { useUpdateExperience } from '@/hooks/creative/profile';
@@ -32,6 +33,11 @@ const fromMonthInput = (value: string) => {
   if (!value) return null;
   const [year, month] = value.split('-');
   return new Date(parseInt(year), parseInt(month) - 1, 1).toISOString();
+};
+
+const getCurrentMonth = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 };
 
 const formatEmploymentType = (type: string) => {
@@ -213,8 +219,30 @@ function ExperienceFormSection({
     description: '',
     skills: '',
   });
+  const [dateError, setDateError] = useState<string | null>(null);
+
+  const currentMonth = getCurrentMonth();
+
+  const validateDates = (startDate: string, endDate: string) => {
+    if (startDate && startDate > currentMonth) {
+      return 'Start date cannot be in the future';
+    }
+    if (endDate && startDate && endDate < startDate) {
+      return 'End date cannot be before the start date';
+    }
+    return null;
+  };
 
   const handleSubmit = () => {
+    const error = validateDates(
+      formData.startDate,
+      formData.currentlyWorking ? '' : formData.endDate
+    );
+    if (error) {
+      setDateError(error);
+      return;
+    }
+
     const newExperience = {
       ...formData,
       skills: formData.skills
@@ -250,6 +278,7 @@ function ExperienceFormSection({
             description: '',
             skills: '',
           });
+          setDateError(null);
           setIsAdding(false);
         },
         onError: (error) => {
@@ -295,7 +324,7 @@ function ExperienceFormSection({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
               <Label className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2">
-                Title *
+                Title <span className="text-red-600">*</span>
               </Label>
               <Input
                 placeholder="e.g., Senior Designer"
@@ -309,7 +338,7 @@ function ExperienceFormSection({
 
             <div className="space-y-4">
               <Label className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2">
-                Company
+                Company <span className="text-red-600">*</span>
               </Label>
               <Input
                 placeholder="e.g., Acme Inc"
@@ -325,7 +354,7 @@ function ExperienceFormSection({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
               <Label className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2">
-                Employment Type
+                Employment Type <span className="text-red-600">*</span>
               </Label>
               <select
                 value={formData.employmentType}
@@ -347,7 +376,7 @@ function ExperienceFormSection({
 
             <div className="space-y-4">
               <Label className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2">
-                Industry
+                Industry <span className="text-red-600">*</span>
               </Label>
               <Input
                 placeholder="e.g., Technology"
@@ -363,15 +392,21 @@ function ExperienceFormSection({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
               <Label className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2">
-                Start Date *
+                Start Date <span className="text-red-600">*</span>
               </Label>
-              <Input
-                type="month"
+              <MonthPicker
+                id="exp-start"
+                max={currentMonth}
                 value={formData.startDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, startDate: e.target.value })
-                }
-                className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors duration-200 ease-out"
+                onChange={(startDate) => {
+                  setFormData({ ...formData, startDate });
+                  setDateError(
+                    validateDates(
+                      startDate,
+                      formData.currentlyWorking ? '' : formData.endDate
+                    )
+                  );
+                }}
               />
             </div>
 
@@ -379,26 +414,40 @@ function ExperienceFormSection({
               <Label className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2">
                 End Date
               </Label>
-              <Input
-                type="month"
+              <MonthPicker
+                id="exp-end"
+                min={formData.startDate || undefined}
                 value={formData.endDate}
                 disabled={formData.currentlyWorking}
-                onChange={(e) =>
-                  setFormData({ ...formData, endDate: e.target.value })
-                }
-                className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors duration-200 ease-out disabled:opacity-50"
+                onChange={(endDate) => {
+                  setFormData({ ...formData, endDate });
+                  setDateError(validateDates(formData.startDate, endDate));
+                }}
               />
             </div>
           </div>
+
+          {dateError && (
+            <p className="font-mono text-[11px] uppercase tracking-widest text-red-600">
+              {dateError}
+            </p>
+          )}
 
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
               id="currentlyWorking"
               checked={formData.currentlyWorking}
-              onChange={(e) =>
-                setFormData({ ...formData, currentlyWorking: e.target.checked })
-              }
+              onChange={(e) => {
+                const currentlyWorking = e.target.checked;
+                setFormData({ ...formData, currentlyWorking });
+                setDateError(
+                  validateDates(
+                    formData.startDate,
+                    currentlyWorking ? '' : formData.endDate
+                  )
+                );
+              }}
               className="w-4 h-4 rounded border-border focus-visible:ring-0 focus-visible:border-primary transition-colors duration-200 ease-out"
             />
             <Label
@@ -453,7 +502,10 @@ function ExperienceFormSection({
               onClick={handleSubmit}
               disabled={
                 !formData.title ||
+                !formData.companyName ||
+                !formData.industry ||
                 !formData.startDate ||
+                !!dateError ||
                 updateExperienceMutation.isPending
               }
               className="flex-1 h-10 gap-1.5 transition-all duration-200 ease-out hover:bg-primary/90 motion-reduce:transition-none"

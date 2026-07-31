@@ -12,8 +12,10 @@ export const experienceSchema = z
           ? 'Employment type is required'
           : 'Please select a valid employment type',
     }),
-    companyName: z.string().optional(),
-    industry: z.string().optional(),
+    companyName: z
+      .string('Company name is required')
+      .min(1, 'Company name is required'),
+    industry: z.string('Industry is required').min(1, 'Industry is required'),
     startDate: z
       .string('Start date is required')
       .min(1, 'Start date is required'),

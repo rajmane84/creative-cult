@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { MonthPicker } from '@/components/ui/date-picker';
 import {
   X,
   Plus,
@@ -42,6 +43,11 @@ const EMPLOYMENT_TYPE_LABELS: Record<EmploymentType, string> = {
   [EmploymentType.SELF_EMPLOYED]: 'Self-Employed',
 };
 
+const getCurrentMonth = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+};
+
 const EMPTY_FORM: Experience = {
   title: '',
   employmentType: EmploymentType.FULL_TIME,
@@ -65,6 +71,18 @@ export default function ExperienceFormSection({
   const [skillInput, setSkillInput] = useState('');
   const [formData, setFormData] = useState<Experience>(EMPTY_FORM);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
+  const currentMonth = getCurrentMonth();
+
+  const validateDates = (startDate?: string, endDate?: string) => {
+    if (startDate && startDate > currentMonth) {
+      return 'Start date cannot be in the future';
+    }
+    if (endDate && startDate && endDate < startDate) {
+      return 'End date cannot be before the start date';
+    }
+    return undefined;
+  };
 
   const resetForm = () => {
     setFormData(EMPTY_FORM);
@@ -134,6 +152,12 @@ export default function ExperienceFormSection({
       return;
     }
 
+    const dateError = validateDates(payload.startDate, payload.endDate);
+    if (dateError) {
+      setFormErrors((prev) => ({ ...prev, endDate: dateError }));
+      return;
+    }
+
     if (editingIndex !== null) {
       const updated = [...experiences];
       updated[editingIndex] = parseResult.data;
@@ -195,7 +219,7 @@ export default function ExperienceFormSection({
               htmlFor="exp-title"
               className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
             >
-              Title *
+              Title <span className="text-red-600">*</span>
             </Label>
             <Input
               id="exp-title"
@@ -240,7 +264,7 @@ export default function ExperienceFormSection({
                 htmlFor="exp-employment-type"
                 className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
               >
-                Employment Type *
+                Employment Type <span className="text-red-600">*</span>
               </Label>
               <DropdownMenu
                 open={isDropdownOpen}
@@ -314,16 +338,25 @@ export default function ExperienceFormSection({
                 htmlFor="exp-start"
                 className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
               >
-                Start Date *
+                Start Date <span className="text-red-600">*</span>
               </Label>
-              <Input
+              <MonthPicker
                 id="exp-start"
-                type="month"
+                max={currentMonth}
                 value={formData.startDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, startDate: e.target.value })
-                }
-                className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors text-base md:text-lg"
+                onChange={(startDate) => {
+                  setFormData({ ...formData, startDate });
+                  setFormErrors((prev) => {
+                    const rest = { ...prev };
+                    delete rest.startDate;
+                    delete rest.endDate;
+                    const dateError = validateDates(
+                      startDate,
+                      formData.currentlyWorking ? undefined : formData.endDate
+                    );
+                    return dateError ? { ...rest, endDate: dateError } : rest;
+                  });
+                }}
               />
               {formErrors.startDate && (
                 <p className="font-mono text-[11px] uppercase tracking-widest text-red-600">
@@ -339,15 +372,20 @@ export default function ExperienceFormSection({
               >
                 End Date
               </Label>
-              <Input
+              <MonthPicker
                 id="exp-end"
-                type="month"
+                min={formData.startDate || undefined}
                 value={formData.endDate}
                 disabled={formData.currentlyWorking}
-                onChange={(e) =>
-                  setFormData({ ...formData, endDate: e.target.value })
-                }
-                className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors text-base md:text-lg"
+                onChange={(endDate) => {
+                  setFormData({ ...formData, endDate });
+                  const dateError = validateDates(formData.startDate, endDate);
+                  setFormErrors((prev) => {
+                    const rest = { ...prev };
+                    delete rest.endDate;
+                    return dateError ? { ...rest, endDate: dateError } : rest;
+                  });
+                }}
               />
               {formErrors.endDate && (
                 <p className="font-mono text-[11px] uppercase tracking-widest text-red-600">
@@ -359,12 +397,18 @@ export default function ExperienceFormSection({
 
           <button
             type="button"
-            onClick={() =>
-              setFormData({
-                ...formData,
-                currentlyWorking: !formData.currentlyWorking,
-              })
-            }
+            onClick={() => {
+              const currentlyWorking = !formData.currentlyWorking;
+              setFormData({ ...formData, currentlyWorking });
+              const dateError = validateDates(
+                formData.startDate,
+                currentlyWorking ? undefined : formData.endDate
+              );
+              setFormErrors((prev) => {
+                const { ...rest } = prev;
+                return dateError ? { ...rest, endDate: dateError } : rest;
+              });
+            }}
             className={cn(
               'inline-flex items-center gap-2 px-3 py-2 rounded-none font-mono text-[10px] uppercase tracking-widest border transition-colors duration-300 cursor-pointer',
               formData.currentlyWorking

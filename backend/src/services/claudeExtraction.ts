@@ -1,8 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { env } from '../util/env';
 
-const anthropic = new Anthropic({
-  apiKey: env.ANTHROPIC_API_KEY,
+const OPENROUTER_MODEL = 'anthropic/claude-3.5-sonnet';
+
+const openrouter = new OpenAI({
+  apiKey: env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1',
 });
 
 /**
@@ -42,8 +45,8 @@ export async function extractResumeData(
   resumeText: string
 ): Promise<ParsedResume> {
   try {
-    const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+    const completion = await openrouter.chat.completions.create({
+      model: OPENROUTER_MODEL,
       max_tokens: 4096,
       messages: [
         {
@@ -72,18 +75,18 @@ ${resumeText}`,
     });
 
     // Extract the JSON response
-    const content = message.content[0];
-    if (content?.type === 'text') {
-      const jsonMatch = content.text.match(/\{[\s\S]*\}/);
+    const content = completion.choices[0]?.message?.content;
+    if (content) {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsedData = JSON.parse(jsonMatch[0]) as ParsedResume;
         return parsedData;
       }
     }
 
-    throw new Error('Failed to parse Claude response');
+    throw new Error('Failed to parse OpenRouter response');
   } catch (error) {
-    console.error('Claude extraction error:', error);
+    console.error('OpenRouter extraction error:', error);
     throw new Error('Failed to extract data from resume using AI', {
       cause: error,
     });
