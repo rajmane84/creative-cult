@@ -16,7 +16,7 @@ const envSchema = z.object({
 
   // Email Configuration
   RESEND_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().default('Creative Cult <onboarding@resend.dev>'),
+  EMAIL_FROM: z.string().default('Atelier-Hub <onboarding@resend.dev>'),
 
   // SMTP Configuration (for Nodemailer development)
   SMTP_HOST: z.string().optional(),

@@ -308,7 +308,7 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
               <Lock className="size-6 text-primary selection:text-background selection:bg-primary shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <h4 className="font-mono text-xs uppercase tracking-wider font-bold text-foreground">
-                  CREATIVE-CULT ESCROW GUARANTEE
+                  ATELIER-HUB ESCROW GUARANTEE
                 </h4>
                 <p className="font-body text-xs text-muted-foreground leading-relaxed">
                   Your payment is held securely in escrow and only released upon

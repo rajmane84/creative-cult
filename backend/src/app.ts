@@ -6,10 +6,13 @@ import { env } from './util/env';
 import V1Router from './routes/v1/index';
 import { notFoundHandler } from './middlewares/notFoundHandler';
 import { errorHandler } from './middlewares/errorHandler';
+import { rateLimiter } from './util/rateLimiter';
 
 const app = express();
 
 app.set('trust proxy', true);
+
+app.use(rateLimiter);
 
 app.use(
   cors({

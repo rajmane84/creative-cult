@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, TriangleAlert } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useCreateCult } from '@/hooks/creative/cult';
+import { authClient } from '@/lib/auth-client';
 
 interface CreateCultModalProps {
   open: boolean;
@@ -22,6 +23,9 @@ interface CreateCultModalProps {
 }
 
 export function CreateCultModal({ open, onOpenChange }: CreateCultModalProps) {
+  const { data: sessionData } = authClient.useSession();
+  const isEmailVerified = Boolean(sessionData?.user?.emailVerified);
+
   const [name, setName] = useState('');
   const [tagline, setTagline] = useState('');
   const [bio, setBio] = useState('');
@@ -41,7 +45,7 @@ export function CreateCultModal({ open, onOpenChange }: CreateCultModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || !isEmailVerified) return;
 
     createCult({
       name: name.trim(),
@@ -65,6 +69,16 @@ export function CreateCultModal({ open, onOpenChange }: CreateCultModalProps) {
             and present a unified portfolio.
           </DialogDescription>
         </DialogHeader>
+
+        {!isEmailVerified && (
+          <div className="flex items-start gap-2 border border-primary/30 bg-primary/10 px-3 py-2.5 text-primary">
+            <TriangleAlert className="size-4 shrink-0 mt-0.5" />
+            <p className="font-body text-xs">
+              Verify your email address before creating a cult. You can resend
+              the verification email from your dashboard.
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4 py-2">
           <div className="space-y-1.5">
@@ -172,7 +186,7 @@ export function CreateCultModal({ open, onOpenChange }: CreateCultModalProps) {
             </Button>
             <Button
               type="submit"
-              disabled={isCreating || !name.trim()}
+              disabled={isCreating || !name.trim() || !isEmailVerified}
               className="cursor-pointer gap-2"
             >
               {isCreating && <Loader2 className="size-4 animate-spin" />}

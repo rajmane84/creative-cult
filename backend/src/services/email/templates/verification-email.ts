@@ -12,7 +12,7 @@ export function generateVerificationEmailHtml(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify your Creative Cult email address</title>
+  <title>Verify your Atelier-Hub email address</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f4f4f5;">
   <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #09090b; padding: 40px 20px;">
@@ -23,7 +23,7 @@ export function generateVerificationEmailHtml(
           <tr>
             <td style="padding-bottom: 24px; border-bottom: 1px solid #27272a;">
               <div style="font-family: monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #f97316;">
-                / CREATIVE CULT
+                / ATELIER-HUB
               </div>
             </td>
           </tr>
@@ -41,7 +41,7 @@ export function generateVerificationEmailHtml(
           <tr>
             <td style="padding-bottom: 32px; font-size: 15px; line-height: 1.6; color: #a1a1aa;">
               Hi ${name},<br><br>
-              Thank you for registering with Creative Cult. Please verify your email address to secure your account and unlock full access to all features.
+              Thank you for registering with Atelier-Hub. Please verify your email address to secure your account and unlock full access to all features.
             </td>
           </tr>
 
@@ -65,7 +65,7 @@ export function generateVerificationEmailHtml(
           <!-- Footer -->
           <tr>
             <td style="padding-top: 32px; font-family: monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; text-align: center;">
-              © Creative Cult. If you did not create an account, you can safely ignore this email.
+              © Atelier-Hub. If you did not create an account, you can safely ignore this email.
             </td>
           </tr>
         </table>
@@ -79,7 +79,7 @@ export function generateVerificationEmailHtml(
   const text = `
 Hi ${name},
 
-Please verify your email address for Creative Cult by clicking the following link:
+Please verify your email address for Atelier-Hub by clicking the following link:
 ${url}
 
 If you did not request this email, please ignore it.

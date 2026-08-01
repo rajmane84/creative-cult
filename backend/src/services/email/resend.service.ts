@@ -30,7 +30,7 @@ export class ResendEmailService implements IEmailService {
     const { error } = await this.resend.emails.send({
       from: env.EMAIL_FROM,
       to: [payload.to],
-      subject: 'Verify your email address - Creative Cult',
+      subject: 'Verify your email address - Atelier-Hub',
       html,
       text,
     });

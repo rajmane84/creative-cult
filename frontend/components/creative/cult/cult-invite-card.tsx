@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Mail, Check, X, Loader2 } from 'lucide-react';
+import { Mail, Check, X, Loader2, TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
 import type { CultInvite } from '@/types/creative/cult';
 
 interface CultInviteCardProps {
@@ -19,6 +20,9 @@ export function CultInviteCard({
   isResponding = false,
   activeAction,
 }: CultInviteCardProps) {
+  const { data: sessionData } = authClient.useSession();
+  const isEmailVerified = Boolean(sessionData?.user?.emailVerified);
+
   const [selectedAction, setSelectedAction] = useState<
     'ACCEPT' | 'DECLINE' | null
   >(null);
@@ -28,6 +32,7 @@ export function CultInviteCard({
   const isDeclining = isResponding && currentAction === 'DECLINE';
 
   const handleAction = (action: 'ACCEPT' | 'DECLINE') => {
+    if (!isEmailVerified) return;
     setSelectedAction(action);
     onRespond(invite.id, action);
   };
@@ -89,6 +94,12 @@ export function CultInviteCard({
               </>
             )}
           </p>
+          {!isEmailVerified && (
+            <p className="font-body text-xs text-primary flex items-center gap-1.5">
+              <TriangleAlert className="size-3.5 shrink-0" />
+              <span>Verify your email to respond to this invite</span>
+            </p>
+          )}
         </div>
       </div>
 
@@ -96,7 +107,7 @@ export function CultInviteCard({
         <Button
           variant="secondary"
           size="sm"
-          disabled={isResponding}
+          disabled={isResponding || !isEmailVerified}
           onClick={() => handleAction('DECLINE')}
           className="w-1/2 sm:w-auto cursor-pointer gap-1.5 text-foreground hover:bg-muted"
         >
@@ -111,7 +122,7 @@ export function CultInviteCard({
         <Button
           variant="default"
           size="sm"
-          disabled={isResponding}
+          disabled={isResponding || !isEmailVerified}
           onClick={() => handleAction('ACCEPT')}
           className="w-1/2 sm:w-auto cursor-pointer gap-1.5"
         >

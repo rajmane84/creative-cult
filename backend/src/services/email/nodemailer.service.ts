@@ -43,9 +43,9 @@ export class NodemailerEmailService implements IEmailService {
 
     try {
       const info = await this.transporter.sendMail({
-        from: env.EMAIL_FROM || 'Creative Cult <no-reply@creativecult.dev>',
+        from: env.EMAIL_FROM || 'Atelier-Hub <no-reply@atelier-hub.dev>',
         to: payload.to,
-        subject: 'Verify your email address - Creative Cult (Dev)',
+        subject: 'Verify your email address - Atelier-Hub (Dev)',
         html,
         text,
       });
