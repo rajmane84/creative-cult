@@ -17,7 +17,6 @@ import {
   Clock,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 
@@ -54,29 +53,27 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
           alt={cult.name}
           className="size-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/40 to-transparent" />
 
         {/* Hero Content Overlay */}
         <div className="absolute bottom-6 sm:bottom-8 left-4 sm:left-6 md:left-10 lg:left-12 right-4 sm:right-6 md:right-10 lg:right-12 flex flex-col md:flex-row md:items-end justify-between gap-4 text-white">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3 flex-wrap">
-              <Badge className="bg-primary text-primary-foreground font-mono text-[10px] uppercase tracking-widest px-3 py-1 border-none">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="status-tag status-tag--brand text-[10px]">
                 CULT COLLECTIVE
-              </Badge>
+              </span>
 
               {cult.isVerified && (
                 <span className="status-tag status-tag--positive text-[10px] bg-background/90 text-foreground">
                   <ShieldCheck className="size-3.5 text-primary selection:text-background selection:bg-primary" />
-                  VERIFIED ESCROW COLLECTIVE
+                  VERIFIED ESCROW
                 </span>
               )}
 
               <span
                 className={cn(
-                  'status-tag text-[10px]',
-                  isAvailable
-                    ? 'status-tag--positive bg-background/90 text-foreground'
-                    : 'status-tag--neutral bg-background/90 text-foreground'
+                  'status-tag text-[10px] bg-background/90 text-foreground',
+                  isAvailable ? 'status-tag--positive' : 'status-tag--neutral'
                 )}
               >
                 {isAvailable ? 'AVAILABLE FOR BOOKING' : 'BUSY / BOOKING AHEAD'}
@@ -111,9 +108,14 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
           <div className="col-span-12 lg:col-span-8 space-y-10">
             {/* Bio & Manifesto */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Sparkles className="size-4 text-primary selection:text-background selection:bg-primary" />
-                <span>ABOUT & MANIFESTO</span>
+              <div className="space-y-1 border-b border-border pb-3">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <Sparkles className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <span>About</span>
+                </div>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Manifesto
+                </h2>
               </div>
               <p className="font-editorial text-lg sm:text-xl text-foreground leading-relaxed">
                 {cult.bio}
@@ -121,36 +123,42 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             </div>
 
             {/* Active Cult Roster */}
-            <div className="space-y-4 pt-4 border-t border-border">
-              <div className="flex items-center justify-between border-b border-border pb-2">
-                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold">
-                  <Users className="size-4 text-primary selection:text-background selection:bg-primary" />
-                  <span>
-                    ACTIVE CULT ROSTER ({cult.members.length} CREATIVES)
-                  </span>
+            <div className="space-y-4 pt-6 border-t border-border">
+              <div className="flex items-end justify-between gap-4 border-b border-border pb-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <Users className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                    <span>Roster</span>
+                  </div>
+                  <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                    {cult.members.length} Creatives, One Invoice
+                  </h2>
                 </div>
-                <span className="font-mono text-[10px] uppercase text-muted-foreground">
-                  SINGLE ESCROW INVOICE
+                <span className="hidden sm:inline font-mono text-[10px] uppercase text-muted-foreground shrink-0 pb-1.5">
+                  Single escrow invoice
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {cult.members.map((m) => (
+                {cult.members.map((m, i) => (
                   <div
                     key={m.id}
-                    className="border border-border bg-card p-4 flex items-center gap-3.5 hover:border-foreground transition-colors"
+                    className="group relative border border-border bg-card p-4 flex items-center gap-3.5 transition-all hover:border-foreground hover:shadow-[4px_4px_0_0_var(--border)] hover:-translate-x-0.5 hover:-translate-y-0.5"
                   >
-                    <Avatar className="size-12 border-2 border-border shrink-0">
+                    <span className="absolute top-2 right-2.5 font-mono text-[10px] text-muted-foreground/50 group-hover:text-primary transition-colors">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <Avatar className="size-14 border-2 border-border shrink-0">
                       <AvatarImage src={m.avatar} alt={m.name} />
                       <AvatarFallback className="font-mono text-xs font-bold">
                         {m.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="space-y-0.5 min-w-0">
+                    <div className="space-y-1 min-w-0">
                       <h4 className="font-editorial text-base font-bold text-foreground truncate">
                         {m.name}
                       </h4>
-                      <p className="font-mono text-[10px] text-primary selection:text-background selection:bg-primary uppercase font-bold truncate">
+                      <p className="status-tag status-tag--attention text-[9px] w-fit">
                         {m.role}
                       </p>
                       <p className="font-mono text-[10px] text-muted-foreground truncate">
@@ -163,34 +171,42 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             </div>
 
             {/* Portfolio Case Studies */}
-            <div className="space-y-4 pt-4 border-t border-border">
-              <div className="flex items-center justify-between border-b border-border pb-2">
-                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold">
-                  <Briefcase className="size-4 text-primary selection:text-background selection:bg-primary" />
-                  <span>FEATURED CASE STUDIES ({cult.portfolio.length})</span>
+            <div className="space-y-4 pt-6 border-t border-border">
+              <div className="space-y-1 border-b border-border pb-3">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <Briefcase className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <span>Selected work</span>
                 </div>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Featured Case Studies
+                </h2>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                 {cult.portfolio.map((p) => (
                   <div
                     key={p.id}
-                    className="group border border-border overflow-hidden bg-card hover:border-foreground transition-all"
+                    className="group relative overflow-hidden border border-border bg-card h-64 transition-all hover:border-foreground"
                   >
-                    <div className="h-52 overflow-hidden relative">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span className="absolute bottom-2 left-2 font-mono text-[9px] uppercase tracking-wider bg-background/90 border border-border px-2 py-0.5 text-foreground">
-                        {p.category}
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-[1.06]"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/85 via-black/10 to-transparent" />
+
+                    <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-2 text-white">
+                      <div className="space-y-1 min-w-0">
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-white/70">
+                          {p.category}
+                        </span>
+                        <h4 className="font-editorial text-lg font-bold leading-tight line-clamp-2">
+                          {p.title}
+                        </h4>
+                      </div>
+                      <span className="shrink-0 border border-white/70 font-mono text-[10px] uppercase px-2 py-1 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                        View →
                       </span>
-                    </div>
-                    <div className="p-4 space-y-1">
-                      <h4 className="font-editorial text-lg font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                        {p.title}
-                      </h4>
                     </div>
                   </div>
                 ))}
@@ -198,17 +214,22 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
             </div>
 
             {/* Gear & Production Tech */}
-            <div className="space-y-4 pt-4 border-t border-border">
-              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Wrench className="size-4 text-primary selection:text-background selection:bg-primary" />
-                <span>GEAR & PRODUCTION TECH VAULT</span>
+            <div className="space-y-4 pt-6 border-t border-border">
+              <div className="space-y-1 border-b border-border pb-3">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <Wrench className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <span>Capability</span>
+                </div>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Gear & Production Tech Vault
+                </h2>
               </div>
 
               <div className="flex flex-wrap gap-2.5">
                 {cult.equipment.map((eq) => (
                   <span
                     key={eq}
-                    className="font-mono text-xs uppercase border border-border bg-card px-3.5 py-2 text-foreground flex items-center gap-2"
+                    className="font-mono text-xs uppercase border border-border bg-card px-3.5 py-2 text-foreground font-semibold flex items-center gap-2 transition-colors hover:border-foreground hover:bg-muted"
                   >
                     <CheckCircle2 className="size-4 text-primary selection:text-background selection:bg-primary" />
                     {eq}
@@ -220,64 +241,61 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
 
           {/* Right Column: Escrow & Booking Card */}
           <div className="col-span-12 lg:col-span-4 sticky top-20 space-y-6">
-            <div className="border border-border bg-card p-6 space-y-6">
+            <div className="border border-border bg-card p-6 space-y-7">
               <div className="flex items-center justify-between font-mono text-[10px] uppercase text-muted-foreground border-b border-border pb-3">
-                <span>PROJECT ESTIMATE & BOOKING</span>
-                <Badge
-                  variant="outline"
-                  className="font-mono text-[9px] uppercase border-border"
-                >
-                  VERIFIED
-                </Badge>
+                <span>Project Estimate & Booking</span>
+                <span className="status-tag status-tag--positive text-[9px]">
+                  Verified
+                </span>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <span className="font-mono text-[10px] text-muted-foreground uppercase block">
                   Starting Production Quote
                 </span>
-                <div className="font-display text-4xl text-primary selection:text-background selection:bg-primary">
+                <div className="font-display text-5xl text-primary selection:text-background selection:bg-primary leading-none">
                   {cult.startingPrice}
                 </div>
-                <span className="font-mono text-[10px] text-muted-foreground uppercase block">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase block pt-1">
                   One quote • Split among {cult.members.length} members
                 </span>
               </div>
 
               {/* Stats Breakdown */}
-              <div className="space-y-2.5 pt-4 border-t border-border font-mono text-xs">
-                <div className="flex justify-between items-center text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="size-3.5 text-primary selection:text-background selection:bg-primary" />
-                    Turnaround:
-                  </span>
-                  <span className="text-foreground font-bold">
+              <div className="grid grid-cols-3 gap-px bg-border border border-border">
+                <div className="bg-card p-3 space-y-1.5 text-center">
+                  <Clock className="size-4 mx-auto text-primary selection:text-background selection:bg-primary" />
+                  <div className="font-mono text-sm font-bold text-foreground">
                     {cult.turnaround}
-                  </span>
+                  </div>
+                  <div className="font-mono text-[9px] uppercase text-muted-foreground">
+                    Turnaround
+                  </div>
                 </div>
 
-                <div className="flex justify-between items-center text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <Briefcase className="size-3.5 text-primary selection:text-background selection:bg-primary" />
-                    Completed Projects:
-                  </span>
-                  <span className="text-foreground font-bold">
-                    {cult.completedProjects} Verified
-                  </span>
+                <div className="bg-card p-3 space-y-1.5 text-center">
+                  <Briefcase className="size-4 mx-auto text-primary selection:text-background selection:bg-primary" />
+                  <div className="font-mono text-sm font-bold text-foreground">
+                    {cult.completedProjects}
+                  </div>
+                  <div className="font-mono text-[9px] uppercase text-muted-foreground">
+                    Projects
+                  </div>
                 </div>
 
-                <div className="flex justify-between items-center text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <Star className="size-3.5 fill-primary text-primary selection:text-background selection:bg-primary" />
-                    Client Rating:
-                  </span>
-                  <span className="text-foreground font-bold">
-                    {cult.rating} / 5.0
-                  </span>
+                <div className="bg-card p-3 space-y-1.5 text-center">
+                  <Star className="size-4 mx-auto fill-primary text-primary selection:text-background selection:bg-primary" />
+                  <div className="font-mono text-sm font-bold text-foreground">
+                    {cult.rating}
+                  </div>
+                  <div className="font-mono text-[9px] uppercase text-muted-foreground">
+                    Rating
+                  </div>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="space-y-3 pt-4 border-t border-border">
+              <div className="space-y-2 pt-1">
                 <Button
                   variant="default"
                   size="lg"
@@ -288,27 +306,27 @@ export function CultDetailView({ cult }: CultDetailViewProps) {
                 </Button>
 
                 <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full font-mono text-xs uppercase tracking-wider h-11"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     if (navigator.clipboard) {
                       navigator.clipboard.writeText(window.location.href);
                     }
                   }}
                 >
-                  <Share2 className="size-4 mr-2" />
+                  <Share2 className="size-3.5 mr-2" />
                   <span>Share Cult Profile</span>
                 </Button>
               </div>
             </div>
 
             {/* Escrow Banner */}
-            <div className="border border-primary/40 bg-primary/5 p-5 flex items-start gap-4">
+            <div className="border border-border border-t-4 border-t-primary bg-card p-5 flex items-start gap-4">
               <Lock className="size-6 text-primary selection:text-background selection:bg-primary shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <h4 className="font-mono text-xs uppercase tracking-wider font-bold text-foreground">
-                  ATELIER-HUB ESCROW GUARANTEE
+                  Atelier-Hub Escrow Guarantee
                 </h4>
                 <p className="font-body text-xs text-muted-foreground leading-relaxed">
                   Your payment is held securely in escrow and only released upon

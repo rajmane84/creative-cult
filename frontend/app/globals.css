@@ -280,6 +280,12 @@ html.lenis body {
   border-color: var(--border);
 }
 
+.status-tag--brand {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
 /* Sonner toasts: render above modals/alert dialogs, and match the bordered,
    mono-labeled, hard-shadow system used elsewhere (see not-found.tsx). */
 [data-sonner-toaster] {

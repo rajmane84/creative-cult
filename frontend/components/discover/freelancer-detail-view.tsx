@@ -16,7 +16,6 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/cn';
 
@@ -135,9 +134,14 @@ export function FreelancerDetailView({
           <div className="col-span-12 lg:col-span-8 space-y-10">
             {/* Bio Section */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Sparkles className="size-4 text-primary selection:text-background selection:bg-primary" />
-                <span>BIO & SPECIALIZATION</span>
+              <div className="space-y-1 border-b border-border pb-3">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <Sparkles className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <span>About</span>
+                </div>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Bio & Specialization
+                </h2>
               </div>
               <p className="font-editorial text-lg sm:text-xl text-foreground leading-relaxed">
                 {freelancer.bio}
@@ -145,17 +149,22 @@ export function FreelancerDetailView({
             </div>
 
             {/* Skills & Disciplines Tags */}
-            <div className="space-y-3 pt-4 border-t border-border">
-              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Award className="size-4 text-primary selection:text-background selection:bg-primary" />
-                <span>CORE SKILLS & DISCIPLINES</span>
+            <div className="space-y-3 pt-6 border-t border-border">
+              <div className="space-y-1 border-b border-border pb-3">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <Award className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <span>Expertise</span>
+                </div>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Core Skills & Disciplines
+                </h2>
               </div>
 
               <div className="flex flex-wrap gap-2">
                 {freelancer.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="font-mono text-xs uppercase border border-border bg-card px-3 py-1.5 text-foreground font-semibold"
+                    className="font-mono text-xs uppercase border border-border bg-card px-3 py-1.5 text-foreground font-semibold transition-colors hover:border-foreground hover:bg-muted"
                   >
                     {skill}
                   </span>
@@ -164,34 +173,42 @@ export function FreelancerDetailView({
             </div>
 
             {/* Portfolio Works */}
-            <div className="space-y-4 pt-4 border-t border-border">
-              <div className="flex items-center justify-between border-b border-border pb-2">
-                <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold">
-                  <Briefcase className="size-4 text-primary selection:text-background selection:bg-primary" />
-                  <span>PORTFOLIO WORKS ({freelancer.portfolio.length})</span>
+            <div className="space-y-4 pt-6 border-t border-border">
+              <div className="space-y-1 border-b border-border pb-3">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <Briefcase className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <span>Selected work</span>
                 </div>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Portfolio Works
+                </h2>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                 {freelancer.portfolio.map((p) => (
                   <div
                     key={p.id}
-                    className="group border border-border overflow-hidden bg-card hover:border-foreground transition-all"
+                    className="group relative overflow-hidden border border-border bg-card h-64 transition-all hover:border-foreground"
                   >
-                    <div className="h-52 overflow-hidden relative">
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        className="size-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span className="absolute bottom-2 left-2 font-mono text-[9px] uppercase tracking-wider bg-background/90 border border-border px-2 py-0.5 text-foreground">
-                        {p.category}
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="absolute inset-0 size-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] group-hover:scale-[1.06]"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/85 via-black/10 to-transparent" />
+
+                    <div className="absolute inset-x-0 bottom-0 p-4 flex items-end justify-between gap-2 text-white">
+                      <div className="space-y-1 min-w-0">
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-white/70">
+                          {p.category}
+                        </span>
+                        <h4 className="font-editorial text-lg font-bold leading-tight line-clamp-2">
+                          {p.title}
+                        </h4>
+                      </div>
+                      <span className="shrink-0 border border-white/70 font-mono text-[10px] uppercase px-2 py-1 opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                        View →
                       </span>
-                    </div>
-                    <div className="p-4 space-y-1">
-                      <h4 className="font-editorial text-lg font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
-                        {p.title}
-                      </h4>
                     </div>
                   </div>
                 ))}
@@ -199,17 +216,22 @@ export function FreelancerDetailView({
             </div>
 
             {/* Production Tools & Hardware */}
-            <div className="space-y-4 pt-4 border-t border-border">
-              <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-foreground font-bold border-b border-border pb-2">
-                <Wrench className="size-4 text-primary selection:text-background selection:bg-primary" />
-                <span>HARDWARE & SOFTWARE STACK</span>
+            <div className="space-y-4 pt-6 border-t border-border">
+              <div className="space-y-1 border-b border-border pb-3">
+                <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  <Wrench className="size-3.5 text-primary selection:text-background selection:bg-primary" />
+                  <span>Capability</span>
+                </div>
+                <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  Hardware & Software Stack
+                </h2>
               </div>
 
               <div className="flex flex-wrap gap-2.5">
                 {freelancer.tools.map((tool) => (
                   <span
                     key={tool}
-                    className="font-mono text-xs uppercase border border-border bg-card px-3.5 py-2 text-foreground flex items-center gap-2"
+                    className="font-mono text-xs uppercase border border-border bg-card px-3.5 py-2 text-foreground font-semibold flex items-center gap-2 transition-colors hover:border-foreground hover:bg-muted"
                   >
                     <CheckCircle2 className="size-4 text-primary selection:text-background selection:bg-primary" />
                     {tool}
@@ -221,54 +243,55 @@ export function FreelancerDetailView({
 
           {/* Right Column: Hire & Rate Card */}
           <div className="col-span-12 lg:col-span-4 sticky top-20 space-y-6">
-            <div className="border border-border bg-card p-6 space-y-6">
+            <div className="border border-border bg-card p-6 space-y-7">
               <div className="flex items-center justify-between font-mono text-[10px] uppercase text-muted-foreground border-b border-border pb-3">
-                <span>RATES & BOOKING</span>
-                <Badge
-                  variant="outline"
-                  className="font-mono text-[9px] uppercase border-border"
-                >
-                  DIRECT HIRE
-                </Badge>
+                <span>Rates & Booking</span>
+                <span className="status-tag status-tag--positive text-[9px]">
+                  Direct hire
+                </span>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <span className="font-mono text-[10px] text-muted-foreground uppercase block">
                   {getRateLabel(freelancer.rateType)}
                 </span>
-                <div className="font-display text-4xl text-foreground">
+                <div className="font-display text-5xl text-foreground leading-none">
                   {formatRate(freelancer.rateType, freelancer.rateAmount)}
                 </div>
               </div>
 
               {/* Stats */}
-              <div className="space-y-2.5 pt-4 border-t border-border font-mono text-xs">
-                <div className="flex justify-between items-center text-muted-foreground">
-                  <span>Experience:</span>
-                  <span className="text-foreground font-bold">
-                    {freelancer.experienceYears} Years
-                  </span>
+              <div className="grid grid-cols-3 gap-px bg-border border border-border">
+                <div className="bg-card p-3 space-y-1.5 text-center">
+                  <div className="font-mono text-sm font-bold text-foreground">
+                    {freelancer.experienceYears}+
+                  </div>
+                  <div className="font-mono text-[9px] uppercase text-muted-foreground">
+                    Years exp.
+                  </div>
                 </div>
 
-                <div className="flex justify-between items-center text-muted-foreground">
-                  <span>Completed Projects:</span>
-                  <span className="text-foreground font-bold">
-                    {freelancer.completedProjects} Verified
-                  </span>
+                <div className="bg-card p-3 space-y-1.5 text-center">
+                  <div className="font-mono text-sm font-bold text-foreground">
+                    {freelancer.completedProjects}
+                  </div>
+                  <div className="font-mono text-[9px] uppercase text-muted-foreground">
+                    Projects
+                  </div>
                 </div>
 
-                <div className="flex justify-between items-center text-muted-foreground">
-                  <span>Rating:</span>
-                  <span className="text-foreground font-bold">
-                    {freelancer.rating !== null
-                      ? `${freelancer.rating} / 5.0`
-                      : 'No reviews yet'}
-                  </span>
+                <div className="bg-card p-3 space-y-1.5 text-center">
+                  <div className="font-mono text-sm font-bold text-foreground">
+                    {freelancer.rating !== null ? freelancer.rating : 'New'}
+                  </div>
+                  <div className="font-mono text-[9px] uppercase text-muted-foreground">
+                    Rating
+                  </div>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="space-y-3 pt-4 border-t border-border">
+              <div className="space-y-2 pt-1">
                 <Button
                   variant="default"
                   size="lg"
@@ -279,27 +302,27 @@ export function FreelancerDetailView({
                 </Button>
 
                 <Button
-                  variant="outline"
-                  size="lg"
-                  className="w-full font-mono text-xs uppercase tracking-wider h-11"
+                  variant="ghost"
+                  size="sm"
+                  className="w-full font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     if (navigator.clipboard) {
                       navigator.clipboard.writeText(window.location.href);
                     }
                   }}
                 >
-                  <Share2 className="size-4 mr-2" />
+                  <Share2 className="size-3.5 mr-2" />
                   <span>Share Profile</span>
                 </Button>
               </div>
             </div>
 
             {/* Escrow Banner */}
-            <div className="border border-primary/40 bg-primary/5 p-5 flex items-start gap-4">
+            <div className="border border-border border-t-4 border-t-primary bg-card p-5 flex items-start gap-4">
               <Lock className="size-6 text-primary selection:text-background selection:bg-primary shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <h4 className="font-mono text-xs uppercase tracking-wider font-bold text-foreground">
-                  ESCROW SAFEGUARD
+                  Escrow Safeguard
                 </h4>
                 <p className="font-body text-xs text-muted-foreground leading-relaxed">
                   Hire with confidence. All payments are locked in escrow and
