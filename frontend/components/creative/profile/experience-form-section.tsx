@@ -16,6 +16,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { formatDateDDMMYYYY } from '@/lib/format-date';
 import { EmploymentType } from '@/types';
 import {
   Experience,
@@ -172,13 +173,7 @@ export default function ExperienceFormSection({
   };
 
   const formatMonth = (value?: string) => {
-    if (!value) return '';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return value;
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    });
+    return formatDateDDMMYYYY(value);
   };
 
   return (

@@ -2,7 +2,14 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RateType, Currency } from '@/types';
+import { RateType, Currency, CURRENCY_LABELS, CURRENCY_SYMBOLS } from '@/types';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface BudgetStepProps {
   rateType: RateType;
@@ -44,17 +51,20 @@ export default function BudgetStep({
           >
             Rate Type
           </Label>
-          <select
-            id="rateType"
-            className="w-full h-10 px-3 border border-border bg-background text-sm font-body rounded-none focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+          <Select
             value={rateType}
-            onChange={(e) => onRateTypeChange(e.target.value as RateType)}
+            onValueChange={(value) => onRateTypeChange(value as RateType)}
           >
-            <option value={RateType.PROJECT}>Project Based</option>
-            <option value={RateType.HOURLY}>Hourly Rate</option>
-            <option value={RateType.DAILY}>Daily Rate</option>
-            <option value={RateType.NEGOTIABLE}>Negotiable</option>
-          </select>
+            <SelectTrigger id="rateType" className="w-full">
+              <SelectValue placeholder="Select rate type..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={RateType.PROJECT}>Project Based</SelectItem>
+              <SelectItem value={RateType.HOURLY}>Hourly Rate</SelectItem>
+              <SelectItem value={RateType.DAILY}>Daily Rate</SelectItem>
+              <SelectItem value={RateType.NEGOTIABLE}>Negotiable</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-4">
@@ -64,19 +74,21 @@ export default function BudgetStep({
           >
             Currency
           </Label>
-          <select
-            id="currency"
-            className="w-full h-10 px-3 border border-border bg-background text-sm font-body rounded-none focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+          <Select
             value={currency}
-            onChange={(e) => onCurrencyChange(e.target.value as Currency)}
+            onValueChange={(value) => onCurrencyChange(value as Currency)}
           >
-            <option value={Currency.USD}>USD ($)</option>
-            <option value={Currency.EUR}>EUR (€)</option>
-            <option value={Currency.GBP}>GBP (£)</option>
-            <option value={Currency.INR}>INR (₹)</option>
-            <option value={Currency.CAD}>CAD ($)</option>
-            <option value={Currency.AUD}>AUD ($)</option>
-          </select>
+            <SelectTrigger id="currency" className="w-full">
+              <SelectValue placeholder="Select currency..." />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.values(Currency).map((curr) => (
+                <SelectItem key={curr} value={curr}>
+                  {curr} ({CURRENCY_SYMBOLS[curr]}) - {CURRENCY_LABELS[curr]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

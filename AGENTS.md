@@ -92,6 +92,11 @@ When building new features, always adhere to the following strictly separated fl
 - **Text Selection Highlight**: The global selection color is set to primary (orange). Therefore, whenever you apply `text-primary` to any text or icon, you MUST also add the classes `selection:text-background selection:bg-primary` so that if the user selects that text, the highlight color inverses correctly instead of disappearing (orange on orange).
 - **Square Sizing Shorthand**: Whenever an element or tag has identical height and width utility classes (e.g. `h-5 w-5`), use the Tailwind `size-*` shorthand instead (e.g. `size-5`).
 
+## Date Formatting Standards
+
+- **Strict `dd/mm/yyyy` Format**: All dates displayed across the UI (forms, listing cards, profiles, tables, details views, and pickers) MUST be formatted as `dd/mm/yyyy` (e.g., `15/08/2026`).
+- Do NOT use `mm/dd/yyyy` or default locale strings that render month before day.
+
 ## Code Quality & Cleanup
 
 - **Remove Unused Code**: If you find any unused variables, imports, components, or functions while working in a file, proactively remove them to keep the codebase clean. Never leave dead code behind.

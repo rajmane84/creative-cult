@@ -4,6 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { DatePicker } from '@/components/ui/date-picker';
 import { LocationType, LOCATION_TYPE_LABELS } from '@/types';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface LocationScheduleStepProps {
   locationType: LocationType;
@@ -54,27 +61,20 @@ export default function LocationScheduleStep({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-4">
           <Label
-            htmlFor="locationType"
+            htmlFor="duration"
             className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
           >
-            Location Type
+            Duration
           </Label>
-          <select
-            id="locationType"
-            className="w-full h-10 px-3 border border-border bg-background text-sm font-body rounded-none focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
-            value={locationType}
-            onChange={(e) =>
-              onLocationTypeChange(e.target.value as LocationType)
-            }
-          >
-            {Object.entries(LOCATION_TYPE_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>
-                {label}
-              </option>
-            ))}
-          </select>
+          <Input
+            id="duration"
+            type="text"
+            placeholder="e.g. 2 months, 6 weeks"
+            value={duration}
+            onChange={(e) => onDurationChange(e.target.value)}
+            className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors"
+          />
         </div>
-
         <div className="space-y-4">
           <Label
             htmlFor="location"
@@ -96,21 +96,29 @@ export default function LocationScheduleStep({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="space-y-4">
           <Label
-            htmlFor="duration"
+            htmlFor="locationType"
             className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
           >
-            Duration
+            Location Type
           </Label>
-          <Input
-            id="duration"
-            type="text"
-            placeholder="e.g. 2 months, 6 weeks"
-            value={duration}
-            onChange={(e) => onDurationChange(e.target.value)}
-            className="rounded-none border-border focus-visible:ring-0 focus-visible:border-primary transition-colors"
-          />
+          <Select
+            value={locationType}
+            onValueChange={(value) =>
+              onLocationTypeChange(value as LocationType)
+            }
+          >
+            <SelectTrigger id="locationType" className="w-full">
+              <SelectValue placeholder="Select location type..." />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(LOCATION_TYPE_LABELS).map(([key, label]) => (
+                <SelectItem key={key} value={key}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-
         <div className="space-y-4">
           <Label
             htmlFor="startDate"

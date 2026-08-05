@@ -73,6 +73,65 @@ export default function NewListingPage() {
     setSkills(skills.filter((s) => s !== skillToRemove));
   };
 
+  const isStepValid = (step: number): boolean => {
+    switch (step) {
+      case 0:
+        // Basic Details: title (min 5 chars) and description (min 20 chars) are mandatory
+        return title.length >= 5 && description.length >= 20;
+      case 1:
+        // Location & Schedule: no mandatory fields
+        return true;
+      case 2:
+        // Budget: no mandatory fields
+        return true;
+      case 3:
+        // Skills & Status: no mandatory fields
+        return true;
+      default:
+        return true;
+    }
+  };
+
+  const isFormValid = (): boolean => {
+    // Check all mandatory fields for the entire form
+    const mandatoryFieldsValid = title.length >= 5 && description.length >= 20;
+
+    // Validate dates if provided
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let datesValid = true;
+    if (startDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      if (start < today) datesValid = false;
+    }
+
+    if (deadline) {
+      const dline = new Date(deadline);
+      dline.setHours(0, 0, 0, 0);
+      if (dline < today) datesValid = false;
+    }
+
+    if (startDate && deadline) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const dline = new Date(deadline);
+      dline.setHours(0, 0, 0, 0);
+      if (dline > start) datesValid = false;
+    }
+
+    // Validate budget if provided
+    let budgetValid = true;
+    const min = budgetMin ? parseInt(budgetMin, 10) : undefined;
+    const max = budgetMax ? parseInt(budgetMax, 10) : undefined;
+    if (min !== undefined && max !== undefined && max < min) {
+      budgetValid = false;
+    }
+
+    return mandatoryFieldsValid && datesValid && budgetValid;
+  };
+
   const handleNext = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
 
@@ -136,47 +195,13 @@ export default function NewListingPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (startDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      if (start < today) {
-        toast.error('Start date must be today or a future date');
-        return;
-      }
-    }
-
-    if (deadline) {
-      const dline = new Date(deadline);
-      dline.setHours(0, 0, 0, 0);
-      if (dline < today) {
-        toast.error('Application deadline must be today or a future date');
-        return;
-      }
-    }
-
-    if (startDate && deadline) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      const dline = new Date(deadline);
-      dline.setHours(0, 0, 0, 0);
-      if (dline > start) {
-        toast.error('Application deadline cannot be after the start date');
-        return;
-      }
+    if (!isFormValid()) {
+      toast.error('Please fix all validation errors before submitting');
+      return;
     }
 
     const min = budgetMin ? parseInt(budgetMin, 10) : undefined;
     const max = budgetMax ? parseInt(budgetMax, 10) : undefined;
-
-    if (min !== undefined && max !== undefined && max < min) {
-      toast.error(
-        'Maximum budget must be greater than or equal to minimum budget'
-      );
-      return;
-    }
 
     createListingMutation.mutate({
       title,
@@ -288,7 +313,8 @@ export default function NewListingPage() {
               onPrevious={handlePrevious}
               onNext={handleNext}
               isSubmitting={createListingMutation.isPending}
-              isNextDisabled={false}
+              isNextDisabled={!isStepValid(currentStep)}
+              isSubmitDisabled={!isFormValid()}
             />
           </MultiStepListingForm>
         </form>

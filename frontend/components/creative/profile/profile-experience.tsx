@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { MonthPicker } from '@/components/ui/date-picker';
 import { cn } from '@/lib/cn';
+import { formatDateDDMMYYYY } from '@/lib/format-date';
 import { EmploymentType } from '@/types';
 import { useUpdateExperience } from '@/hooks/creative/profile';
 import { handleApiError } from '@/lib/handle-error';
@@ -55,10 +56,7 @@ export default function ProfileExperience({
   const { updateExperienceMutation } = useUpdateExperience();
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      year: 'numeric',
-    });
+    return formatDateDDMMYYYY(dateString);
   };
 
   const handleDelete = (id: string) => {

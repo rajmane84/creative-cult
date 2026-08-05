@@ -5,6 +5,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Plus, X } from 'lucide-react';
 import { ListingStatus } from '@/types';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface SkillsStatusStepProps {
   skillInput: string;
@@ -97,19 +104,22 @@ export default function SkillsStatusStep({
         >
           Listing Status
         </Label>
-        <select
-          id="status"
-          className="w-full h-10 px-3 border border-border bg-background text-sm font-body rounded-none focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+        <Select
           value={status}
-          onChange={(e) => onStatusChange(e.target.value as ListingStatus)}
+          onValueChange={(value) => onStatusChange(value as ListingStatus)}
         >
-          <option value={ListingStatus.ACTIVE}>
-            Active (Publish immediately)
-          </option>
-          <option value={ListingStatus.DRAFT}>
-            Draft (Save without publishing)
-          </option>
-        </select>
+          <SelectTrigger id="status" className="w-full">
+            <SelectValue placeholder="Select status..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={ListingStatus.ACTIVE}>
+              Active (Publish immediately)
+            </SelectItem>
+            <SelectItem value={ListingStatus.DRAFT}>
+              Draft (Save without publishing)
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

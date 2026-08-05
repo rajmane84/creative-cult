@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useCultDetail, useCultActions } from '@/hooks/creative/cult';
 import { cn } from '@/lib/cn';
+import { formatDateDDMMYYYY } from '@/lib/format-date';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -188,11 +189,7 @@ export default function CultDetailPage({
                   <span className="flex items-center gap-1.5">
                     <Calendar className="size-3.5 text-primary selection:text-background selection:bg-primary" />
                     <span>
-                      Established{' '}
-                      {new Date(cult.createdAt).toLocaleDateString(undefined, {
-                        month: 'short',
-                        year: 'numeric',
-                      })}
+                      Established {formatDateDDMMYYYY(cult.createdAt)}
                     </span>
                   </span>
                   <span>•</span>
@@ -325,12 +322,7 @@ export default function CultDetailPage({
                       )}
 
                       <p className="font-mono text-[10px] text-muted-foreground">
-                        Joined{' '}
-                        {new Date(member.joinedAt).toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                        })}
+                        Joined {formatDateDDMMYYYY(member.joinedAt)}
                       </p>
                     </div>
                   </div>

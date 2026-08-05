@@ -9,6 +9,7 @@ interface ListingStepNavigationProps {
   onNext: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   isSubmitting?: boolean;
   isNextDisabled?: boolean;
+  isSubmitDisabled?: boolean;
   nextLabel?: string;
 }
 
@@ -19,6 +20,7 @@ export default function ListingStepNavigation({
   onNext,
   isSubmitting = false,
   isNextDisabled = false,
+  isSubmitDisabled = false,
   nextLabel = 'Continue',
 }: ListingStepNavigationProps) {
   const isLastStep = currentStep === totalSteps - 1;
@@ -30,7 +32,7 @@ export default function ListingStepNavigation({
         variant="default"
         onClick={onPrevious}
         disabled={currentStep === 0}
-        className="w-full sm:w-auto transition-colors duration-300 motion-reduce:transition-none"
+        className="w-full sm:w-auto transition-colors duration-300 motion-reduce:transition-none disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Previous
       </Button>
@@ -38,8 +40,10 @@ export default function ListingStepNavigation({
       <Button
         type={isLastStep ? 'submit' : 'button'}
         onClick={isLastStep ? undefined : onNext}
-        disabled={isNextDisabled || isSubmitting}
-        className="w-full sm:w-auto shrink-0 transition-colors duration-300 motion-reduce:transition-none"
+        disabled={
+          isNextDisabled || isSubmitting || (isLastStep && isSubmitDisabled)
+        }
+        className="w-full sm:w-auto shrink-0 transition-colors duration-300 motion-reduce:transition-none disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isSubmitting
           ? 'Saving...'
