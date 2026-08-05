@@ -10,7 +10,7 @@ import { rateLimiter } from './util/rateLimiter';
 
 const app = express();
 
-app.set('trust proxy', true);
+app.set('trust proxy', false);
 
 app.use(rateLimiter);
 

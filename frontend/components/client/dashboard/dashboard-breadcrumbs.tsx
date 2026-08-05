@@ -16,7 +16,7 @@ const PATH_NAME_MAP: Record<string, string> = {
   dashboard: 'Dashboard',
   client: 'Client',
   listings: 'Listings',
-  new: 'New Listing',
+  new: 'Create',
   applications: 'Applications',
   saved: 'Saved Creatives',
   messages: 'Messages',
@@ -67,9 +67,13 @@ export function DashboardBreadcrumbs() {
                 const href = `/dashboard/client/${array
                   .slice(0, index + 1)
                   .join('/')}`;
-                const label =
-                  PATH_NAME_MAP[segment.toLowerCase()] ||
-                  segment.replace(/-/g, ' ');
+
+                // Check if segment looks like a listing ID (cuid format)
+                const isListingId = /^[a-z0-9]{20,}$/.test(segment);
+                const label = isListingId
+                  ? 'Listing Details'
+                  : PATH_NAME_MAP[segment.toLowerCase()] ||
+                    segment.replace(/-/g, ' ');
 
                 return (
                   <div key={href} className="inline-flex items-center gap-1.5">

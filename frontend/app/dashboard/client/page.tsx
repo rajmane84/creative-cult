@@ -14,6 +14,8 @@ import { EmailVerificationCard } from '@/components/auth/email-verification-card
 import { LoadingState } from '@/components/loading-state';
 import { ErrorState } from '@/components/error-state';
 import { useClientProfile } from '@/hooks/client/profile';
+import { useListings } from '@/hooks/listing';
+import { ListingCard } from '@/components/listing/listing-card';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 
@@ -25,6 +27,7 @@ export default function ClientDashboard() {
     error: profileError,
     refetch: refetchProfile,
   } = useClientProfile();
+  const { data: listingsData } = useListings();
   const user = sessionData?.user;
 
   if (isPending || isProfileDataPending || !user) {
@@ -47,6 +50,12 @@ export default function ClientDashboard() {
   const displayName = fullName ? fullName.split(' ')[0] : 'Client';
   const userEmail = user.email;
   const isEmailVerified = Boolean(user.emailVerified);
+
+  const listings = listingsData?.data || [];
+  const activeListingsCount = listings.filter(
+    (l) => !l.status || l.status === 'ACTIVE'
+  ).length;
+  const recentListings = listings.slice(0, 3);
 
   return (
     <div className="w-full bg-background">
@@ -83,16 +92,16 @@ export default function ClientDashboard() {
             className="flex flex-col items-start sm:items-end gap-1.5 shrink-0"
           >
             <Link
-              href="/dashboard/client/listings/new"
+              href="/dashboard/client/listings"
               className="w-full sm:w-auto"
             >
               <Button className="w-full sm:w-auto cursor-pointer gap-2">
                 <Plus className="size-4" />
-                <span>Post a Job / Listing</span>
+                <span>Manage Listings</span>
               </Button>
             </Link>
             <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
-              It only takes a few minutes!
+              View and create job postings
             </span>
           </motion.div>
         </div>
@@ -142,7 +151,49 @@ export default function ClientDashboard() {
         </div>
 
         {/* Section 2: Key Metrics & Stat Cards */}
-        <ClientStatsCards />
+        <ClientStatsCards activeListings={activeListingsCount} />
+
+        {/* Section 3: Recent Listings Preview */}
+        <div className="border-t border-border pt-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="font-editorial text-2xl font-bold text-foreground tracking-tight">
+                Recent Listings
+              </h2>
+              <p className="font-body text-sm text-muted-foreground mt-1">
+                Your latest job postings
+              </p>
+            </div>
+            <Link href="/dashboard/client/listings">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="font-mono text-[11px] uppercase tracking-widest"
+              >
+                View All ({listings.length})
+              </Button>
+            </Link>
+          </div>
+          {recentListings.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4">
+              {recentListings.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 border border-dashed border-border bg-muted/20">
+              <p className="font-body text-sm text-muted-foreground mb-4">
+                No active listings. Create your first one to get started.
+              </p>
+              <Link href="/dashboard/client/listings/new">
+                <Button size="sm" className="gap-2">
+                  <Plus className="size-4" />
+                  <span>Create Listing</span>
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -133,6 +133,43 @@ enum CompanySize {
   ENTERPRISE // 201+ employees
 }
 
+enum ListingStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+  FILLED
+  ARCHIVED
+}
+
+enum LocationType {
+  REMOTE
+  ON_SITE
+  HYBRID
+}
+
+enum Currency {
+  USD
+  EUR
+  GBP
+  INR
+  CAD
+  AUD
+  JPY
+  CNY
+  CHF
+  SEK
+  NOK
+  DKK
+  SGD
+  HKD
+  NZD
+  MXN
+  BRL
+  KRW
+  TRY
+  ZAR
+}
+
 enum Industry {
   ADVERTISING_MARKETING
   FASHION_APPAREL
@@ -279,8 +316,50 @@ model ClientProfile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  listings Listing[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Listing {
+  id          String        @id @default(cuid())
+  title       String
+  description String
+  status      ListingStatus @default(DRAFT)
+
+  // Location and work arrangement
+  locationType LocationType @default(REMOTE)
+  location     String? // Specific city/region for on-site or hybrid
+
+  // Compensation
+  budgetMin    Int?
+  budgetMax    Int?
+  rateType     RateType? // HOURLY, DAILY, PROJECT, NEGOTIABLE
+  currency     Currency @default(USD)
+
+  // Job details
+  discipline   Discipline? // Primary discipline for filtering
+  employmentType EmploymentType?
+
+  // Skills required - array of skill names for flexibility
+  skills       String[]
+
+  // Timeline
+  deadline     DateTime?
+  startDate    DateTime?
+  duration     String? // e.g., "2 weeks", "3 months", "ongoing"
+
+  // Client relationship
+  clientProfileId String
+  clientProfile   ClientProfile @relation(fields: [clientProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientProfileId])
+  @@index([status])
+  @@index([discipline])
 }
 
 model CreativeSkill {

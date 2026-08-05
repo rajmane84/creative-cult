@@ -89,6 +89,110 @@ export enum RateType {
   NEGOTIABLE = 'NEGOTIABLE',
 }
 
+export enum ListingStatus {
+  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  CLOSED = 'CLOSED',
+  FILLED = 'FILLED',
+  ARCHIVED = 'ARCHIVED',
+}
+
+export enum LocationType {
+  REMOTE = 'REMOTE',
+  ON_SITE = 'ON_SITE',
+  HYBRID = 'HYBRID',
+}
+
+export enum Currency {
+  USD = 'USD',
+  EUR = 'EUR',
+  GBP = 'GBP',
+  INR = 'INR',
+  CAD = 'CAD',
+  AUD = 'AUD',
+  JPY = 'JPY',
+  CNY = 'CNY',
+  CHF = 'CHF',
+  SEK = 'SEK',
+  NOK = 'NOK',
+  DKK = 'DKK',
+  SGD = 'SGD',
+  HKD = 'HKD',
+  NZD = 'NZD',
+  MXN = 'MXN',
+  BRL = 'BRL',
+  KRW = 'KRW',
+  TRY = 'TRY',
+  ZAR = 'ZAR',
+}
+
+export const LISTING_STATUS_LABELS: Record<ListingStatus, string> = {
+  [ListingStatus.DRAFT]: 'Draft',
+  [ListingStatus.ACTIVE]: 'Active',
+  [ListingStatus.CLOSED]: 'Closed',
+  [ListingStatus.FILLED]: 'Filled',
+  [ListingStatus.ARCHIVED]: 'Archived',
+};
+
+export const LOCATION_TYPE_LABELS: Record<LocationType, string> = {
+  [LocationType.REMOTE]: 'Remote',
+  [LocationType.ON_SITE]: 'On-site',
+  [LocationType.HYBRID]: 'Hybrid',
+};
+
+export const RATE_TYPE_LABELS: Record<RateType, string> = {
+  [RateType.HOURLY]: 'Hourly',
+  [RateType.DAILY]: 'Daily',
+  [RateType.PROJECT]: 'Project',
+  [RateType.NEGOTIABLE]: 'Negotiable',
+};
+
+export const CURRENCY_LABELS: Record<Currency, string> = {
+  [Currency.USD]: 'US Dollar',
+  [Currency.EUR]: 'Euro',
+  [Currency.GBP]: 'British Pound',
+  [Currency.INR]: 'Indian Rupee',
+  [Currency.CAD]: 'Canadian Dollar',
+  [Currency.AUD]: 'Australian Dollar',
+  [Currency.JPY]: 'Japanese Yen',
+  [Currency.CNY]: 'Chinese Yuan',
+  [Currency.CHF]: 'Swiss Franc',
+  [Currency.SEK]: 'Swedish Krona',
+  [Currency.NOK]: 'Norwegian Krone',
+  [Currency.DKK]: 'Danish Krone',
+  [Currency.SGD]: 'Singapore Dollar',
+  [Currency.HKD]: 'Hong Kong Dollar',
+  [Currency.NZD]: 'New Zealand Dollar',
+  [Currency.MXN]: 'Mexican Peso',
+  [Currency.BRL]: 'Brazilian Real',
+  [Currency.KRW]: 'South Korean Won',
+  [Currency.TRY]: 'Turkish Lira',
+  [Currency.ZAR]: 'South African Rand',
+};
+
+export const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  [Currency.USD]: '$',
+  [Currency.EUR]: '€',
+  [Currency.GBP]: '£',
+  [Currency.INR]: '₹',
+  [Currency.CAD]: 'C$',
+  [Currency.AUD]: 'A$',
+  [Currency.JPY]: '¥',
+  [Currency.CNY]: '¥',
+  [Currency.CHF]: 'Fr',
+  [Currency.SEK]: 'kr',
+  [Currency.NOK]: 'kr',
+  [Currency.DKK]: 'kr',
+  [Currency.SGD]: 'S$',
+  [Currency.HKD]: 'HK$',
+  [Currency.NZD]: 'NZ$',
+  [Currency.MXN]: '$',
+  [Currency.BRL]: 'R$',
+  [Currency.KRW]: '₩',
+  [Currency.TRY]: '₺',
+  [Currency.ZAR]: 'R',
+};
+
 export enum ClientType {
   INDIVIDUAL = 'INDIVIDUAL',
   COMPANY = 'COMPANY',

@@ -13,6 +13,7 @@ import cultRouter from './cult.route';
 import portfolioRouter from './portfolio.route';
 import discoverRouter from './discover.route';
 import reviewRouter from './review.route';
+import listingRouter from './listing.route';
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use('/cult', cultRouter);
 router.use('/portfolio', portfolioRouter);
 router.use('/discover', discoverRouter);
 router.use('/reviews', reviewRouter);
+router.use('/listings', listingRouter);
 
 router.get('/health', (_, res) => {
   const healthCheck = {
