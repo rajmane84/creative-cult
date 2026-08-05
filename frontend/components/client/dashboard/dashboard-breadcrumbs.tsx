@@ -36,8 +36,8 @@ export function DashboardBreadcrumbs() {
     pathname === '/dashboard/client' || pathname === '/dashboard/client/';
 
   return (
-    <div className="w-full border-b border-border bg-card/40 px-4 sm:px-6 lg:px-8 py-3 h-11.5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+    <div className="w-full border-b border-border bg-card/40 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 min-h-11.5 h-auto">
+      <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
         <Breadcrumb>
           <BreadcrumbList>
             {/* Root item */}
@@ -100,7 +100,7 @@ export function DashboardBreadcrumbs() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-2 self-start sm:self-auto">
+        <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground flex items-center gap-2 shrink-0">
           <span className="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 selection:text-background selection:bg-primary font-semibold">
             Client Portal
           </span>
