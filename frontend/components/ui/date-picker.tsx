@@ -181,3 +181,68 @@ export function MonthPicker({
     </Popover>
   );
 }
+
+export function formatToDDMMYYYY(value?: string) {
+  if (!value) return '';
+  const dateOnly = value.split('T')[0];
+  const parts = dateOnly.split('-');
+  if (parts.length === 3 && parts[0].length === 4) {
+    const [year, month, day] = parts;
+    return `${day}/${month}/${year}`;
+  }
+  return value;
+}
+
+interface DatePickerProps {
+  id?: string;
+  value?: string;
+  onChange: (value: string) => void;
+  min?: string;
+  max?: string;
+  placeholder?: string;
+  disabled?: boolean;
+}
+
+export function DatePicker({
+  id,
+  value = '',
+  onChange,
+  min,
+  max,
+  placeholder = 'DD/MM/YYYY',
+  disabled = false,
+}: DatePickerProps) {
+  const formattedDisplay = formatToDDMMYYYY(value);
+
+  return (
+    <div className="relative w-full group">
+      <input
+        id={id}
+        type="date"
+        min={min ? min.split('T')[0] : undefined}
+        max={max ? max.split('T')[0] : undefined}
+        value={value ? value.split('T')[0] : ''}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 z-10 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
+      />
+      <div
+        className={cn(
+          'flex h-10 w-full items-center justify-between border border-border bg-background px-3 text-sm font-body transition-colors',
+          'group-focus-within:border-primary group-hover:border-primary/60',
+          disabled && 'opacity-50 cursor-not-allowed'
+        )}
+      >
+        <span
+          className={cn(
+            'font-mono text-sm tracking-wide',
+            formattedDisplay ? 'text-foreground' : 'text-muted-foreground'
+          )}
+        >
+          {formattedDisplay || placeholder}
+        </span>
+        <CalendarIcon className="size-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" />
+      </div>
+    </div>
+  );
+}

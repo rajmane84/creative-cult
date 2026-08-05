@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/error-state';
 import { ListingCard } from '@/components/listing/listing-card';
 import { ListingEmptyState } from '@/components/listing/listing-empty-state';
 import { ListingFilters } from '@/components/listing/listing-filters';
+import { DeleteListingDialog } from '@/components/listing';
 import { useListings } from '@/hooks/listing';
 import { useDeleteListing, useUpdateListingStatus } from '@/hooks/listing';
 import { ListingStatus, Discipline } from '@/types';
@@ -23,6 +24,11 @@ export default function ClientListingsPage() {
   const [disciplineFilter, setDisciplineFilter] = useState<
     Discipline | undefined
   >();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [listingToDelete, setListingToDelete] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
 
   const {
     data: listingsData,
@@ -47,9 +53,19 @@ export default function ClientListingsPage() {
     },
   });
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this listing?')) {
-      deleteListingMutation.mutate(id);
+  const handleDelete = (id: string, title: string) => {
+    setListingToDelete({ id, title });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (listingToDelete) {
+      deleteListingMutation.mutate(listingToDelete.id, {
+        onSuccess: () => {
+          setDeleteDialogOpen(false);
+          setListingToDelete(null);
+        },
+      });
     }
   };
 
@@ -184,7 +200,7 @@ export default function ClientListingsPage() {
                         onEdit={(id) => {
                           window.location.href = `/dashboard/client/listings/${id}/edit`;
                         }}
-                        onDelete={handleDelete}
+                        onDelete={(id) => handleDelete(id, listing.title)}
                         onStatusChange={handleStatusChange}
                       />
                     </motion.div>
@@ -211,6 +227,15 @@ export default function ClientListingsPage() {
           </motion.div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteListingDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        isDeleting={deleteListingMutation.isPending}
+        listingTitle={listingToDelete?.title}
+      />
     </div>
   );
 }

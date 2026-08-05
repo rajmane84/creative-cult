@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 
-interface StepNavigationProps {
+interface ListingStepNavigationProps {
   currentStep: number;
   totalSteps: number;
   onPrevious: () => void;
@@ -12,7 +12,7 @@ interface StepNavigationProps {
   nextLabel?: string;
 }
 
-export default function StepNavigation({
+export default function ListingStepNavigation({
   currentStep,
   totalSteps,
   onPrevious,
@@ -20,7 +20,7 @@ export default function StepNavigation({
   isSubmitting = false,
   isNextDisabled = false,
   nextLabel = 'Continue',
-}: StepNavigationProps) {
+}: ListingStepNavigationProps) {
   const isLastStep = currentStep === totalSteps - 1;
 
   return (
@@ -44,7 +44,7 @@ export default function StepNavigation({
         {isSubmitting
           ? 'Saving...'
           : isLastStep
-            ? 'Complete Profile'
+            ? 'Publish Listing'
             : nextLabel}
       </Button>
     </div>

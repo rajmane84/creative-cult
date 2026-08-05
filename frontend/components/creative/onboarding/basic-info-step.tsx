@@ -69,7 +69,7 @@ export default function BasicInfoStep({
           htmlFor="username"
           className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
         >
-          Username *
+          Username <span className="text-destructive">*</span>
         </Label>
         <div className="relative">
           <Input

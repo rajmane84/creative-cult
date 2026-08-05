@@ -82,19 +82,70 @@ export const createListingObject = z.object({
     .optional(),
 });
 
-export const createListingSchema = createListingObject.refine(
-  (data) => {
-    // If budgetMin is provided, budgetMax must be greater than or equal to budgetMin
-    if (data.budgetMin !== undefined && data.budgetMax !== undefined) {
-      return data.budgetMax >= data.budgetMin;
+export const createListingSchema = createListingObject
+  .refine(
+    (data) => {
+      // If budgetMin is provided, budgetMax must be greater than or equal to budgetMin
+      if (data.budgetMin !== undefined && data.budgetMax !== undefined) {
+        return data.budgetMax >= data.budgetMin;
+      }
+      return true;
+    },
+    {
+      message: 'Budget maximum must be greater than or equal to budget minimum',
+      path: ['budgetMax'],
     }
-    return true;
-  },
-  {
-    message: 'Budget maximum must be greater than or equal to budget minimum',
-    path: ['budgetMax'],
-  }
-);
+  )
+  .refine(
+    (data) => {
+      if (data.startDate) {
+        const start = new Date(data.startDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (start < today) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: 'Start date must be today or a future date',
+      path: ['startDate'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.deadline) {
+        const dline = new Date(data.deadline);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (dline < today) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: 'Application deadline must be today or a future date',
+      path: ['deadline'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.startDate && data.deadline) {
+        const start = new Date(data.startDate);
+        const dline = new Date(data.deadline);
+        if (dline > start) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: 'Application deadline cannot be after the start date',
+      path: ['deadline'],
+    }
+  );
 
 export const updateListingSchema = createListingObject
   .partial()
@@ -111,6 +162,56 @@ export const updateListingSchema = createListingObject
     {
       message: 'Budget maximum must be greater than or equal to budget minimum',
       path: ['budgetMax'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.startDate) {
+        const start = new Date(data.startDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (start < today) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: 'Start date must be today or a future date',
+      path: ['startDate'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.deadline) {
+        const dline = new Date(data.deadline);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (dline < today) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: 'Application deadline must be today or a future date',
+      path: ['deadline'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.startDate && data.deadline) {
+        const start = new Date(data.startDate);
+        const dline = new Date(data.deadline);
+        if (dline > start) {
+          return false;
+        }
+      }
+      return true;
+    },
+    {
+      message: 'Application deadline cannot be after the start date',
+      path: ['deadline'],
     }
   );
 

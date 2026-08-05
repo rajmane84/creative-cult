@@ -6,6 +6,11 @@ import {
   Calendar,
   MapPin,
   DollarSign,
+  Euro,
+  PoundSterling,
+  IndianRupee,
+  JapaneseYen,
+  Banknote,
   Clock,
   MoreVertical,
 } from 'lucide-react';
@@ -50,6 +55,27 @@ interface ListingCardProps {
   onStatusChange?: (id: string, status: string) => void;
 }
 
+const getCurrencyIcon = (currency?: Currency | null) => {
+  switch (currency) {
+    case Currency.EUR:
+      return Euro;
+    case Currency.GBP:
+      return PoundSterling;
+    case Currency.INR:
+      return IndianRupee;
+    case Currency.JPY:
+    case Currency.CNY:
+      return JapaneseYen;
+    case Currency.USD:
+    case Currency.CAD:
+    case Currency.AUD:
+    case Currency.MXN:
+      return DollarSign;
+    default:
+      return Banknote;
+  }
+};
+
 export function ListingCard({
   listing,
   onEdit,
@@ -57,18 +83,20 @@ export function ListingCard({
   onStatusChange,
 }: ListingCardProps) {
   const formatDate = (dateString: string) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
+    if (isNaN(date.getTime())) return dateString;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   };
 
   const formatBudget = () => {
-    const currencySymbol = listing.currency
-      ? CURRENCY_SYMBOLS[listing.currency]
-      : '$';
+    const currencySymbol =
+      listing.currency && CURRENCY_SYMBOLS[listing.currency]
+        ? CURRENCY_SYMBOLS[listing.currency]
+        : '$';
 
     if (listing.rateType === RateType.NEGOTIABLE) {
       return 'Negotiable';
@@ -78,6 +106,9 @@ export function ListingCard({
     }
     if (listing.budgetMin) {
       return `${currencySymbol}${listing.budgetMin.toLocaleString()}+`;
+    }
+    if (listing.budgetMax) {
+      return `Up to ${currencySymbol}${listing.budgetMax.toLocaleString()}`;
     }
     return 'Budget not specified';
   };
@@ -97,6 +128,8 @@ export function ListingCard({
         return 'status-tag--neutral';
     }
   };
+
+  const CurrencyIcon = getCurrencyIcon(listing.currency);
 
   return (
     <motion.div
@@ -181,7 +214,7 @@ export function ListingCard({
 
             {/* Budget */}
             <div className="flex items-center gap-2 text-sm">
-              <DollarSign className="size-4 text-muted-foreground shrink-0" />
+              <CurrencyIcon className="size-4 text-muted-foreground shrink-0" />
               <span className="font-body text-foreground">
                 {formatBudget()}
                 {listing.rateType &&

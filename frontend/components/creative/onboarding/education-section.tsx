@@ -190,7 +190,7 @@ export default function EducationSection({
               htmlFor="school"
               className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
             >
-              School / University *
+              School / University <span className="text-destructive">*</span>
             </Label>
             <Input
               id="school"
@@ -217,7 +217,7 @@ export default function EducationSection({
                 htmlFor="degree"
                 className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
               >
-                Degree *
+                Degree <span className="text-destructive">*</span>
               </Label>
               <DropdownMenu
                 open={isDropdownOpen}
@@ -274,7 +274,7 @@ export default function EducationSection({
                 htmlFor="fieldOfStudy"
                 className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
               >
-                Field of Study *
+                Field of Study <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="fieldOfStudy"
@@ -301,7 +301,7 @@ export default function EducationSection({
                 htmlFor="country"
                 className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
               >
-                Country *
+                Country <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="country"
@@ -325,7 +325,7 @@ export default function EducationSection({
                 htmlFor="yearOfGraduation"
                 className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
               >
-                Graduation Year *
+                Graduation Year <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="yearOfGraduation"
