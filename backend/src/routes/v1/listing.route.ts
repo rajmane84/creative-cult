@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../../middlewares/authMiddleware';
 import { requireClient } from '../../middlewares/roleMiddleware';
 import { validate } from '../../middlewares/validate';
+import { emailVerificationMiddleware } from '../../middlewares/emailVerificationMiddleware';
 import {
   createListingSchema,
   updateListingSchema,
@@ -18,7 +19,7 @@ import {
 
 const router = Router();
 
-// All listing routes require authentication and the CLIENT role
+// All listing routes require authentication, and the CLIENT role
 router.use(authenticate, requireClient);
 
 // Query validation for listing list
@@ -28,15 +29,29 @@ router.get('/', validate(listingQuerySchema, 'query'), handleGetListings);
 router.get('/:id', handleGetListingById);
 
 // Create new listing
-router.post('/', validate(createListingSchema), handleCreateListing);
+router.post(
+  '/',
+  emailVerificationMiddleware,
+  validate(createListingSchema),
+  handleCreateListing
+);
 
 // Update listing
-router.patch('/:id', validate(updateListingSchema), handleUpdateListing);
+router.patch(
+  '/:id',
+  emailVerificationMiddleware,
+  validate(updateListingSchema),
+  handleUpdateListing
+);
 
 // Update listing status
-router.patch('/:id/status', handleUpdateListingStatus);
+router.patch(
+  '/:id/status',
+  emailVerificationMiddleware,
+  handleUpdateListingStatus
+);
 
 // Delete listing
-router.delete('/:id', handleDeleteListing);
+router.delete('/:id', emailVerificationMiddleware, handleDeleteListing);
 
 export default router;

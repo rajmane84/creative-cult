@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
 
 interface ClientDashboardHeaderProps {
   fullName?: string | null;
@@ -14,7 +16,19 @@ const ease = [0.76, 0, 0.24, 1] as const;
 export function ClientDashboardHeader({
   fullName,
 }: ClientDashboardHeaderProps) {
+  const { data: sessionData } = authClient.useSession();
+  const isEmailVerified = Boolean(sessionData?.user?.emailVerified);
+
   const displayName = fullName?.split(' ')[0];
+
+  const handleCreateListingClick = (e: React.MouseEvent) => {
+    if (!isEmailVerified) {
+      e.preventDefault();
+      toast.error(
+        'Email verification required. Please verify your email address before proceeding.'
+      );
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-border pb-8">
@@ -47,7 +61,10 @@ export function ClientDashboardHeader({
         transition={{ duration: 0.6, delay: 0.15, ease }}
         className="flex flex-col items-start md:items-end gap-1.5 shrink-0"
       >
-        <Link href="/dashboard/client/listings/new">
+        <Link
+          href="/dashboard/client/listings/new"
+          onClick={handleCreateListingClick}
+        >
           <Button>
             <Plus className="size-4" />
             <span>Post a Job / Listing</span>

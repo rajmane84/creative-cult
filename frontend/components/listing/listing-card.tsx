@@ -13,6 +13,7 @@ import {
   FileEdit,
   Archive,
   Radio,
+  ArrowUpRight,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { formatDateDDMMYYYY } from '@/lib/format-date';
@@ -28,7 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 
@@ -193,11 +194,11 @@ export function ListingCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease }}
-      className="group w-full"
+      className="w-full"
     >
       <div
         className={cn(
-          'w-full border transition-all duration-300 overflow-hidden',
+          'group w-full border transition-all duration-300 overflow-hidden',
           getContainerStyles(listing.status)
         )}
       >
@@ -218,14 +219,17 @@ export function ListingCard({
             </div>
             <h3
               className={cn(
-                'font-editorial text-xl sm:text-2xl font-bold tracking-tight truncate transition-colors selection:text-background selection:bg-primary',
+                'font-editorial text-xl sm:text-2xl font-bold tracking-tight truncate selection:text-background selection:bg-primary',
                 listing.status === ListingStatus.CLOSED ||
                   listing.status === ListingStatus.ARCHIVED
                   ? 'text-muted-foreground line-through decoration-red-400/60'
                   : 'text-foreground selection:text-background selection:bg-primary'
               )}
             >
-              <Link href={`/dashboard/client/listings/${listing.id}`}>
+              <Link
+                href={`/dashboard/client/listings/${listing.id}`}
+                className="hover:text-primary transition-colors duration-300 ease-[cubic-bezier(0.76,0,0.24,1)]"
+              >
                 {listing.title}
               </Link>
             </h3>
@@ -361,21 +365,15 @@ export function ListingCard({
           <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Posted {formatDate(listing.createdAt)}
           </span>
-          <Link href={`/dashboard/client/listings/${listing.id}`}>
-            <Button
-              variant={
-                listing.status === ListingStatus.CLOSED ? 'outline' : 'ghost'
-              }
-              size="sm"
-              className={cn(
-                'font-mono text-[11px] uppercase tracking-widest',
-                listing.status === ListingStatus.CLOSED
-                  ? 'border-red-300 text-red-800 hover:bg-red-100'
-                  : 'hover:text-primary selection:text-background selection:bg-primary'
-              )}
-            >
-              View Details
-            </Button>
+          <Link
+            href={`/dashboard/client/listings/${listing.id}`}
+            className={cn(
+              'font-mono text-[11px] uppercase tracking-widest text-muted-foreground hover:text-primary selection:text-background selection:bg-primary transition-colors duration-300 ease-[cubic-bezier(0.76,0,0.24,1)] flex items-center gap-1',
+              listing.status === ListingStatus.CLOSED && 'text-red-800'
+            )}
+          >
+            <span>View details</span>
+            <ArrowUpRight className="size-3" />
           </Link>
         </div>
       </div>

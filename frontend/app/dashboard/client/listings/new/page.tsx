@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { TriangleAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCreateListing } from '@/hooks/listing';
+import { authClient } from '@/lib/auth-client';
 import {
   Discipline,
   LocationType,
@@ -32,6 +34,8 @@ const steps = [
 
 export default function NewListingPage() {
   const router = useRouter();
+  const { data: sessionData } = authClient.useSession();
+  const isEmailVerified = Boolean(sessionData?.user?.emailVerified);
   const [currentStep, setCurrentStep] = useState(0);
 
   // Form state
@@ -195,6 +199,13 @@ export default function NewListingPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!isEmailVerified) {
+      toast.error(
+        'Email verification required. Please verify your email address before proceeding.'
+      );
+      return;
+    }
+
     if (!isFormValid()) {
       toast.error('Please fix all validation errors before submitting');
       return;
@@ -302,6 +313,20 @@ export default function NewListingPage() {
           </div>
         </div>
 
+        {!isEmailVerified && (
+          <div className="flex items-start gap-2.5 border border-primary/30 bg-primary/10 p-4 text-primary">
+            <TriangleAlert className="size-5 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-body text-sm font-medium">
+                Email verification required
+              </p>
+              <p className="font-body text-xs text-primary/80">
+                Please verify your email address before creating a listing.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Multi-step Form */}
         <form onSubmit={handleSubmit}>
           <MultiStepListingForm currentStep={currentStep} steps={steps}>
@@ -314,7 +339,7 @@ export default function NewListingPage() {
               onNext={handleNext}
               isSubmitting={createListingMutation.isPending}
               isNextDisabled={!isStepValid(currentStep)}
-              isSubmitDisabled={!isFormValid()}
+              isSubmitDisabled={!isFormValid() || !isEmailVerified}
             />
           </MultiStepListingForm>
         </form>

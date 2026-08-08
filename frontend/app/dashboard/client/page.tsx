@@ -16,6 +16,7 @@ import { ErrorState } from '@/components/error-state';
 import { useClientProfile } from '@/hooks/client/profile';
 import { useListings } from '@/hooks/listing';
 import { ListingCard } from '@/components/listing/listing-card';
+import { toast } from 'sonner';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 
@@ -50,6 +51,15 @@ export default function ClientDashboard() {
   const displayName = fullName ? fullName.split(' ')[0] : 'Client';
   const userEmail = user.email;
   const isEmailVerified = Boolean(user.emailVerified);
+
+  const handleCreateListingClick = (e: React.MouseEvent) => {
+    if (!isEmailVerified) {
+      e.preventDefault();
+      toast.error(
+        'Email verification required. Please verify your email address before proceeding.'
+      );
+    }
+  };
 
   const listings = listingsData?.data || [];
   const activeListingsCount = listings.filter(
@@ -185,7 +195,10 @@ export default function ClientDashboard() {
               <p className="font-body text-sm text-muted-foreground mb-4">
                 No active listings. Create your first one to get started.
               </p>
-              <Link href="/dashboard/client/listings/new">
+              <Link
+                href="/dashboard/client/listings/new"
+                onClick={handleCreateListingClick}
+              >
                 <Button size="sm" className="gap-2">
                   <Plus className="size-4" />
                   <span>Create Listing</span>

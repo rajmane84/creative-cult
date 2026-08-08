@@ -4,6 +4,8 @@ import { motion } from 'motion/react';
 import { Briefcase, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 
@@ -12,6 +14,22 @@ interface ListingEmptyStateProps {
 }
 
 export function ListingEmptyState({ onCreate }: ListingEmptyStateProps) {
+  const { data: sessionData } = authClient.useSession();
+  const isEmailVerified = Boolean(sessionData?.user?.emailVerified);
+
+  const handleCreateClick = (e: React.MouseEvent) => {
+    if (!isEmailVerified) {
+      e.preventDefault();
+      toast.error(
+        'Email verification required. Please verify your email address before proceeding.'
+      );
+      return;
+    }
+    if (onCreate) {
+      onCreate();
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -20,7 +38,7 @@ export function ListingEmptyState({ onCreate }: ListingEmptyStateProps) {
       className="w-full py-16 sm:py-24"
     >
       <div className="w-full max-w-md mx-auto text-center space-y-6">
-        <div className="w-20 h-20 mx-auto border border-border bg-card flex items-center justify-center">
+        <div className="size-20 mx-auto border border-border bg-card flex items-center justify-center">
           <Briefcase className="size-8 text-muted-foreground" />
         </div>
 
@@ -36,12 +54,18 @@ export function ListingEmptyState({ onCreate }: ListingEmptyStateProps) {
 
         <div className="pt-4">
           {onCreate ? (
-            <Button onClick={onCreate} className="gap-2 cursor-pointer">
+            <Button
+              onClick={handleCreateClick}
+              className="gap-2 cursor-pointer"
+            >
               <Plus className="size-4" />
               <span>Create Your First Listing</span>
             </Button>
           ) : (
-            <Link href="/dashboard/client/listings/new">
+            <Link
+              href="/dashboard/client/listings/new"
+              onClick={handleCreateClick}
+            >
               <Button className="gap-2 cursor-pointer">
                 <Plus className="size-4" />
                 <span>Create Your First Listing</span>

@@ -17,11 +17,15 @@ import { useDeleteListing, useUpdateListingStatus } from '@/hooks/listing';
 import { ListingStatus, Discipline } from '@/types';
 import { cn } from '@/lib/cn';
 import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 
 const ease = [0.76, 0, 0.24, 1] as const;
 
 export default function ClientListingsPage() {
   const router = useRouter();
+  const { data: sessionData } = authClient.useSession();
+  const isEmailVerified = Boolean(sessionData?.user?.emailVerified);
+
   const [statusFilter, setStatusFilter] = useState<ListingStatus | undefined>();
   const [disciplineFilter, setDisciplineFilter] = useState<
     Discipline | undefined
@@ -32,6 +36,16 @@ export default function ClientListingsPage() {
     title: string;
   } | null>(null);
 
+  const handleCreateListingClick = (e: React.MouseEvent) => {
+    if (!isEmailVerified) {
+      e.preventDefault();
+      toast.error(
+        'Email verification required. Please verify your email address before proceeding.'
+      );
+    }
+  };
+
+  const { data: totalListingsData } = useListings();
   const {
     data: listingsData,
     isLoading,
@@ -83,6 +97,7 @@ export default function ClientListingsPage() {
   const hasActiveFilters =
     statusFilter !== undefined || disciplineFilter !== undefined;
   const listings = listingsData?.data || [];
+  const hasTotalListings = (totalListingsData?.data?.length ?? 0) > 0;
 
   if (isLoading && !listingsData) {
     return <LoadingState message="Loading listings..." />;
@@ -134,6 +149,7 @@ export default function ClientListingsPage() {
           >
             <Link
               href="/dashboard/client/listings/new"
+              onClick={handleCreateListingClick}
               className="w-full sm:w-auto"
             >
               <Button className="w-full sm:w-auto cursor-pointer gap-2">
@@ -147,15 +163,17 @@ export default function ClientListingsPage() {
           </motion.div>
         </motion.div>
 
-        {/* Filters */}
-        <ListingFilters
-          statusFilter={statusFilter}
-          disciplineFilter={disciplineFilter}
-          onStatusChange={setStatusFilter}
-          onDisciplineChange={setDisciplineFilter}
-          onClearFilters={handleClearFilters}
-          hasActiveFilters={hasActiveFilters}
-        />
+        {/* Filters (only displayed if user has total listings) */}
+        {hasTotalListings && (
+          <ListingFilters
+            statusFilter={statusFilter}
+            disciplineFilter={disciplineFilter}
+            onStatusChange={setStatusFilter}
+            onDisciplineChange={setDisciplineFilter}
+            onClearFilters={handleClearFilters}
+            hasActiveFilters={hasActiveFilters}
+          />
+        )}
 
         {/* Listings Grid with Smooth In-Place Updates */}
         <div className="relative min-h-[200px]">
