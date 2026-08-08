@@ -147,6 +147,13 @@ export const RATE_TYPE_LABELS: Record<RateType, string> = {
   [RateType.NEGOTIABLE]: 'Negotiable',
 };
 
+export const EMPLOYMENT_TYPE_LABELS: Record<EmploymentType, string> = {
+  [EmploymentType.FULL_TIME]: 'Full-time',
+  [EmploymentType.PART_TIME]: 'Part-time',
+  [EmploymentType.FREELANCE]: 'Freelance',
+  [EmploymentType.SELF_EMPLOYED]: 'Self-employed',
+};
+
 export const CURRENCY_LABELS: Record<Currency, string> = {
   [Currency.USD]: 'US Dollar',
   [Currency.EUR]: 'Euro',

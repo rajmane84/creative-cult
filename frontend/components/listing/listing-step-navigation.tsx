@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Save } from 'lucide-react';
 
 interface ListingStepNavigationProps {
   currentStep: number;
@@ -11,6 +12,7 @@ interface ListingStepNavigationProps {
   isNextDisabled?: boolean;
   isSubmitDisabled?: boolean;
   nextLabel?: string;
+  submitLabel?: string;
 }
 
 export default function ListingStepNavigation({
@@ -22,6 +24,7 @@ export default function ListingStepNavigation({
   isNextDisabled = false,
   isSubmitDisabled = false,
   nextLabel = 'Continue',
+  submitLabel = 'Publish Listing',
 }: ListingStepNavigationProps) {
   const isLastStep = currentStep === totalSteps - 1;
 
@@ -29,7 +32,7 @@ export default function ListingStepNavigation({
     <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-4 mt-8 pt-8 border-t border-border w-full">
       <Button
         type="button"
-        variant="default"
+        variant="outline"
         onClick={onPrevious}
         disabled={currentStep === 0}
         className="w-full sm:w-auto transition-colors duration-300 motion-reduce:transition-none disabled:opacity-50 disabled:cursor-not-allowed"
@@ -43,13 +46,18 @@ export default function ListingStepNavigation({
         disabled={
           isNextDisabled || isSubmitting || (isLastStep && isSubmitDisabled)
         }
-        className="w-full sm:w-auto shrink-0 transition-colors duration-300 motion-reduce:transition-none disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto shrink-0 transition-colors duration-300 motion-reduce:transition-none disabled:opacity-50 disabled:cursor-not-allowed gap-2"
       >
-        {isSubmitting
-          ? 'Saving...'
-          : isLastStep
-            ? 'Publish Listing'
-            : nextLabel}
+        {isSubmitting ? (
+          'Saving...'
+        ) : isLastStep ? (
+          <>
+            <Save className="size-4" />
+            <span>{submitLabel}</span>
+          </>
+        ) : (
+          nextLabel
+        )}
       </Button>
     </div>
   );

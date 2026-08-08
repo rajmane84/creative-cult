@@ -160,9 +160,11 @@ export const handleUpdateListing = asyncHandler(
       );
     }
 
+    const { ...updateData } = req.body;
+
     const updatedListing = await prisma.listing.update({
       where: { id: String(id) },
-      data: req.body,
+      data: updateData,
     });
 
     return ApiResponse.success(

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { Plus, Loader2 } from 'lucide-react';
@@ -20,6 +21,7 @@ import { toast } from 'sonner';
 const ease = [0.76, 0, 0.24, 1] as const;
 
 export default function ClientListingsPage() {
+  const router = useRouter();
   const [statusFilter, setStatusFilter] = useState<ListingStatus | undefined>();
   const [disciplineFilter, setDisciplineFilter] = useState<
     Discipline | undefined
@@ -198,7 +200,7 @@ export default function ClientListingsPage() {
                       <ListingCard
                         listing={listing}
                         onEdit={(id) => {
-                          window.location.href = `/dashboard/client/listings/${id}/edit`;
+                          router.push(`/dashboard/client/listings/${id}/edit`);
                         }}
                         onDelete={(id) => handleDelete(id, listing.title)}
                         onStatusChange={handleStatusChange}

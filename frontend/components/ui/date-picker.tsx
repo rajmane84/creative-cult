@@ -224,6 +224,16 @@ export function DatePicker({
         value={value ? value.split('T')[0] : ''}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
+        onClick={(e) => {
+          if (disabled) return;
+          try {
+            if ('showPicker' in e.currentTarget) {
+              e.currentTarget.showPicker();
+            }
+          } catch {
+            // Fallback for browsers that do not support showPicker
+          }
+        }}
         className="absolute inset-0 z-10 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
       />
       <div

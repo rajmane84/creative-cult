@@ -149,9 +149,6 @@ export const createListingSchema = createListingObject
 
 export const updateListingSchema = createListingObject
   .partial()
-  .extend({
-    id: z.string('Listing ID is required'),
-  })
   .refine(
     (data) => {
       if (data.budgetMin !== undefined && data.budgetMax !== undefined) {

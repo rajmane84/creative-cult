@@ -19,8 +19,9 @@ interface SkillsStatusStepProps {
   skills: string[];
   onAddSkill: () => void;
   onRemoveSkill: (skill: string) => void;
-  status: ListingStatus;
-  onStatusChange: (value: ListingStatus) => void;
+  status?: ListingStatus;
+  onStatusChange?: (value: ListingStatus) => void;
+  showStatusSelect?: boolean;
 }
 
 export default function SkillsStatusStep({
@@ -31,15 +32,18 @@ export default function SkillsStatusStep({
   onRemoveSkill,
   status,
   onStatusChange,
+  showStatusSelect = true,
 }: SkillsStatusStepProps) {
   return (
     <div className="space-y-8">
       <div className="mb-10 space-y-2">
         <h3 className="font-display text-4xl text-foreground leading-none tracking-normal">
-          Skills & Publication
+          {showStatusSelect ? 'Skills & Publication' : 'Skills & Stack'}
         </h3>
         <p className="font-editorial text-lg text-foreground opacity-70">
-          Add required skills and choose when to publish
+          {showStatusSelect
+            ? 'Add required skills and choose when to publish'
+            : 'Specify the technical skills and tools required for this role'}
         </p>
       </div>
 
@@ -97,30 +101,32 @@ export default function SkillsStatusStep({
         )}
       </div>
 
-      <div className="space-y-4 pt-6 border-t border-border">
-        <Label
-          htmlFor="status"
-          className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
-        >
-          Listing Status
-        </Label>
-        <Select
-          value={status}
-          onValueChange={(value) => onStatusChange(value as ListingStatus)}
-        >
-          <SelectTrigger id="status" className="w-full">
-            <SelectValue placeholder="Select status..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ListingStatus.ACTIVE}>
-              Active (Publish immediately)
-            </SelectItem>
-            <SelectItem value={ListingStatus.DRAFT}>
-              Draft (Save without publishing)
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {showStatusSelect && status && onStatusChange && (
+        <div className="space-y-4 pt-6 border-t border-border">
+          <Label
+            htmlFor="status"
+            className="font-mono text-[11px] uppercase tracking-widest text-foreground block mb-2"
+          >
+            Listing Status
+          </Label>
+          <Select
+            value={status}
+            onValueChange={(value) => onStatusChange(value as ListingStatus)}
+          >
+            <SelectTrigger id="status" className="w-full">
+              <SelectValue placeholder="Select status..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ListingStatus.ACTIVE}>
+                Active (Publish immediately)
+              </SelectItem>
+              <SelectItem value={ListingStatus.DRAFT}>
+                Draft (Save without publishing)
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   );
 }

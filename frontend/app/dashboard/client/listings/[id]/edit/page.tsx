@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useCreateListing } from '@/hooks/listing';
+import { LoadingState } from '@/components/loading-state';
+import { ErrorState } from '@/components/error-state';
+import { useListing, useUpdateListing } from '@/hooks/listing';
 import {
   Discipline,
   LocationType,
@@ -14,6 +16,7 @@ import {
   ListingStatus,
 } from '@/types';
 import { toast } from 'sonner';
+import { ArrowLeft, Save } from 'lucide-react';
 import {
   MultiStepListingForm,
   ListingStepNavigation,
@@ -27,11 +30,14 @@ const steps = [
   { id: 1, title: 'Details', description: 'Basic info' },
   { id: 2, title: 'Location', description: 'Where & when' },
   { id: 3, title: 'Budget', description: 'Compensation' },
-  { id: 4, title: 'Skills', description: 'Requirements' },
+  { id: 4, title: 'Skills', description: 'Requirements & stack' },
 ];
 
-export default function NewListingPage() {
+export default function EditListingPage() {
   const router = useRouter();
+  const params = useParams();
+  const id = (params?.id as string) || '';
+
   const [currentStep, setCurrentStep] = useState(0);
 
   // Form state
@@ -54,9 +60,41 @@ export default function NewListingPage() {
   const [skills, setSkills] = useState<string[]>([]);
   const [status, setStatus] = useState<ListingStatus>(ListingStatus.ACTIVE);
 
-  const { createListingMutation } = useCreateListing({
+  const { data: listingResponse, isLoading, error, refetch } = useListing(id);
+  const listing = listingResponse?.data;
+
+  // Prepopulate form when listing data is loaded
+  useEffect(() => {
+    if (listing) {
+      setTitle(listing.title || '');
+      setDescription(listing.description || '');
+      setDiscipline(listing.discipline || '');
+      setEmploymentType(listing.employmentType || '');
+      setLocationType(listing.locationType || LocationType.REMOTE);
+      setLocation(listing.location || '');
+      setDuration(listing.duration || '');
+      setStartDate(listing.startDate ? listing.startDate.split('T')[0] : '');
+      setDeadline(listing.deadline ? listing.deadline.split('T')[0] : '');
+      setRateType(listing.rateType || RateType.PROJECT);
+      setCurrency(listing.currency || Currency.USD);
+      setBudgetMin(
+        listing.budgetMin !== null && listing.budgetMin !== undefined
+          ? String(listing.budgetMin)
+          : ''
+      );
+      setBudgetMax(
+        listing.budgetMax !== null && listing.budgetMax !== undefined
+          ? String(listing.budgetMax)
+          : ''
+      );
+      setSkills(listing.skills || []);
+      setStatus(listing.status || ListingStatus.ACTIVE);
+    }
+  }, [listing]);
+
+  const { updateListingMutation } = useUpdateListing({
     onSuccess: () => {
-      toast.success('Listing created successfully!');
+      toast.success('Listing updated successfully!');
       router.push('/dashboard/client/listings');
     },
   });
@@ -79,13 +117,13 @@ export default function NewListingPage() {
         // Basic Details: title (min 5 chars) and description (min 20 chars) are mandatory
         return title.length >= 5 && description.length >= 20;
       case 1:
-        // Location & Schedule: no mandatory fields
+        // Location & Schedule: optional fields
         return true;
       case 2:
-        // Budget: no mandatory fields
+        // Budget: optional fields
         return true;
       case 3:
-        // Skills & Status: no mandatory fields
+        // Skills & Status: optional fields
         return true;
       default:
         return true;
@@ -93,25 +131,11 @@ export default function NewListingPage() {
   };
 
   const isFormValid = (): boolean => {
-    // Check all mandatory fields for the entire form
+    // Check mandatory fields
     const mandatoryFieldsValid = title.length >= 5 && description.length >= 20;
 
     // Validate dates if provided
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
     let datesValid = true;
-    if (startDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      if (start < today) datesValid = false;
-    }
-
-    if (deadline) {
-      const dline = new Date(deadline);
-      dline.setHours(0, 0, 0, 0);
-      if (dline < today) datesValid = false;
-    }
 
     if (startDate && deadline) {
       const start = new Date(startDate);
@@ -135,9 +159,6 @@ export default function NewListingPage() {
   const handleNext = (e?: React.MouseEvent<HTMLButtonElement>) => {
     e?.preventDefault();
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
     // Validation for each step
     if (currentStep === 0) {
       if (title.length < 5) {
@@ -151,24 +172,6 @@ export default function NewListingPage() {
     }
 
     if (currentStep === 1) {
-      if (startDate) {
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0);
-        if (start < today) {
-          toast.error('Start date must be today or a future date');
-          return;
-        }
-      }
-
-      if (deadline) {
-        const dline = new Date(deadline);
-        dline.setHours(0, 0, 0, 0);
-        if (dline < today) {
-          toast.error('Application deadline must be today or a future date');
-          return;
-        }
-      }
-
       if (startDate && deadline) {
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
@@ -192,6 +195,41 @@ export default function NewListingPage() {
     }
   };
 
+  const handleStepClick = (targetStep: number) => {
+    if (targetStep === currentStep) return;
+
+    if (targetStep < currentStep) {
+      setCurrentStep(targetStep);
+      return;
+    }
+
+    if (currentStep === 0) {
+      if (title.length < 5) {
+        toast.error('Title must be at least 5 characters long');
+        return;
+      }
+      if (description.length < 20) {
+        toast.error('Description must be at least 20 characters long');
+        return;
+      }
+    }
+
+    if (currentStep === 1) {
+      if (startDate && deadline) {
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        const dline = new Date(deadline);
+        dline.setHours(0, 0, 0, 0);
+        if (dline > start) {
+          toast.error('Application deadline cannot be after the start date');
+          return;
+        }
+      }
+    }
+
+    setCurrentStep(targetStep);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -203,7 +241,8 @@ export default function NewListingPage() {
     const min = budgetMin ? parseInt(budgetMin, 10) : undefined;
     const max = budgetMax ? parseInt(budgetMax, 10) : undefined;
 
-    createListingMutation.mutate({
+    updateListingMutation.mutate({
+      id,
       title,
       description,
       status,
@@ -220,7 +259,7 @@ export default function NewListingPage() {
       duration: duration || undefined,
       startDate: startDate ? new Date(startDate).toISOString() : undefined,
       deadline: deadline ? new Date(deadline).toISOString() : undefined,
-      skills: skills.length > 0 ? skills : undefined,
+      skills,
     });
   };
 
@@ -275,8 +314,7 @@ export default function NewListingPage() {
             skills={skills}
             onAddSkill={handleAddSkill}
             onRemoveSkill={handleRemoveSkill}
-            status={status}
-            onStatusChange={setStatus}
+            showStatusSelect={false}
           />
         );
       default:
@@ -284,27 +322,74 @@ export default function NewListingPage() {
     }
   };
 
+  if (isLoading) {
+    return <LoadingState message="Loading listing details..." />;
+  }
+
+  if (error || !listing) {
+    return (
+      <div className="w-full bg-background min-h-screen py-12 px-4 sm:px-6">
+        <div className="max-w-xl mx-auto space-y-6">
+          <ErrorState
+            title="Couldn't load listing"
+            message={
+              error?.message ||
+              "The listing you are trying to edit could not be found or you don't have permission to edit it."
+            }
+            onRetry={refetch}
+          />
+          <div className="text-center">
+            <Link href="/dashboard/client/listings">
+              <Button variant="outline" className="gap-2">
+                <ArrowLeft className="size-4" />
+                Back to Listings
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full bg-background">
+    <div className="w-full bg-background min-h-screen">
       <div className="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 max-w-4xl mx-auto space-y-8">
         {/* Header */}
         <div className="space-y-4 border-b border-border pb-6">
-          <div>
-            <h1 className="font-editorial text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-              Create New{' '}
-              <span className="text-primary selection:text-background selection:bg-primary">
-                Listing
-              </span>
-            </h1>
-            <p className="font-body text-sm text-muted-foreground mt-1">
-              Post an opportunity for top creatives to apply
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="font-editorial text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+                Edit{' '}
+                <span className="text-primary selection:text-background selection:bg-primary">
+                  Listing
+                </span>
+              </h1>
+              <p className="font-body text-sm text-muted-foreground mt-1 truncate max-w-xl">
+                Updating &ldquo;{listing.title}&rdquo;
+              </p>
+            </div>
+
+            {currentStep < steps.length - 1 && (
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!isFormValid() || updateListingMutation.isPending}
+                className="gap-2 shrink-0"
+              >
+                <Save className="size-4" />
+                {updateListingMutation.isPending ? 'Saving...' : 'Save Changes'}
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Multi-step Form */}
         <form onSubmit={handleSubmit}>
-          <MultiStepListingForm currentStep={currentStep} steps={steps}>
+          <MultiStepListingForm
+            currentStep={currentStep}
+            steps={steps}
+            onStepClick={handleStepClick}
+          >
             {renderStep()}
 
             <ListingStepNavigation
@@ -312,9 +397,10 @@ export default function NewListingPage() {
               totalSteps={steps.length}
               onPrevious={handlePrevious}
               onNext={handleNext}
-              isSubmitting={createListingMutation.isPending}
+              isSubmitting={updateListingMutation.isPending}
               isNextDisabled={!isStepValid(currentStep)}
               isSubmitDisabled={!isFormValid()}
+              submitLabel="Save Changes"
             />
           </MultiStepListingForm>
         </form>
